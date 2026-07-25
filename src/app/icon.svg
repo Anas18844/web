@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="A">
+  <!--
+    Interim favicon. Follows the documented logo structure (brand_identity §3.1):
+    an angular "A" letter-mark — navy left stroke, gold right stroke, cyan
+    "solution path" crossing the base. Sharp cuts only, no curves.
+
+    TODO(assets): replace with the official simplified favicon once the
+    small-size logo variant is produced (brand_identity §8, open TBD).
+  -->
+  <rect width="64" height="64" fill="#0D1B33"/>
+  <path d="M30 10 L38 10 L24 54 L16 54 Z" fill="#1E3554"/>
+  <path d="M34 10 L42 10 L52 54 L44 54 Z" fill="#CBA352"/>
+  <path d="M14 40 L54 34 L54 42 L14 48 Z" fill="#48C8D5" opacity="0.9"/>
+</svg>
