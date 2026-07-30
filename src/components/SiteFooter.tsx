@@ -15,6 +15,15 @@ export function SiteFooter() {
         </div>
 
         <nav aria-label="روابط الموقع" className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <Link href="/courses" className="transition-colors hover:text-ink">
+            {common.nav.courses}
+          </Link>
+          <Link href="/platform" className="transition-colors hover:text-ink">
+            {common.nav.platform}
+          </Link>
+          <Link href="/about" className="transition-colors hover:text-ink">
+            {common.nav.about}
+          </Link>
           <Link href="/links" className="transition-colors hover:text-ink">
             {common.footer.links}
           </Link>

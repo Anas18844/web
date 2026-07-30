@@ -49,10 +49,13 @@ export async function POST(request: Request) {
       .from('leads')
       .insert({
         name: lead.name,
+        phone: lead.phone,
         whatsapp: lead.whatsapp,
         grade: lead.grade,
+        attendance: lead.attendance,
+        branch: lead.branch ?? null,
+        heard_from: lead.heardFrom,
         intent: lead.intent,
-        referred_by: lead.referredBy || null,
         note: lead.note || null,
         page_context: lead.pageContext || null,
         source: lead.utm?.utm_source || lead.utm?.referrer || null,

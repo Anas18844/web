@@ -23,9 +23,9 @@ export const metadata: Metadata = {
 /**
  * The parent page (Doc 01 §3 — the P1→P4 journey).
  *
- * This is the page the student sends home, so it must stand alone: full
- * identity, full explanation, its own capture point. Tone is calm and serious
- * throughout — never the student's register (Principle 11).
+ * This is the page the student sends home, so it stands alone: who is teaching
+ * and where they actually worked, how the follow-up works, what it costs, and
+ * what we refuse to promise. Tone is calm and serious throughout.
  */
 export default function ParentsPage() {
   const report = assets.parentReportSample
@@ -42,7 +42,26 @@ export default function ParentsPage() {
         </Container>
       </section>
 
+      {/* Credentials first — a parent verifies before they read anything else. */}
       <Section width="prose">
+        <SectionHeading title={parents.credentials.title} />
+        <p className="text-body text-ink-muted">{parents.credentials.body}</p>
+
+        <dl className="mt-8 grid gap-5">
+          {[
+            { term: 'التدريس', detail: parents.credentials.teaching },
+            { term: 'الشغل الهندسي', detail: parents.credentials.industry },
+            { term: 'المسابقات', detail: parents.credentials.competitions },
+          ].map((row) => (
+            <div key={row.term} className="border-s-2 border-gold/60 ps-5">
+              <dt className="text-sm font-extrabold text-gold">{row.term}</dt>
+              <dd className="mt-1 text-body text-ink-muted">{row.detail}</dd>
+            </div>
+          ))}
+        </dl>
+      </Section>
+
+      <Section tone="raised" width="prose">
         <SectionHeading title={parents.followUp.title} />
         <div className="grid gap-6">
           {parents.followUp.items.map((item) => (
@@ -65,13 +84,13 @@ export default function ParentsPage() {
               className="rounded border border-navy-line"
             />
             <figcaption className="mt-3 text-sm text-ink-faint">
-              نموذج حقيقي من التقرير الأسبوعي
+              نموذج من التقرير الأسبوعي
             </figcaption>
           </figure>
         )}
       </Section>
 
-      <Section tone="raised" width="prose">
+      <Section width="prose">
         <h2 className="text-title font-extrabold text-ink">{parents.cost.title}</h2>
         <p className="mt-4 text-body text-ink-muted">{parents.cost.body}</p>
       </Section>
@@ -105,7 +124,6 @@ export default function ParentsPage() {
         pageContext="parents"
         title={parents.capture.title}
         body={parents.capture.body}
-        withNote
       />
     </>
   )

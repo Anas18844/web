@@ -1,0 +1,46 @@
+
+> anas-ahmed-website@1.0.0 dev
+> next dev
+
+   ▲ Next.js 15.5.21
+   - Local:        http://localhost:3000
+   - Network:      http://172.19.192.1:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 6.5s
+ ○ Compiling / ...
+ ✓ Compiled / in 5.9s (730 modules)
+ GET / 200 in 7517ms
+ ○ Compiling /courses ...
+ ✓ Compiled /courses in 2.1s (735 modules)
+ GET /courses 200 in 2950ms
+ ○ Compiling /platform ...
+ ✓ Compiled /platform in 589ms (726 modules)
+ GET /platform 200 in 1093ms
+ ○ Compiling /about ...
+ ✓ Compiled /about in 673ms (731 modules)
+ GET /about 200 in 1138ms
+ ○ Compiling /parents ...
+ ✓ Compiled /parents in 568ms (733 modules)
+ GET /parents 200 in 1046ms
+ GET / 200 in 357ms
+ GET /parents 200 in 461ms
+ ○ Compiling /icon.svg ...
+ ✓ Compiled /icon.svg in 683ms (481 modules)
+ GET /icon.svg?c508d36a5fcfddd1 200 in 1064ms
+ GET / 200 in 292ms
+ GET /icon.svg?c508d36a5fcfddd1 200 in 25ms
+ GET / 200 in 165ms
+ ○ Compiling /courses ...
+ ✓ Compiled /courses in 542ms (466 modules)
+ GET /courses 200 in 1081ms
+ ✓ Compiled /icon.svg in 364ms (483 modules)
+ GET /icon.svg?c508d36a5fcfddd1 200 in 571ms
+ ○ Compiling /about ...
+ ✓ Compiled /about in 572ms (470 modules)
+ GET /about 200 in 1123ms
+ ✓ Compiled /icon.svg in 409ms (487 modules)
+ GET /icon.svg?c508d36a5fcfddd1 200 in 588ms
+ GET /parents 200 in 269ms
+ GET /icon.svg?c508d36a5fcfddd1 200 in 35ms

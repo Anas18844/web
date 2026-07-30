@@ -23,37 +23,39 @@ const cairo = Cairo({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — ${site.subject} | بكالوريا`,
+    default: `${site.name} — ${site.subject} من الصفر`,
     template: `%s — ${site.name}`,
   },
   description:
-    'مهندس بيشتغل بالبرمجة كل يوم وبيدرّسها لطلاب البكالوريا — مسار الهندسة وعلوم الحاسب. حصة مركّزة، منصة بتصحّح كودك، ومتابعة أسبوعية لولي الأمر بالبيانات.',
+    'اتعلّم البرمجة من حد بيشتغل بيها كل يوم. ٤ سنين تدريس في iSchool وأشبال مصر الرقمية ورواد، و٤ سنين شغل هندسي مع Microsoft Egypt وiTech Solutions. لطلاب الثانوي والجامعة والمتعلمين ذاتياً.',
   applicationName: site.name,
   authors: [{ name: site.name }],
   creator: site.name,
   keywords: [
+    'تعلم البرمجة',
     'البرمجة والذكاء الاصطناعي',
-    'بكالوريا',
-    'تانية ثانوي',
-    'مسار الهندسة وعلوم الحاسب',
-    'مستر أنس أحمد',
+    'برمجة أولى ثانوي',
     'برمجة تانية ثانوي',
+    'بكالوريا',
+    'مسار الهندسة وعلوم الحاسب',
+    'ICPC',
+    'مستر أنس أحمد',
   ],
   alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
     locale: 'ar_EG',
     siteName: site.name,
-    title: `${site.name} — ${site.subject}`,
+    title: `${site.name} — اتعلّم البرمجة من حد بيشتغل بيها`,
     description:
-      'منظومة كاملة لمادة البرمجة والذكاء الاصطناعي: حصة مركّزة، منصة بتصحّح كودك، ومتابعة أسبوعية لولي الأمر.',
+      '٤ سنين تدريس في iSchool وأشبال مصر الرقمية ورواد، و٤ سنين شغل هندسي مع Microsoft Egypt وiTech Solutions — لطلاب الثانوي والجامعة والمتعلمين ذاتياً.',
     url: '/',
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${site.name} — ${site.subject}`,
+    title: `${site.name} — اتعلّم البرمجة من حد بيشتغل بيها`,
     description:
-      'منظومة كاملة لمادة البرمجة والذكاء الاصطناعي لطلاب البكالوريا — مسار الهندسة وعلوم الحاسب.',
+      'خبرة تدريس وشغل هندسي حقيقي — لطلاب الثانوي والجامعة والمتعلمين ذاتياً.',
   },
   robots: {
     index: true,

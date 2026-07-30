@@ -1,57 +1,94 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { GRADES, INTENTS, site, type Intent } from '@/content/site'
+import {
+  ATTENDANCE,
+  BRANCHES,
+  GRADES,
+  HEARD_FROM,
+  INTENTS,
+  site,
+  type Intent,
+} from '@/content/site'
 import { common } from '@/content/copy'
 import { collectUtm } from '@/lib/utm'
 import { events } from '@/lib/analytics'
 import { EG_MOBILE, normalizePhone } from '@/lib/phone'
+import { nameError } from '@/lib/name'
 import { WhatsAppButton } from '@/components/WhatsAppButton'
 import { cn } from '@/lib/utils'
 
-type Errors = Partial<Record<'name' | 'whatsapp' | 'grade' | 'form', string>>
+type FieldKey = 'name' | 'phone' | 'whatsapp' | 'grade' | 'attendance' | 'branch' | 'heardFrom'
+type Errors = Partial<Record<FieldKey | 'form', string>>
 
-/**
- * The capture form (Doc 05).
- *
- * Three required fields only — name, WhatsApp, grade — plus an optional
- * referral field. Every extra field is a tax on the submission rate, and the
- * rest of the data is earned in conversation, not extracted up front.
- */
 export function LeadForm({
   intent,
   pageContext,
-  withNote = false,
   className,
 }: {
   intent: Intent
   pageContext: string
-  /** Parents page only: lets them ask for a call in their own words. */
-  withNote?: boolean
   className?: string
 }) {
   const [state, setState] = useState<'idle' | 'sending' | 'done'>('idle')
   const [errors, setErrors] = useState<Errors>({})
+
+  // Controlled only where behaviour depends on the value:
+  // the WhatsApp mirror button and the conditional branch question.
+  const [phone, setPhone] = useState('')
+  const [whatsapp, setWhatsapp] = useState('')
+  const [sameAsPhone, setSameAsPhone] = useState(false)
+  const [attendance, setAttendance] = useState<string>('')
+
   const mountedAt = useRef(Date.now())
-  const formRef = useRef<HTMLFormElement>(null)
+
+  function applySameAsPhone(checked: boolean) {
+    setSameAsPhone(checked)
+    if (checked) {
+      setWhatsapp(phone)
+      setErrors((prev) => ({ ...prev, whatsapp: undefined }))
+    }
+  }
+
+  function onPhoneChange(value: string) {
+    setPhone(value)
+    if (sameAsPhone) setWhatsapp(value)
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (state === 'sending') return
 
-    const form = e.currentTarget
-    const data = new FormData(form)
+    const data = new FormData(e.currentTarget)
 
-    const name = String(data.get('name') || '').trim()
-    const whatsappRaw = String(data.get('whatsapp') || '')
-    const whatsapp = normalizePhone(whatsappRaw)
+    const name = String(data.get('name') || '')
     const grade = String(data.get('grade') || '')
+    const branch = String(data.get('branch') || '')
+    const heardFrom = String(data.get('heardFrom') || '')
+    const normalizedPhone = normalizePhone(phone)
+    const normalizedWhatsapp = normalizePhone(sameAsPhone ? phone : whatsapp)
 
-    // Client-side checks mirror the server's, purely to give instant feedback.
+    // Client-side checks mirror the server's, purely for instant feedback.
     const next: Errors = {}
-    if (name.length < 2) next.name = common.form.errorName
-    if (!EG_MOBILE.test(whatsapp)) next.whatsapp = common.form.errorWhatsapp
+
+    switch (nameError(name)) {
+      case 'empty':
+        next.name = common.form.errorNameEmpty
+        break
+      case 'not_arabic':
+        next.name = common.form.errorNameArabic
+        break
+      case 'not_triple':
+        next.name = common.form.errorNameTriple
+        break
+    }
+
+    if (!EG_MOBILE.test(normalizedPhone)) next.phone = common.form.errorPhone
+    if (!EG_MOBILE.test(normalizedWhatsapp)) next.whatsapp = common.form.errorWhatsapp
     if (!grade) next.grade = common.form.errorGrade
+    if (!attendance) next.attendance = common.form.errorAttendance
+    if (attendance === 'center' && !branch) next.branch = common.form.errorBranch
+    if (!heardFrom) next.heardFrom = common.form.errorHeardFrom
 
     if (Object.keys(next).length) {
       setErrors(next)
@@ -67,10 +104,13 @@ export function LeadForm({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
-          whatsapp,
+          phone: normalizedPhone,
+          whatsapp: normalizedWhatsapp,
           grade,
+          attendance,
+          branch: attendance === 'center' ? branch : undefined,
+          heardFrom,
           intent,
-          referredBy: String(data.get('referredBy') || '').trim(),
           note: String(data.get('note') || '').trim(),
           pageContext,
           utm: collectUtm(),
@@ -113,7 +153,6 @@ export function LeadForm({
 
   return (
     <form
-      ref={formRef}
       onSubmit={onSubmit}
       noValidate
       className={cn('rounded border border-navy-line bg-navy-soft/40 p-6 sm:p-8', className)}
@@ -121,105 +160,183 @@ export function LeadForm({
       <p className="mb-6 text-sm font-semibold text-gold">{INTENTS[intent]}</p>
 
       <div className="grid gap-5">
-        <Field
-          id="name"
-          label={common.form.name}
-          error={errors.name}
-          input={
-            <input
-              id="name"
-              name="name"
-              type="text"
-              autoComplete="given-name"
-              placeholder={common.form.namePlaceholder}
-              required
-              aria-invalid={Boolean(errors.name)}
-              aria-describedby={errors.name ? 'name-error' : undefined}
-              className={inputClass(Boolean(errors.name))}
-            />
-          }
-        />
+        <Field id="name" label={common.form.name} hint={common.form.nameHint} error={errors.name}>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            autoComplete="name"
+            placeholder={common.form.namePlaceholder}
+            required
+            aria-invalid={Boolean(errors.name)}
+            aria-describedby={describedBy('name', errors.name, common.form.nameHint)}
+            className={inputClass(Boolean(errors.name))}
+          />
+        </Field>
+
+        <Field id="phone" label={common.form.phone} error={errors.phone}>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            dir="ltr"
+            value={phone}
+            onChange={(e) => onPhoneChange(e.target.value)}
+            placeholder={common.form.phonePlaceholder}
+            required
+            aria-invalid={Boolean(errors.phone)}
+            aria-describedby={describedBy('phone', errors.phone)}
+            className={cn(inputClass(Boolean(errors.phone)), 'text-start')}
+          />
+        </Field>
 
         <Field
           id="whatsapp"
           label={common.form.whatsapp}
           hint={common.form.whatsappHint}
           error={errors.whatsapp}
-          input={
-            <input
-              id="whatsapp"
-              name="whatsapp"
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel"
-              dir="ltr"
-              placeholder={common.form.whatsappPlaceholder}
-              required
-              aria-invalid={Boolean(errors.whatsapp)}
-              aria-describedby={
-                errors.whatsapp ? 'whatsapp-error whatsapp-hint' : 'whatsapp-hint'
-              }
-              className={cn(inputClass(Boolean(errors.whatsapp)), 'text-start')}
-            />
+          action={
+            <label className="flex cursor-pointer items-center gap-2 text-xs font-bold text-gold">
+              <input
+                type="checkbox"
+                checked={sameAsPhone}
+                onChange={(e) => applySameAsPhone(e.target.checked)}
+                className="h-4 w-4 accent-[#CBA352]"
+              />
+              {common.form.sameAsPhone}
+            </label>
           }
-        />
+        >
+          <input
+            id="whatsapp"
+            name="whatsapp"
+            type="tel"
+            inputMode="tel"
+            dir="ltr"
+            value={whatsapp}
+            onChange={(e) => setWhatsapp(e.target.value)}
+            readOnly={sameAsPhone}
+            placeholder={common.form.phonePlaceholder}
+            required
+            aria-invalid={Boolean(errors.whatsapp)}
+            aria-describedby={describedBy('whatsapp', errors.whatsapp, common.form.whatsappHint)}
+            className={cn(
+              inputClass(Boolean(errors.whatsapp)),
+              'text-start',
+              sameAsPhone && 'opacity-60',
+            )}
+          />
+        </Field>
 
-        <Field
-          id="grade"
-          label={common.form.grade}
-          error={errors.grade}
-          input={
+        <Field id="grade" label={common.form.grade} error={errors.grade}>
+          <select
+            id="grade"
+            name="grade"
+            required
+            defaultValue=""
+            aria-invalid={Boolean(errors.grade)}
+            aria-describedby={describedBy('grade', errors.grade)}
+            className={inputClass(Boolean(errors.grade))}
+          >
+            <option value="" disabled>
+              {common.form.gradePlaceholder}
+            </option>
+            {GRADES.map((g) => (
+              <option key={g.value} value={g.value}>
+                {g.label}
+              </option>
+            ))}
+          </select>
+        </Field>
+
+        {/* Two options — segmented buttons beat a dropdown on mobile. */}
+        <fieldset>
+          <legend className="mb-2 block text-sm font-bold text-ink">
+            {common.form.attendance}
+          </legend>
+          <div className="grid grid-cols-2 gap-3">
+            {ATTENDANCE.map((option) => (
+              <label
+                key={option.value}
+                className={cn(
+                  'flex min-h-[3rem] cursor-pointer items-center justify-center rounded border px-4 text-base font-bold transition-colors',
+                  attendance === option.value
+                    ? 'border-gold bg-gold text-navy'
+                    : 'border-navy-line bg-navy text-ink hover:border-gold/60',
+                )}
+              >
+                <input
+                  type="radio"
+                  name="attendance"
+                  value={option.value}
+                  checked={attendance === option.value}
+                  onChange={(e) => setAttendance(e.target.value)}
+                  className="sr-only"
+                />
+                {option.label}
+              </label>
+            ))}
+          </div>
+          {errors.attendance && <ErrorText id="attendance">{errors.attendance}</ErrorText>}
+        </fieldset>
+
+        {/* Revealed only for centre students — online students never see it. */}
+        {attendance === 'center' && (
+          <Field id="branch" label={common.form.branch} error={errors.branch}>
             <select
-              id="grade"
-              name="grade"
+              id="branch"
+              name="branch"
               required
               defaultValue=""
-              aria-invalid={Boolean(errors.grade)}
-              aria-describedby={errors.grade ? 'grade-error' : undefined}
-              className={inputClass(Boolean(errors.grade))}
+              aria-invalid={Boolean(errors.branch)}
+              aria-describedby={describedBy('branch', errors.branch)}
+              className={inputClass(Boolean(errors.branch))}
             >
               <option value="" disabled>
-                اختار…
+                {common.form.branchPlaceholder}
               </option>
-              {GRADES.map((g) => (
-                <option key={g.value} value={g.value}>
-                  {g.label}
+              {BRANCHES.map((b) => (
+                <option key={b.value} value={b.value}>
+                  {b.label}
                 </option>
               ))}
             </select>
-          }
-        />
-
-        {withNote && (
-          <Field
-            id="note"
-            label="حابب تضيف حاجة؟ (اختياري)"
-            input={
-              <textarea
-                id="note"
-                name="note"
-                rows={3}
-                maxLength={300}
-                placeholder="مثلاً: أفضّل مكالمة، أو سؤال معيّن"
-                className={inputClass(false)}
-              />
-            }
-          />
+          </Field>
         )}
 
-        <Field
-          id="referredBy"
-          label={common.form.referral}
-          input={
-            <input
-              id="referredBy"
-              name="referredBy"
-              type="text"
-              placeholder={common.form.referralPlaceholder}
-              className={inputClass(false)}
-            />
-          }
-        />
+        <Field id="heardFrom" label={common.form.heardFrom} error={errors.heardFrom}>
+          <select
+            id="heardFrom"
+            name="heardFrom"
+            required
+            defaultValue=""
+            aria-invalid={Boolean(errors.heardFrom)}
+            aria-describedby={describedBy('heardFrom', errors.heardFrom)}
+            className={inputClass(Boolean(errors.heardFrom))}
+          >
+            <option value="" disabled>
+              {common.form.heardFromPlaceholder}
+            </option>
+            {HEARD_FROM.map((h) => (
+              <option key={h.value} value={h.value}>
+                {h.label}
+              </option>
+            ))}
+          </select>
+        </Field>
+
+        <Field id="note" label={common.form.note}>
+          <textarea
+            id="note"
+            name="note"
+            rows={3}
+            maxLength={500}
+            placeholder={common.form.notePlaceholder}
+            className={inputClass(false)}
+          />
+        </Field>
 
         {/* Honeypot — hidden from humans and assistive tech, irresistible to bots. */}
         <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
@@ -229,7 +346,10 @@ export function LeadForm({
       </div>
 
       {errors.form && (
-        <p role="alert" className="mt-5 rounded border border-red-400/40 bg-red-400/10 p-3 text-sm text-red-200">
+        <p
+          role="alert"
+          className="mt-5 rounded border border-red-400/40 bg-red-400/10 p-3 text-sm text-red-200"
+        >
           {errors.form}
         </p>
       )}
@@ -257,35 +377,49 @@ function inputClass(hasError: boolean) {
   )
 }
 
+function describedBy(id: string, error?: string, hint?: string) {
+  const ids = [error && `${id}-error`, hint && `${id}-hint`].filter(Boolean)
+  return ids.length ? ids.join(' ') : undefined
+}
+
+function ErrorText({ id, children }: { id: string; children: React.ReactNode }) {
+  return (
+    <p id={`${id}-error`} role="alert" className="mt-2 text-xs font-semibold text-red-300">
+      {children}
+    </p>
+  )
+}
+
 function Field({
   id,
   label,
   hint,
   error,
-  input,
+  action,
+  children,
 }: {
   id: string
   label: string
   hint?: string
   error?: string
-  input: React.ReactNode
+  action?: React.ReactNode
+  children: React.ReactNode
 }) {
   return (
     <div>
-      <label htmlFor={id} className="mb-2 block text-sm font-bold text-ink">
-        {label}
-      </label>
-      {input}
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <label htmlFor={id} className="block text-sm font-bold text-ink">
+          {label}
+        </label>
+        {action}
+      </div>
+      {children}
       {hint && (
         <p id={`${id}-hint`} className="mt-2 text-xs text-ink-faint">
           {hint}
         </p>
       )}
-      {error && (
-        <p id={`${id}-error`} role="alert" className="mt-2 text-xs font-semibold text-red-300">
-          {error}
-        </p>
-      )}
+      {error && <ErrorText id={id}>{error}</ErrorText>}
     </div>
   )
 }

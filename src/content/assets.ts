@@ -1,13 +1,14 @@
 /**
  * Asset Registry — the contract with Document 04 (Proof & Evidence Framework).
  *
- * Every proof asset has a reserved slot here. While a slot is `null`, the
- * component that uses it renders NOTHING — never a placeholder, never a
- * "coming soon" (Doc 04 §1.6 / Principle 22). The site ships complete with
- * whatever exists today and upgrades the moment an asset lands.
+ * Governing rule from the founder: we do not *claim* experience, we *prove* it.
+ * Every credential below has a reserved photo/screenshot slot. While a slot is
+ * `null` (or an empty array), the component renders NOTHING — never a
+ * placeholder, never a "coming soon" (Principle 22). The site ships complete
+ * with what exists today and upgrades the moment an asset lands.
  *
  * TO ADD AN ASSET LATER:
- *   1. Drop the file in /public/images (or note the YouTube id).
+ *   1. Drop the file in /public/images.
  *   2. Fill the slot below. Nothing else changes.
  */
 
@@ -26,45 +27,82 @@ export type VideoAsset = {
 
 export const assets = {
   /**
-   * Founder portrait — Layer 1, immediate identity.
-   * WHY: visual continuity with the YouTube thumbnails is the proof that the
-   * visitor is "in the right place" (Doc 01, stage 2).
+   * Hero banner — ✅ AVAILABLE.
+   * Founder on the left, brand circuit motif on the right. Doubles as the
+   * "am I in the right place?" continuity signal with the YouTube thumbnails.
    */
-  founderPortrait: null as ImageAsset | null,
+  hero: {
+    src: '/images/hero.png',
+    alt: 'مستر أنس أحمد — مهندس ذكاء اصطناعي وبرمجيات ومدرّس برمجة',
+    width: 1376,
+    height: 768,
+  } as ImageAsset | null,
 
-  /**
-   * Teaching sample — the single most important proof asset for students.
-   * WHY: watching him teach is the only undebatable evidence of teaching
-   * ability (Doc 04 §2.1, rank 1).
-   */
+  // ---------------------------------------------------------------------------
+  // PROOF OF TEACHING — photos from the places named on the site.
+  // WHY: the student trusts recognisable places, not a job title.
+  // ---------------------------------------------------------------------------
+  /** Photos from teaching at iSchool / أشبال مصر الرقمية / رواد. */
+  teachingPhotos: [] as ImageAsset[],
+
+  /** Screenshot/photo proving engineer-training sessions in the software industry. */
+  engineerTrainingProof: null as ImageAsset | null,
+
+  // ---------------------------------------------------------------------------
+  // PROOF OF INDUSTRY WORK — ✅ AVAILABLE
+  // ---------------------------------------------------------------------------
+  /** The three roles, on one banner: iSchool · Microsoft · iTech Solutions. */
+  companiesBanner: {
+    src: '/images/companies.jpeg',
+    alt: 'iSchool — Coding Instructor · Microsoft — Software Engineer · iTech Solutions — AI Engineer',
+    width: 1600,
+    height: 396,
+  } as ImageAsset | null,
+
+  /** Photo at Microsoft — physical proof beats a logo list. */
+  industryPhotos: [
+    {
+      src: '/images/microsoft.png',
+      alt: 'مستر أنس أحمد داخل مقر Microsoft',
+      width: 896,
+      height: 1195,
+    },
+  ] as ImageAsset[],
+
+  // ---------------------------------------------------------------------------
+  // PROOF OF COMPETITIONS & COMMUNITY
+  // ---------------------------------------------------------------------------
+  /** Photos from ICPC / hackathon training. ⏳ not supplied yet. */
+  competitionPhotos: [] as ImageAsset[],
+
+  /** ✅ Codeforces profile showing the Expert rank. */
+  codeforcesProof: {
+    src: '/images/codeforces-expert.png',
+    alt: 'حساب مستر أنس أحمد على Codeforces بمستوى Expert وتقييم 1645',
+    width: 1107,
+    height: 612,
+  } as ImageAsset | null,
+
+  /** ✅ LinkedIn profile — the reach itself is the proof. */
+  linkedinProof: {
+    src: '/images/linkedin-profile.png',
+    alt: 'حساب مستر أنس أحمد على لينكدإن — أكثر من ٦٠٠٠ متابع',
+    width: 889,
+    height: 530,
+  } as ImageAsset | null,
+
+  // ---------------------------------------------------------------------------
+  // PROOF OF THE SYSTEM
+  // ---------------------------------------------------------------------------
+  /** A real teaching clip — the strongest single proof for a student. */
   teachingSample: null as VideoAsset | null,
 
-  /**
-   * Platform in real use (code → run → auto-grade → correction video).
-   * WHY: turns "we have a platform" from a market cliché into a scene no
-   * competitor owns (Doc 04 §2.1, rank 2).
-   */
+  /** The platform in real use: code → run → auto-grade → correction video. */
   platformDemo: null as VideoAsset | null,
 
-  /**
-   * Stills of the platform — for visitors who will not play a video.
-   * Keep to a maximum of two (Doc 04 §3.5 — dosage rule).
-   */
+  /** Stills of the platform, for visitors who will not play a video. Max 2. */
   platformStills: [] as ImageAsset[],
 
-  /**
-   * Weekly parent report sample — the strongest single asset for parents.
-   * WHY: makes the core promise to the parent tangible (Doc 04 §2.2, rank 1).
-   * NOTE: any real student data must be blurred or consented.
-   */
+  /** Weekly parent report sample — the strongest single asset for a parent. */
   parentReportSample: null as ImageAsset | null,
-
-  /**
-   * A photo from a real session at the centre.
-   * WHY: physical presence reads as seriousness in this market.
-   */
-  sessionPhoto: null as ImageAsset | null,
 } as const
-
-/** Named centres, once contracts are confirmed. Empty = generic copy is used. */
-export const centres: { name: string; area: string }[] = []

@@ -1,7 +1,8 @@
 import { Hero } from '@/components/sections/Hero'
-import { Numbers } from '@/components/sections/Numbers'
+import { Audience } from '@/components/sections/Audience'
+import { FreeFirst } from '@/components/sections/FreeFirst'
+import { AboutTeaser } from '@/components/sections/AboutTeaser'
 import { System } from '@/components/sections/System'
-import { Story } from '@/components/sections/Story'
 import { Practical } from '@/components/sections/Practical'
 import { Transparency } from '@/components/sections/Transparency'
 import { ParentBridge } from '@/components/sections/ParentBridge'
@@ -10,19 +11,21 @@ import { JsonLd } from '@/components/JsonLd'
 import { homeGraph } from '@/lib/schema-org'
 
 /**
- * The home page carries the entire persuasion arc in one scroll, so a visitor
- * who never clicks anything can still travel from "who is this?" to the form
- * (Review §6.1). Ordered by the questions in the visitor's head (Doc 01),
- * not by what we most want to say.
+ * The home page belongs to the student, not the founder: it answers
+ * "is this for me?", "how does it work?", "what do I do now?".
+ *
+ * Everything about the founder is compressed into one short teaser that links
+ * to /about — where the full credentials and their proof screenshots live.
  */
 export default function HomePage() {
   return (
     <>
       <JsonLd data={homeGraph()} />
       <Hero />
-      <Numbers />
+      <Audience />
+      <FreeFirst />
+      <AboutTeaser />
       <System />
-      <Story />
       <Practical />
       <Transparency />
       <ParentBridge />

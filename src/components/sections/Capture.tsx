@@ -1,6 +1,7 @@
 import { Section, SectionHeading } from '@/components/ui/Section'
 import { LeadForm } from '@/components/LeadForm'
 import { WhatsAppButton } from '@/components/WhatsAppButton'
+import { SocialLinks } from '@/components/SocialLinks'
 import { home } from '@/content/copy'
 import type { Intent } from '@/content/site'
 
@@ -14,13 +15,11 @@ export function Capture({
   pageContext = 'home',
   title = home.capture.title,
   body = home.capture.body,
-  withNote = false,
 }: {
   intent?: Intent
   pageContext?: string
   title?: string
   body?: string
-  withNote?: boolean
 }) {
   return (
     <Section id="start" tone="deep">
@@ -28,9 +27,15 @@ export function Capture({
         <div>
           <SectionHeading title={title} intro={body} />
           <WhatsAppButton context={pageContext}>كلّمنا على الواتساب</WhatsAppButton>
+
+          {/* Fills the space beside the form, and gives the hesitant visitor
+              a lower-commitment way to stay connected. */}
+          <div className="mt-8">
+            <SocialLinks />
+          </div>
         </div>
 
-        <LeadForm intent={intent} pageContext={pageContext} withNote={withNote} />
+        <LeadForm intent={intent} pageContext={pageContext} />
       </div>
     </Section>
   )

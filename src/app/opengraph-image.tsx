@@ -56,10 +56,10 @@ export default async function Image() {
           {font ? (
             <>
               <div style={{ fontSize: 62, color: '#FFFFFF', lineHeight: 1.3 }}>
-                مهندس بيشتغل بالبرمجة كل يوم… وبيدرّسها
+                اتعلّم البرمجة من حد بيشتغل بيها كل يوم
               </div>
               <div style={{ fontSize: 30, color: '#AEBACC', marginTop: 24 }}>
-                البرمجة والذكاء الاصطناعي · بكالوريا · مسار الهندسة وعلوم الحاسب
+                iSchool · أشبال مصر الرقمية · Microsoft Egypt · iTech Solutions
               </div>
             </>
           ) : (

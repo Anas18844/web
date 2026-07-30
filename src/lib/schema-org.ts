@@ -1,4 +1,4 @@
-import { site } from '@/content/site'
+import { site, institutions } from '@/content/site'
 import { home } from '@/content/copy'
 
 /**
@@ -9,6 +9,10 @@ import { home } from '@/content/copy'
  *     and in every channel bio. Contradiction between sources is what destroys
  *     an entity in the eyes of search engines and LLMs.
  *  2. Retired names go in `alternateName` so old searches still resolve to us.
+ *
+ * The credentials below (places taught at, places worked with) are the same
+ * ones shown on the page — they are the trust device, so the machines get them
+ * in structured form too.
  */
 
 const PERSON_ID = `${site.url}/#person`
@@ -24,18 +28,35 @@ export function personSchema() {
     '@id': PERSON_ID,
     name: site.name,
     alternateName: [site.nameEn, ...site.formerNames],
-    url: site.url,
-    jobTitle: 'مهندس برمجيات وأتمتة — ومدرّس البرمجة والذكاء الاصطناعي',
+    url: `${site.url}/about`,
+    jobTitle: 'مهندس ذكاء اصطناعي وبرمجيات — ومدرّس برمجة',
     description:
-      'مهندس يعمل في الذكاء الاصطناعي والأتمتة، ويدرّس مادة البرمجة والذكاء الاصطناعي لطلاب البكالوريا في مسار الهندسة وعلوم الحاسب.',
+      'مدرّس ومهندس يعملان بالتوازي منذ ٤ سنوات. مهندس ذكاء اصطناعي وبرمجيات عمل مع Microsoft Egypt وiTech Solutions وiSchool وBade3 Program for AI، وشارك في بناء أكثر من ٢٠ منتجاً يستخدمها أكثر من مليون مستخدم، وله أكثر من ٩ أوراق بحثية في الذكاء الاصطناعي والخوارزميات التطورية وAgentic AI منشورة على IEEE وGoogle Scholar. درّس الفيزياء لطلاب الثانوية بين ٢٠٢٣ و٢٠٢٦، ودرّب أكثر من ١٠٠ طالب على مسابقات ICPC.',
     knowsAbout: [
-      'البرمجة والذكاء الاصطناعي',
-      'نظام البكالوريا المصري',
-      'مسار الهندسة وعلوم الحاسب',
-      'JavaScript',
+      'البرمجة',
+      'الذكاء الاصطناعي',
+      'هندسة البرمجيات',
+      'الخوارزميات التطورية',
+      'Agentic AI',
+      'مسابقات ICPC',
       'تعليم البرمجة',
+      'البرمجة والذكاء الاصطناعي للثانوية',
     ],
     knowsLanguage: ['ar', 'en'],
+    worksFor: institutions.industry.map((org) => ({
+      '@type': 'Organization',
+      name: org.name,
+    })),
+    alumniOf: [
+      {
+        '@type': 'CollegeOrUniversity',
+        name: 'جامعة حلوان — كلية الحاسبات والذكاء الاصطناعي',
+      },
+      {
+        '@type': 'CollegeOrUniversity',
+        name: 'الجامعة الأمريكية بالقاهرة (AUC) — منحة في هندسة الحاسوب',
+      },
+    ],
     ...(sameAs().length ? { sameAs: sameAs() } : {}),
   }
 }
@@ -48,7 +69,7 @@ export function organizationSchema() {
     url: site.url,
     slogan: site.motto,
     description:
-      'منظومة تعليمية لمادة البرمجة والذكاء الاصطناعي لطلاب البكالوريا: حصص مكثفة، منصة تعليمية بتصحيح آلي، ومتابعة أسبوعية لأولياء الأمور.',
+      'تعليم البرمجة والذكاء الاصطناعي لطلاب الصف الأول والثاني الثانوي، وطلاب كليات الحاسبات والهندسة والعلوم، والمتعلمين ذاتياً — بشرح من مهندس ممارس، ومنصة بتصحيح آلي، ومتابعة بالبيانات.',
     founder: { '@id': PERSON_ID },
     areaServed: { '@type': 'Country', name: 'مصر' },
     ...(sameAs().length ? { sameAs: sameAs() } : {}),
@@ -58,13 +79,47 @@ export function organizationSchema() {
 export function courseSchema() {
   return {
     '@type': 'Course',
-    name: 'البرمجة والذكاء الاصطناعي — الصف الثاني الثانوي (بكالوريا)',
+    name: 'البرمجة والذكاء الاصطناعي — من الصفر',
+    url: `${site.url}/courses`,
     description:
-      'كورس مادة البرمجة والذكاء الاصطناعي لطلاب الصف الثاني الثانوي في نظام البكالوريا، مسار الهندسة وعلوم الحاسب — حضورياً في القاهرة وأونلاين لباقي المحافظات.',
+      'مسار تعليمي في البرمجة والذكاء الاصطناعي يبدأ من الصفر، لطلاب الصف الأول والثاني الثانوي، وطلاب كليات الحاسبات والهندسة والعلوم، والمتعلمين ذاتياً. الحصص والمراجعات وحل الامتحانات والملازم تُنشر مجاناً على يوتيوب، والمنصة والسنتر اختياريان لمن يريد متابعة أقرب.',
     inLanguage: 'ar',
     provider: { '@id': ORG_ID },
-    educationalLevel: 'الصف الثاني الثانوي — نظام البكالوريا',
-    teaches: 'أساسيات البرمجة، التفكير الخوارزمي، وحل المشكلات',
+    teaches: 'التفكير البرمجي، حل المشكلات، كتابة كود نظيف، وأساسيات الذكاء الاصطناعي',
+    isAccessibleForFree: true,
+    audience: {
+      '@type': 'EducationalAudience',
+      educationalRole: 'student',
+      audienceType: 'طلاب الثانوي، وطلاب كليات الحاسبات والهندسة والعلوم، والمتعلمون ذاتياً',
+    },
+    hasCourseInstance: [
+      {
+        '@type': 'CourseInstance',
+        name: 'المحتوى المجاني على يوتيوب',
+        courseMode: 'online',
+        description:
+          'الحصص والمراجعات وحل الامتحانات والملازم — تُنشر مجاناً بالكامل ودون اشتراك.',
+        isAccessibleForFree: true,
+      },
+      {
+        '@type': 'CourseInstance',
+        name: 'المنصة التعليمية (اختيارية)',
+        courseMode: 'online',
+        description:
+          'لمن يريد متابعة فردية وواجبات وامتحانات وتصحيحاً آلياً للكود — ليست شرطاً للنجاح.',
+      },
+      {
+        '@type': 'CourseInstance',
+        name: 'الحصص الحضورية (اختيارية)',
+        courseMode: 'onsite',
+        description: 'سناتر في حلوان وحدائق حلوان ومدينة ١٥ مايو.',
+        location: [
+          { '@type': 'Place', name: 'حلوان، القاهرة' },
+          { '@type': 'Place', name: 'حدائق حلوان، القاهرة' },
+          { '@type': 'Place', name: 'مدينة ١٥ مايو، القاهرة' },
+        ],
+      },
+    ],
   }
 }
 

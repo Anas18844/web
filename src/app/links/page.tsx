@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 
 const CHANNEL_LABELS: Record<keyof typeof site.channels, string> = {
   youtube: 'يوتيوب',
+  linkedin: 'لينكدإن',
   facebook: 'فيسبوك',
   tiktok: 'تيك توك',
   instagram: 'إنستجرام',
@@ -67,6 +68,16 @@ export default function LinksPage() {
               dir="ltr"
             >
               {site.whatsapp.display}
+            </a>
+          </p>
+          <p className="mt-2 text-body text-ink-muted">
+            إيميل:{' '}
+            <a
+              href={`mailto:${site.email}`}
+              className="break-all font-bold text-gold underline underline-offset-4"
+              dir="ltr"
+            >
+              {site.email}
             </a>
           </p>
         </div>

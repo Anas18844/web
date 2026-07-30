@@ -1,6 +1,5 @@
 /**
- * Site configuration — identity, contact points, and the copy that depends on
- * decisions still open with the founder.
+ * Site configuration — identity, contact points, audience, and credentials.
  *
  * Everything here is editable through the GitHub web UI without a developer.
  */
@@ -15,7 +14,6 @@ export const site = {
   motto: 'بنحل مشكلة',
 
   subject: 'البرمجة والذكاء الاصطناعي',
-  audience: 'طلاب البكالوريا — مسار الهندسة وعلوم الحاسب',
 
   /**
    * ⚠️ OPEN DECISION #1 (roadmap §2.1): the final domain is not settled.
@@ -34,40 +32,106 @@ export const site = {
     display: '0103 935 6737',
   },
 
+  email: process.env.NEXT_PUBLIC_EMAIL || 'eng.anas.ai.official@gmail.com',
+
+  /**
+   * Official channels — all published under the same handle: Mr Anas Ahmed.
+   *
+   * Defaults are hardcoded so the site is correct out of the box; the env vars
+   * exist only as an override. These same URLs feed the entity's `sameAs`,
+   * which is what ties the accounts together for search engines and LLMs.
+   *
+   * NOTE: the LinkedIn vanity URL genuinely contains a 🍉 emoji. It is
+   * percent-encoded here (%F0%9F%8D%89) so the href stays valid everywhere.
+   */
   channels: {
-    youtube: process.env.NEXT_PUBLIC_YOUTUBE_URL || '',
-    facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL || '',
-    tiktok: process.env.NEXT_PUBLIC_TIKTOK_URL || '',
-    instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || '',
+    youtube: process.env.NEXT_PUBLIC_YOUTUBE_URL || 'https://youtube.com/@MrAnasAhmedOfficial',
+    linkedin:
+      process.env.NEXT_PUBLIC_LINKEDIN_URL ||
+      'https://www.linkedin.com/in/anas-ahmed-%F0%9F%8D%89-1805a7243',
+    facebook:
+      process.env.NEXT_PUBLIC_FACEBOOK_URL || 'https://www.facebook.com/MrAnasAhmedOfficial/',
+    tiktok: process.env.NEXT_PUBLIC_TIKTOK_URL || 'https://www.tiktok.com/@mranasahmedofficial',
+    instagram:
+      process.env.NEXT_PUBLIC_INSTAGRAM_URL || 'https://www.instagram.com/mranasahmedofficial/',
     telegram: process.env.NEXT_PUBLIC_TELEGRAM_URL || '',
   },
 
   /**
    * ⚠️ OPEN DECISION #4 (roadmap §2.1): the published response-time promise (SLA).
-   * The wording below is deliberately non-numeric until the founder commits to a
-   * number. Replace with e.g. 'وهنرد عليك خلال ٢٤ ساعة' the moment it is decided —
-   * a published promise must always be kept (Principle 10).
+   * Non-numeric until the founder commits to a number — a published promise
+   * must always be kept (Principle 10).
    */
   responsePromise: 'وهنتواصل معاك على الواتساب في أقرب وقت',
 } as const
 
-/** Grade options for the capture form (Doc 05 — routing depends on this field). */
+/**
+ * Where the teaching happened and where the engineering work happens.
+ *
+ * This is the core trust device on the site: the student does not trust a job
+ * title, they trust places they recognise. Names only for now — each entry has
+ * a slot for a logo/photo in `assets.ts` and appears the moment one exists.
+ */
+export const institutions = {
+  teaching: [
+    { name: 'iSchool', note: 'تدريب وتدريس برمجة' },
+    { name: 'أشبال مصر الرقمية', note: 'مبادرة قومية لتعليم البرمجة' },
+    { name: 'رواد', note: 'تدريب وتدريس' },
+  ],
+  industry: [
+    { name: 'Microsoft Egypt', note: 'هندسة برمجيات وذكاء اصطناعي' },
+    { name: 'iSchool', note: 'أنظمة وتقنيات تعليمية' },
+    { name: 'ميم سكول', note: 'منتجات تعليمية رقمية' },
+    { name: 'iTech Solutions', note: 'أنظمة ERP وذكاء اصطناعي' },
+  ],
+} as const
+
+/** Grades offered in the capture form. */
 export const GRADES = [
-  { value: 'second', label: 'تانية ثانوي' },
-  { value: 'first', label: 'أولى ثانوي' },
-  { value: 'other', label: 'غير كده' },
+  { value: 'first_sec', label: 'أولى ثانوي' },
+  { value: 'second_bacc', label: 'تانية بكالوريا' },
+] as const
+
+/** Attendance mode. Choosing `center` reveals the branch question. */
+export const ATTENDANCE = [
+  { value: 'online', label: 'أونلاين' },
+  { value: 'center', label: 'سنتر' },
+] as const
+
+/** Centre branches — asked only when attendance is `center`. */
+export const BRANCHES = [
+  { value: 'helwan', label: 'حلوان' },
+  { value: 'hadayek_helwan', label: 'حدائق حلوان' },
+  { value: 'may15', label: 'مدينة ١٥ مايو' },
+  { value: 'other', label: 'مكان تاني' },
+] as const
+
+/**
+ * Acquisition source. This is the only reliable answer to "which channel
+ * actually brings students" — analytics alone cannot see word of mouth.
+ */
+export const HEARD_FROM = [
+  { value: 'facebook', label: 'فيسبوك' },
+  { value: 'youtube', label: 'يوتيوب' },
+  { value: 'google', label: 'جوجل' },
+  { value: 'tiktok', label: 'تيك توك' },
+  { value: 'friend', label: 'صديق' },
+  { value: 'other', label: 'مكان تاني' },
 ] as const
 
 /** Capture intents. Each form instance declares which one it serves. */
 export const INTENTS = {
-  curriculum: 'تحليل المنهج أول ما ينزل',
+  curriculum: 'ابدأ معانا',
   intro_session: 'حجز مقعد في الحصة التعريفية',
-  updates: 'إشعارات قرارات الوزارة',
+  updates: 'إشعارات ومستجدات',
   parent: 'تواصل ولي أمر',
 } as const
 
 export type Intent = keyof typeof INTENTS
 export type Grade = (typeof GRADES)[number]['value']
+export type Attendance = (typeof ATTENDANCE)[number]['value']
+export type Branch = (typeof BRANCHES)[number]['value']
+export type HeardFrom = (typeof HEARD_FROM)[number]['value']
 
 /** Builds a wa.me link carrying the page context, so the reply starts informed. */
 export function whatsappLink(context: string): string {
