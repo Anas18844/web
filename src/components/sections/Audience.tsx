@@ -11,7 +11,7 @@ import { home } from '@/content/copy'
 export function Audience() {
   return (
     <Section id="audience">
-      <SectionHeading title={home.audience.title} intro={home.audience.intro} />
+      <SectionHeading title={home.audience.title} />
 
       <div className="grid gap-6 sm:grid-cols-2">
         {home.audience.items.map((item) => (

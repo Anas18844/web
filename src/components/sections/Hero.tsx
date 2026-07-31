@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { Container } from '@/components/ui/Container'
 import { ButtonLink } from '@/components/ui/Button'
 import { home } from '@/content/copy'
-import { site, institutions } from '@/content/site'
+import { institutions } from '@/content/site'
 import { assets } from '@/content/assets'
 
 /**
@@ -33,11 +33,13 @@ export function Hero() {
             fill
             priority
             sizes="100vw"
-            className="object-cover object-left md:object-center"
+            className="object-cover object-left"
           />
           {/* Mobile: fade the band into the section. Desktop (RTL): dim the
-              right half so the copy is readable over the circuit motif. */}
-          <div className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/45 to-transparent md:bg-gradient-to-l md:from-navy-deep md:via-navy-deep/85 md:to-transparent" />
+              right side so the copy is readable over the circuit motif — the
+              stops are placed so the scrim is fully clear before it reaches
+              the founder's portrait on the left, which must stay undimmed. */}
+          <div className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/45 to-transparent md:bg-gradient-to-l md:from-navy-deep md:from-30% md:via-navy-deep/85 md:via-55% md:to-transparent md:to-75%" />
         </div>
       ) : (
         <div
@@ -83,10 +85,6 @@ export function Hero() {
               ))}
             </ul>
           </div>
-
-          <p className="mt-8 inline-block border-s-2 border-gold ps-4 text-lg font-bold text-ink">
-            {site.motto}
-          </p>
         </div>
       </Container>
     </section>

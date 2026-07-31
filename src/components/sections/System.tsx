@@ -14,7 +14,7 @@ export function System() {
 
   return (
     <Section id="system">
-      <SectionHeading title={home.system.title} intro={home.system.intro} />
+      <SectionHeading title={home.system.title} />
 
       <div className="grid gap-10">
         {home.system.pillars.map((pillar) => (
