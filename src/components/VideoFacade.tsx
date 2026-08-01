@@ -48,10 +48,10 @@ export function VideoFacade({
               alt=""
               fill
               sizes="(max-width: 768px) 100vw, 640px"
-              className="object-cover opacity-80 transition-opacity group-hover:opacity-100"
+              className="object-cover opacity-75 transition-[opacity,transform] duration-500 ease-out group-hover:scale-[1.03] group-hover:opacity-100"
             />
             <span className="absolute inset-0 grid place-items-center">
-              <span className="grid h-16 w-16 place-items-center rounded-full bg-gold text-navy transition-transform group-hover:scale-105">
+              <span className="grid h-16 w-16 place-items-center rounded-full bg-gold text-navy shadow-[0_0_0_0_rgba(203,163,82,0.5)] transition-[transform,box-shadow] duration-300 ease-out group-hover:scale-105 group-hover:shadow-[0_0_0_10px_rgba(203,163,82,0.14)]">
                 {/* Play triangle — mirrored for RTL is wrong here; playback is universal LTR. */}
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M8 5v14l11-7z" />

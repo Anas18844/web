@@ -101,6 +101,7 @@ export function SocialLinks() {
           width={48}
           height={48}
           sizes="48px"
+          loading="lazy"
           className="h-12 w-12 rounded border border-navy-line object-cover"
         />
         <div>
@@ -119,9 +120,13 @@ export function SocialLinks() {
               {...(channel.key === 'email'
                 ? {}
                 : { target: '_blank', rel: 'noopener noreferrer' })}
-              className="flex items-center gap-2.5 rounded border border-transparent px-3 py-2.5 text-sm font-bold text-ink-muted transition-colors hover:border-gold/40 hover:text-gold"
+              className="group flex items-center gap-2.5 rounded border border-transparent px-3 py-2.5 text-sm font-bold text-ink-muted transition-[color,border-color,background-color] duration-200 hover:border-gold/40 hover:bg-gold/[0.06] hover:text-gold"
             >
-              {channel.icon}
+              {/* The icon leads the colour change by a beat, so the row reads
+                  as one object responding rather than two. */}
+              <span className="transition-transform duration-200 group-hover:scale-110">
+                {channel.icon}
+              </span>
               <span>{channel.label}</span>
             </a>
           </li>

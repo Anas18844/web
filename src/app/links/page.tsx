@@ -35,28 +35,40 @@ export default function LinksPage() {
       <JsonLd data={pageGraph()} />
 
       <Section width="prose">
-        <h1 className="text-display font-extrabold text-ink">{links.title}</h1>
-        <p className="mt-5 text-body text-ink-muted">{links.lead}</p>
+        <div data-reveal>
+          <span aria-hidden="true" className="trace-rule mb-6" />
+          <h1 className="text-display font-extrabold text-ink">{links.title}</h1>
+          <p className="mt-5 text-body text-ink-muted">{links.lead}</p>
+        </div>
 
         {active.length > 0 && (
-          <ul className="mt-10 divide-y divide-navy-line border-y border-navy-line">
+          <ul
+            data-reveal-stagger
+            className="mt-10 divide-y divide-navy-line border-y border-navy-line"
+          >
             {active.map((key) => (
               <li key={key}>
                 <a
                   href={site.channels[key]}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between gap-4 py-5 text-lg font-bold text-ink transition-colors hover:text-gold"
+                  className="group flex items-center justify-between gap-4 py-5 text-lg font-bold text-ink transition-[color,padding] duration-200 hover:text-gold hover:ps-2"
                 >
                   <span>{CHANNEL_LABELS[key]}</span>
-                  <span aria-hidden="true" className="text-gold">↖</span>
+                  {/* The arrow leans toward where it is about to take you. */}
+                  <span
+                    aria-hidden="true"
+                    className="text-gold transition-transform duration-200 group-hover:-translate-x-1 group-hover:-translate-y-0.5"
+                  >
+                    ↖
+                  </span>
                 </a>
               </li>
             ))}
           </ul>
         )}
 
-        <div className="mt-10">
+        <div data-reveal className="mt-10">
           <h2 className="text-xl font-extrabold text-ink">{links.contactTitle}</h2>
           <p className="mt-3 text-body text-ink-muted">
             واتساب:{' '}
@@ -64,7 +76,7 @@ export default function LinksPage() {
               href={`https://wa.me/${site.whatsapp.number}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-bold text-gold underline underline-offset-4"
+              className="font-bold text-gold underline decoration-gold/40 underline-offset-4 transition-colors duration-200 hover:decoration-gold"
               dir="ltr"
             >
               {site.whatsapp.display}
@@ -74,7 +86,7 @@ export default function LinksPage() {
             إيميل:{' '}
             <a
               href={`mailto:${site.email}`}
-              className="break-all font-bold text-gold underline underline-offset-4"
+              className="break-all font-bold text-gold underline decoration-gold/40 underline-offset-4 transition-colors duration-200 hover:decoration-gold"
               dir="ltr"
             >
               {site.email}

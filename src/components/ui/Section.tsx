@@ -1,18 +1,31 @@
 import { cn } from '@/lib/utils'
 import { Container } from './Container'
 
+/**
+ * Vertical rhythm is a hierarchy signal, not a constant. Ordinary sections
+ * breathe at `base`; the closing capture section gets `lg` so the page opens
+ * up as it approaches the one action it wants; dense utility blocks get `sm`.
+ */
+const spaces = {
+  sm: 'py-12 sm:py-16',
+  base: 'py-16 sm:py-24',
+  lg: 'py-20 sm:py-28',
+}
+
 export function Section({
   children,
   id,
   className,
   tone = 'base',
   width = 'content',
+  space = 'base',
 }: {
   children: React.ReactNode
   id?: string
   className?: string
   tone?: 'base' | 'raised' | 'deep'
   width?: 'content' | 'prose'
+  space?: keyof typeof spaces
 }) {
   const tones = {
     base: 'bg-navy',
@@ -21,26 +34,34 @@ export function Section({
   }
 
   return (
-    <section
-      id={id}
-      className={cn('scroll-mt-16 py-14 sm:py-20', tones[tone], className)}
-    >
+    <section id={id} className={cn('scroll-mt-16', spaces[space], tones[tone], className)}>
       <Container width={width}>{children}</Container>
     </section>
   )
 }
 
+/**
+ * Every section opens the same way: a trace, then the title.
+ *
+ * The trace draws itself as the heading arrives, which is what tells the eye
+ * "a new idea starts here" before a single word is read — and it is the same
+ * 2px gold mark that edges the cards below it, so the section reads as one
+ * piece rather than a heading followed by unrelated boxes.
+ */
 export function SectionHeading({
   title,
   intro,
   eyebrow,
+  className,
 }: {
   title: string
   intro?: string
   eyebrow?: string
+  className?: string
 }) {
   return (
-    <header className="mb-9 sm:mb-12">
+    <header data-reveal className={cn('mb-9 sm:mb-12', className)}>
+      <span aria-hidden="true" className="trace-rule mb-5" />
       {eyebrow && (
         <p className="mb-3 text-sm font-semibold tracking-wide text-gold">{eyebrow}</p>
       )}

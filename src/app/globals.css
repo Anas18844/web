@@ -3,8 +3,21 @@
 @tailwind utilities;
 
 @layer base {
+  /**
+   * Motion tokens — ONE easing curve and three durations for the entire site.
+   * Every transition on every page reads from these, which is what makes the
+   * interface feel like it came from a single hand rather than five.
+   */
+  :root {
+    --ease-trace: cubic-bezier(0.16, 1, 0.3, 1);
+    --dur-fast: 150ms;
+    --dur-base: 240ms;
+    --dur-reveal: 560ms;
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     scroll-behavior: smooth;
   }
 
@@ -27,15 +40,10 @@
     @apply bg-gold text-navy;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      transition-duration: 0.01ms !important;
+  /* Touch devices should never show a grey tap flash over our own states. */
+  @media (hover: none) {
+    * {
+      -webkit-tap-highlight-color: transparent;
     }
   }
 }
@@ -49,5 +57,235 @@
   /* The recurring gold hairline used to separate major blocks. */
   .hairline {
     @apply h-px w-full bg-navy-line;
+  }
+
+  /* ───────────────────────────────────────────────────────────────────────
+   * THE TRACE — the site's one signature device.
+   *
+   * Taken from the circuit motif in the hero artwork: a 2px line that behaves
+   * like a conductor. It opens a section, edges a card, and marks the active
+   * page, so a single visual idea carries structure everywhere instead of
+   * each section inventing its own ornament.
+   *
+   * Origin is the RIGHT edge because the document is RTL — a trace always
+   * grows from where the reader starts.
+   * ─────────────────────────────────────────────────────────────────────── */
+  .trace-rule {
+    @apply block h-0.5 w-10 bg-gold;
+    transform-origin: 100% 50%;
+  }
+
+  /* ───────────────────────────────────────────────────────────────────────
+   * CARD — every bordered block on the site, one definition.
+   *
+   * Rest: a hairline box, flat, quiet. Hover: the start edge lights up like a
+   * trace carrying current, the surface warms, and the card lifts 2px. The
+   * lift is suppressed on touch, where there is no hover to justify it.
+   * ─────────────────────────────────────────────────────────────────────── */
+  .card {
+    @apply relative border border-navy-line;
+    transition:
+      border-color var(--dur-base) ease,
+      background-color var(--dur-base) ease,
+      transform var(--dur-base) var(--ease-trace);
+  }
+
+  .card::before {
+    content: '';
+    @apply absolute bg-gold;
+    inset-block: -1px;
+    inset-inline-start: -1px;
+    width: 2px;
+    transform: scaleY(0);
+    transform-origin: 50% 0;
+    transition: transform var(--dur-base) var(--ease-trace);
+  }
+
+  .card:hover,
+  .card:focus-within {
+    @apply border-gold/45 bg-navy-soft/25;
+  }
+
+  .card:hover::before,
+  .card:focus-within::before {
+    transform: scaleY(1);
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+  }
+
+  @media (hover: none) {
+    .card:hover {
+      transform: none;
+    }
+  }
+
+  /* A card whose trace is the whole point of it (quotes, honesty blocks):
+     the edge is always lit, so hover only warms the surface. */
+  .card-lit::before {
+    transform: scaleY(1);
+  }
+
+  /* ───────────────────────────────────────────────────────────────────────
+   * WASH — one soft gold gradient, used in exactly two places: the top of an
+   * inner page, and the final call to action. It is a background-image on an
+   * element that already exists, so it costs no extra node, no blur filter
+   * and no second paint layer.
+   * ─────────────────────────────────────────────────────────────────────── */
+  .wash-top {
+    background-image: radial-gradient(
+      56rem 24rem at 50% 0%,
+      rgba(203, 163, 82, 0.1),
+      transparent 62%
+    );
+  }
+
+  .wash-start {
+    background-image: radial-gradient(
+      60rem 26rem at 100% 0%,
+      rgba(203, 163, 82, 0.1),
+      transparent 62%
+    );
+  }
+}
+
+@layer utilities {
+  /* ───────────────────────────────────────────────────────────────────────
+   * SCROLL REVEAL
+   *
+   * `.js` is set on <html> before the body renders, so the hidden state never
+   * flashes for a visitor and never applies at all when JS is unavailable.
+   * A single shared IntersectionObserver adds `.is-revealed` — there are no
+   * scroll listeners and no per-frame work anywhere on the site.
+   *
+   * The transition lives on the REVEALED state only, so nothing animates
+   * during the first paint.
+   * ─────────────────────────────────────────────────────────────────────── */
+  .js [data-reveal],
+  .js [data-reveal-stagger] > * {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  .js [data-reveal].is-revealed,
+  .js [data-reveal-stagger].is-revealed > * {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity var(--dur-reveal) var(--ease-trace),
+      transform var(--dur-reveal) var(--ease-trace);
+  }
+
+  /* Children arrive in sequence, capped at five steps: past that the delay
+     stops reading as rhythm and starts reading as waiting. */
+  .js [data-reveal-stagger].is-revealed > *:nth-child(2) {
+    transition-delay: 70ms;
+  }
+  .js [data-reveal-stagger].is-revealed > *:nth-child(3) {
+    transition-delay: 140ms;
+  }
+  .js [data-reveal-stagger].is-revealed > *:nth-child(4) {
+    transition-delay: 210ms;
+  }
+  .js [data-reveal-stagger].is-revealed > *:nth-child(n + 5) {
+    transition-delay: 280ms;
+  }
+
+  /* The trace inside a revealed block draws itself once the block has landed. */
+  .js [data-reveal] .trace-rule {
+    transform: scaleX(0);
+  }
+  .js [data-reveal].is-revealed .trace-rule {
+    transform: scaleX(1);
+    transition: transform 640ms var(--ease-trace) 140ms;
+  }
+
+  /**
+   * Failsafe: if hydration is slow or the observer never runs, the content
+   * reveals itself after 2.5s anyway. Nothing on this site can end up
+   * permanently invisible because of a script.
+   */
+  .js [data-reveal]:not(.is-revealed),
+  .js [data-reveal-stagger]:not(.is-revealed) > * {
+    animation: reveal-failsafe 400ms var(--ease-trace) 2500ms both;
+  }
+
+  /* The trace needs its own failsafe: it is scaled, not faded, so the rule
+     above would leave it collapsed to nothing. */
+  .js [data-reveal]:not(.is-revealed) .trace-rule {
+    animation: trace-failsafe 400ms var(--ease-trace) 2500ms both;
+  }
+
+  @keyframes reveal-failsafe {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes trace-failsafe {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /* ── Hero entrance ────────────────────────────────────────────────────
+   * Two groups, not seven elements. The copy block lands, then the actions
+   * follow it. The hero IMAGE is deliberately never animated: it is the LCP
+   * element, and fading it would delay the largest paint on every visit.
+   * ─────────────────────────────────────────────────────────────────────── */
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .hero-enter {
+    animation: hero-rise 520ms var(--ease-trace) both;
+  }
+
+  .hero-enter-late {
+    animation: hero-rise 520ms var(--ease-trace) 160ms both;
+  }
+
+  /* Disclosure panels: the answer rises into place instead of snapping. */
+  details[open] > .disclosure-panel {
+    animation: hero-rise 280ms var(--ease-trace) both;
+  }
+}
+
+/**
+ * REDUCED MOTION
+ *
+ * Everything above is opacity/transform only, so the honest response to this
+ * preference is to show the final state immediately — not to play the same
+ * motion faster. `!important` also beats the failsafe animation, which is the
+ * one rule that would otherwise still hold content back.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .js [data-reveal],
+  .js [data-reveal-stagger] > *,
+  .js [data-reveal] .trace-rule {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

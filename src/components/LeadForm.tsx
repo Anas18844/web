@@ -155,9 +155,15 @@ export function LeadForm({
     <form
       onSubmit={onSubmit}
       noValidate
-      className={cn('rounded border border-navy-line bg-navy-soft/40 p-6 sm:p-8', className)}
+      className={cn(
+        'rounded border border-navy-line bg-navy-soft/40 p-6 shadow-[0_24px_60px_-40px_rgba(0,0,0,0.9)] sm:p-8',
+        className,
+      )}
     >
-      <p className="mb-6 text-sm font-semibold text-gold">{INTENTS[intent]}</p>
+      <p className="mb-6 flex items-center gap-3 text-sm font-semibold text-gold">
+        <span aria-hidden="true" className="h-0.5 w-6 shrink-0 bg-gold" />
+        {INTENTS[intent]}
+      </p>
 
       <div className="grid gap-5">
         <Field id="name" label={common.form.name} hint={common.form.nameHint} error={errors.name}>
@@ -261,10 +267,11 @@ export function LeadForm({
               <label
                 key={option.value}
                 className={cn(
-                  'flex min-h-[3rem] cursor-pointer items-center justify-center rounded border px-4 text-base font-bold transition-colors',
+                  'flex min-h-[3rem] cursor-pointer items-center justify-center rounded border px-4 text-base font-bold',
+                  'transition-[background-color,border-color,color,box-shadow] duration-200',
                   attendance === option.value
-                    ? 'border-gold bg-gold text-navy'
-                    : 'border-navy-line bg-navy text-ink hover:border-gold/60',
+                    ? 'border-gold bg-gold text-navy shadow-[0_0_20px_-8px_rgba(203,163,82,0.9)]'
+                    : 'border-navy-line bg-navy text-ink hover:border-gold/60 hover:bg-gold/[0.06]',
                 )}
               >
                 <input
@@ -357,8 +364,22 @@ export function LeadForm({
       <button
         type="submit"
         disabled={state === 'sending'}
-        className="mt-7 inline-flex min-h-[3rem] w-full items-center justify-center rounded bg-gold px-6 py-3 text-base font-extrabold text-navy transition-colors hover:bg-gold-deep hover:text-ink disabled:opacity-70"
+        className={cn(
+          'mt-7 inline-flex min-h-[3rem] w-full items-center justify-center gap-2.5 rounded bg-gold px-6 py-3 text-base font-extrabold text-navy',
+          'transition-[background-color,color,box-shadow,transform] duration-200',
+          'hover:bg-gold-deep hover:text-ink hover:shadow-[0_0_28px_-8px_rgba(203,163,82,0.9)]',
+          'active:translate-y-px motion-reduce:active:translate-y-0',
+          'disabled:cursor-wait disabled:opacity-70 disabled:hover:shadow-none',
+        )}
       >
+        {/* A spinner instead of a frozen button: the only thing a visitor can
+            do while this is in flight is wonder whether it worked. */}
+        {state === 'sending' && (
+          <span
+            aria-hidden="true"
+            className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent motion-reduce:animate-none"
+          />
+        )}
         {state === 'sending' ? common.form.submitting : common.form.submit}
       </button>
 
@@ -369,11 +390,19 @@ export function LeadForm({
   )
 }
 
+/**
+ * One definition for every control in the form. Focus warms the border to gold
+ * AND lays a soft gold halo behind it, so the active field is unmistakable on
+ * a dark surface where a 1px border change alone is easy to miss.
+ */
 function inputClass(hasError: boolean) {
   return cn(
     'w-full min-h-[3rem] rounded border bg-navy px-4 py-3 text-base text-ink placeholder:text-ink-faint/70',
-    'transition-colors focus:border-gold',
-    hasError ? 'border-red-400/70' : 'border-navy-line',
+    'transition-[border-color,box-shadow] duration-200',
+    'focus:border-gold focus:shadow-[0_0_0_3px_rgba(203,163,82,0.14)]',
+    hasError
+      ? 'border-red-400/70 focus:border-red-400 focus:shadow-[0_0_0_3px_rgba(248,113,113,0.14)]'
+      : 'border-navy-line hover:border-gold/30',
   )
 }
 

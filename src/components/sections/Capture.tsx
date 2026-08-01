@@ -9,6 +9,10 @@ import type { Intent } from '@/content/site'
  * The capture point (Doc 05). Placed after the proof has been shown, never
  * before it — and the WhatsApp route stays visible but secondary, because a
  * click that never becomes a message is a lead we lose without seeing it.
+ *
+ * This is the last beat on every page, so it is given the most room on the
+ * site and the one gold wash: by the time a visitor reaches it the page should
+ * feel like it has opened up rather than closed in.
  */
 export function Capture({
   intent = 'curriculum',
@@ -22,7 +26,7 @@ export function Capture({
   body?: string
 }) {
   return (
-    <Section id="start" tone="deep">
+    <Section id="start" tone="deep" space="lg" className="wash-top border-t border-navy-line">
       {/* On mobile the three blocks stack heading → form → contact: the form is
           the action we came for, and WhatsApp underneath it stays the fallback
           rather than the first thing a thumb reaches. On md+ the explicit
@@ -43,7 +47,7 @@ export function Capture({
 
         {/* Fills the space beside the form, and gives the hesitant visitor
             a lower-commitment way to stay connected. */}
-        <div className="md:col-start-1 md:row-start-2">
+        <div data-reveal className="md:col-start-1 md:row-start-2">
           <WhatsAppButton context={pageContext}>كلّمنا على الواتساب</WhatsAppButton>
           <div className="mt-8">
             <SocialLinks />

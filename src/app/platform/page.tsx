@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
-import { Container } from '@/components/ui/Container'
 import { Section, SectionHeading } from '@/components/ui/Section'
+import { PageHero } from '@/components/ui/PageHero'
 import { VideoFacade } from '@/components/VideoFacade'
 import { Capture } from '@/components/sections/Capture'
 import { JsonLd } from '@/components/JsonLd'
@@ -36,13 +36,11 @@ export default function PlatformPage() {
     <>
       <JsonLd data={pageGraph()} />
 
-      <section className="border-b border-navy-line bg-navy-deep py-14 sm:py-20">
-        <Container width="prose">
-          <p className="mb-4 text-sm font-semibold text-gold">{platform.hero.eyebrow}</p>
-          <h1 className="text-display font-extrabold text-ink">{platform.hero.title}</h1>
-          <p className="mt-5 text-subtitle text-ink-muted">{platform.hero.lead}</p>
-        </Container>
-      </section>
+      <PageHero
+        eyebrow={platform.hero.eyebrow}
+        title={platform.hero.title}
+        lead={platform.hero.lead}
+      />
 
       {/* Live proof slot — the platform is the strongest asset we own. */}
       {platformDemo && (
@@ -58,7 +56,7 @@ export default function PlatformPage() {
       {/* Who it is for — and, explicitly, who it is not for. */}
       <Section tone="raised" width="prose">
         <SectionHeading title={platform.forWho.title} />
-        <ul className="grid gap-3">
+        <ul data-reveal-stagger className="grid gap-3">
           {platform.forWho.items.map((item) => (
             <li key={item} className="flex gap-3 text-body text-ink-muted">
               <span aria-hidden="true" className="mt-1 shrink-0 text-gold">
@@ -68,19 +66,16 @@ export default function PlatformPage() {
             </li>
           ))}
         </ul>
-        <p className="mt-7 border-s-2 border-gold ps-4 text-body font-bold text-ink">
+        <p data-reveal className="mt-7 border-s-2 border-gold ps-4 text-body font-bold text-ink">
           {platform.forWho.note}
         </p>
       </Section>
 
       <Section>
         <SectionHeading title={platform.features.title} />
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div data-reveal-stagger className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {platform.features.items.map((feature) => (
-            <article
-              key={feature.title}
-              className="border border-navy-line p-6 transition-colors hover:border-gold/40"
-            >
+            <article key={feature.title} className="card p-6">
               <h3 className="font-extrabold text-ink">{feature.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-ink-muted">{feature.body}</p>
             </article>
@@ -107,14 +102,15 @@ export default function PlatformPage() {
 
       <Section tone="raised">
         <div className="grid gap-8 md:grid-cols-2 md:items-center">
-          <div>
+          <div data-reveal>
+            <span aria-hidden="true" className="trace-rule mb-5" />
             <h2 className="text-title font-extrabold text-ink">{platform.followUp.title}</h2>
             <p className="mt-4 text-body text-ink-muted">{platform.followUp.body}</p>
             <p className="mt-4 text-body text-ink-muted">{platform.followUp.parent}</p>
           </div>
 
           {parentReportSample && (
-            <figure>
+            <figure data-reveal>
               <Image
                 src={parentReportSample.src}
                 alt={parentReportSample.alt}
@@ -131,14 +127,17 @@ export default function PlatformPage() {
         </div>
       </Section>
 
-      <Section width="prose">
-        <h2 className="text-title font-extrabold text-ink">{platform.cost.title}</h2>
-        <p className="mt-4 text-body text-ink-muted">{platform.cost.body}</p>
+      <Section width="prose" space="sm">
+        <div data-reveal>
+          <span aria-hidden="true" className="trace-rule mb-5" />
+          <h2 className="text-title font-extrabold text-ink">{platform.cost.title}</h2>
+          <p className="mt-4 text-body text-ink-muted">{platform.cost.body}</p>
+        </div>
       </Section>
 
       {/* The restraint that makes the offer credible. */}
       <Section tone="deep" width="prose">
-        <div className="border-s-2 border-gold ps-5 sm:ps-7">
+        <div data-reveal className="border-s-2 border-gold ps-5 sm:ps-7">
           <h2 className="text-title font-extrabold text-ink">{platform.honest.title}</h2>
           <p className="mt-4 text-body text-ink-muted">{platform.honest.body}</p>
         </div>

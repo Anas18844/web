@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from 'next'
 import { Cairo } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react'
+import { GoogleTagManager } from '@next/third-parties/google'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
+import { Reveal } from '@/components/Reveal'
 import { site } from '@/content/site'
 import './globals.css'
 
@@ -74,7 +76,22 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ar" dir="rtl" className={cairo.variable}>
+      {/*
+       * Google Tag Manager — the single tag container for the whole site.
+       * GA4 and any other tags are configured inside GTM, never pasted here,
+       * so this stays the only tracking snippet the codebase owns.
+       * (@vercel/analytics below is separate: product analytics, not GTM.)
+       */}
+      <GoogleTagManager gtmId="GTM-NVTM4X76" />
       <body className="flex min-h-dvh flex-col">
+        {/*
+         * Marks the document JS-capable before anything below it is painted,
+         * so scroll-reveal can start hidden without a flash — and so a visitor
+         * without JavaScript is never served a hidden page at all.
+         */}
+        <script
+          dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }}
+        />
         <a href="#main" className="skip-link">
           تخطَّ إلى المحتوى
         </a>
@@ -83,6 +100,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <SiteFooter />
+        <Reveal />
         <Analytics />
       </body>
     </html>

@@ -9,8 +9,11 @@ import { home } from '@/content/copy'
  */
 export function ParentBridge() {
   return (
-    <Section tone="raised">
-      <div className="flex flex-col items-start gap-6 border border-navy-line p-7 sm:flex-row sm:items-center sm:justify-between sm:p-9">
+    <Section tone="raised" space="sm">
+      <div
+        data-reveal
+        className="card card-lit flex flex-col items-start gap-6 bg-navy/30 p-7 sm:flex-row sm:items-center sm:justify-between sm:p-9"
+      >
         <div>
           <h2 className="text-xl font-extrabold text-ink sm:text-2xl">
             {home.parentBridge.title}

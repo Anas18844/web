@@ -1,15 +1,16 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Container } from '@/components/ui/Container'
+import { HeaderNav, type NavItem } from '@/components/HeaderNav'
 import { common } from '@/content/copy'
 import { site } from '@/content/site'
 
-const NAV = [
-  { href: '/', label: common.nav.home, show: 'inline-flex' },
-  { href: '/courses', label: common.nav.courses, show: 'inline-flex' },
-  { href: '/platform', label: common.nav.platform, show: 'inline-flex' },
-  { href: '/about', label: common.nav.about, show: 'hidden lg:inline-flex' },
-  { href: '/parents', label: common.nav.parents, show: 'hidden xl:inline-flex' },
+const NAV: NavItem[] = [
+  { href: '/', label: common.nav.home },
+  { href: '/courses', label: common.nav.courses },
+  { href: '/platform', label: common.nav.platform },
+  { href: '/about', label: common.nav.about },
+  { href: '/parents', label: common.nav.parents },
 ]
 
 /**
@@ -25,7 +26,9 @@ const NAV = [
  * Corners stay sharp (2px): the brand identity is built on angular cuts, so
  * "modern" here means glass, hairlines and restrained motion — not pills.
  *
- * Server component: no menu, no hamburger, zero client JS.
+ * The shell stays a server component; only the navigation itself is a client
+ * island, because knowing the current page and opening a menu are the two
+ * things that genuinely require the browser.
  */
 export function SiteHeader() {
   return (
@@ -49,55 +52,24 @@ export function SiteHeader() {
             height={36}
             sizes="36px"
             priority
-            className="h-9 w-9 rounded border border-white/10 object-cover transition-opacity duration-200 group-hover:opacity-90"
+            className="h-9 w-9 rounded border border-white/10 object-cover transition-[border-color,transform] duration-200 group-hover:border-gold/50 group-hover:scale-[1.04]"
           />
-          <span className="hidden text-[0.95rem] font-extrabold text-ink sm:inline">
+          <span className="hidden text-[0.95rem] font-extrabold text-ink transition-colors duration-200 group-hover:text-gold sm:inline">
             {site.name}
           </span>
         </Link>
 
-        {/* Physical CENTRE — links inside a glass capsule. */}
-        <nav
-          aria-label="التنقل الرئيسي"
-          className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 rounded border border-white/[0.08] bg-white/[0.04] p-1 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] md:flex"
-        >
-          {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`${item.show} items-center rounded px-3.5 py-1.5 text-sm font-bold text-ink-muted transition-colors duration-150 hover:bg-white/[0.07] hover:text-ink`}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <HeaderNav items={NAV} />
 
-        {/* Mobile fallback: the key links, since the capsule is hidden. */}
-        <div className="flex items-center gap-4 md:hidden">
+          {/* RTL end — physical LEFT: the primary action. */}
           <Link
-            href="/courses"
-            className="text-sm font-bold text-ink-muted transition-colors hover:text-ink"
+            href="/#start"
+            className="shrink-0 rounded bg-gold px-4 py-2 text-sm font-extrabold text-navy transition-[background-color,color,box-shadow,transform] duration-200 hover:bg-gold-deep hover:text-ink hover:shadow-[0_0_24px_-6px_rgba(203,163,82,0.8)] active:translate-y-px sm:px-5"
           >
-            {common.nav.courses}
-          </Link>
-          <Link
-            href="/platform"
-            className="hidden text-sm font-bold text-ink-muted transition-colors hover:text-ink sm:inline"
-          >
-            {common.nav.platform}
+            {common.nav.start}
           </Link>
         </div>
-
-        {/* The logo already links home on every breakpoint, so the mobile row
-            spends its limited width on pages the mark cannot reach. */}
-
-        {/* RTL end — physical LEFT: the primary action. */}
-        <Link
-          href="/#start"
-          className="shrink-0 rounded bg-gold px-4 py-2 text-sm font-extrabold text-navy transition-all duration-200 hover:bg-gold-deep hover:text-ink hover:shadow-[0_0_24px_-6px_rgba(203,163,82,0.8)] sm:px-5"
-        >
-          {common.nav.start}
-        </Link>
       </Container>
     </header>
   )

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
-import { Container } from '@/components/ui/Container'
 import { Section, SectionHeading } from '@/components/ui/Section'
+import { PageHero } from '@/components/ui/PageHero'
 import { ButtonLink } from '@/components/ui/Button'
 import { JsonLd } from '@/components/JsonLd'
 import { pageGraph } from '@/lib/schema-org'
@@ -36,23 +36,17 @@ export default function AboutPage() {
     <>
       <JsonLd data={pageGraph()} />
 
-      <section className="border-b border-navy-line bg-navy-deep py-14 sm:py-20">
-        <Container width="prose">
-          <p className="mb-4 text-sm font-semibold text-gold">{about.hero.eyebrow}</p>
-          <h1 className="text-display font-extrabold text-ink">{about.hero.title}</h1>
-          <p className="mt-5 text-subtitle text-ink-muted">{about.hero.lead}</p>
-        </Container>
-      </section>
+      <PageHero eyebrow={about.hero.eyebrow} title={about.hero.title} lead={about.hero.lead} />
 
       {/* ── Engineer ─────────────────────────────────────────────────────── */}
       <Section>
         <SectionHeading title={about.engineer.title} intro={about.engineer.body} />
 
-        <ul className="mb-8 flex flex-wrap gap-2">
+        <ul data-reveal-stagger className="mb-8 flex flex-wrap gap-2">
           {about.engineer.companies.map((name) => (
             <li
               key={name}
-              className="border border-gold/40 px-3 py-1.5 text-sm font-bold text-gold"
+              className="border border-gold/40 px-3 py-1.5 text-sm font-bold text-gold transition-[background-color,border-color] duration-200 hover:border-gold hover:bg-gold/[0.08]"
             >
               {name}
             </li>
@@ -61,6 +55,7 @@ export default function AboutPage() {
 
         {companiesBanner && (
           <Image
+            data-reveal
             src={companiesBanner.src}
             alt={companiesBanner.alt}
             width={companiesBanner.width}
@@ -70,8 +65,11 @@ export default function AboutPage() {
           />
         )}
 
-        <div className="grid gap-8 md:grid-cols-[1.3fr_1fr] md:items-start">
-          <dl className="grid gap-6">
+        {/* The proof photo is a tall portrait; giving it an equal column left a
+            third of the row empty beside the numbers. A narrower column and a
+            centred axis balance the two without cropping the evidence. */}
+        <div className="grid gap-8 md:grid-cols-[1.4fr_0.7fr] md:items-center md:gap-10">
+          <dl data-reveal-stagger className="grid gap-6">
             {about.engineer.highlights.map((item) => (
               <div key={item.value} className="border-s-2 border-gold/60 ps-5">
                 <dt className="text-2xl font-extrabold text-gold">{item.value}</dt>
@@ -82,12 +80,13 @@ export default function AboutPage() {
 
           {industryPhotos.length > 0 && (
             <Image
+              data-reveal
               src={industryPhotos[0].src}
               alt={industryPhotos[0].alt}
               width={industryPhotos[0].width}
               height={industryPhotos[0].height}
-              sizes="(max-width: 768px) 100vw, 340px"
-              className="w-full rounded border border-navy-line"
+              sizes="(max-width: 768px) 100vw, 360px"
+              className="mx-auto w-full max-w-sm rounded border border-navy-line md:max-w-none"
             />
           )}
         </div>
@@ -96,9 +95,9 @@ export default function AboutPage() {
       {/* ── Education ────────────────────────────────────────────────────── */}
       <Section tone="raised" width="prose">
         <SectionHeading title={about.education.title} intro={about.education.body} />
-        <dl className="grid gap-5 sm:grid-cols-2">
+        <dl data-reveal-stagger className="grid gap-5 sm:grid-cols-2">
           {about.education.items.map((item) => (
-            <div key={item.title} className="border border-navy-line p-5">
+            <div key={item.title} className="card p-5">
               <dt className="font-extrabold text-ink">{item.title}</dt>
               <dd className="mt-2 text-sm text-ink-muted">{item.detail}</dd>
             </div>
@@ -109,12 +108,13 @@ export default function AboutPage() {
       {/* ── Competitive programming ──────────────────────────────────────── */}
       <Section>
         <div className="grid gap-8 md:grid-cols-2 md:items-center">
-          <div>
+          <div data-reveal>
+            <span aria-hidden="true" className="trace-rule mb-5" />
             <h2 className="text-title font-extrabold text-ink">{about.competitive.title}</h2>
             <p className="mt-4 text-body text-ink-muted">{about.competitive.body}</p>
           </div>
 
-          <div className="grid gap-4">
+          <div data-reveal className="grid gap-4">
             {codeforcesProof && (
               <Image
                 src={codeforcesProof.src}
@@ -150,6 +150,7 @@ export default function AboutPage() {
         <div className="grid gap-8 md:grid-cols-2 md:items-center">
           {linkedinProof && (
             <Image
+              data-reveal
               src={linkedinProof.src}
               alt={linkedinProof.alt}
               width={linkedinProof.width}
@@ -158,7 +159,8 @@ export default function AboutPage() {
               className="w-full rounded border border-navy-line"
             />
           )}
-          <div>
+          <div data-reveal>
+            <span aria-hidden="true" className="trace-rule mb-5" />
             <h2 className="text-title font-extrabold text-ink">{about.linkedin.title}</h2>
             <p className="mt-4 text-body text-ink-muted">{about.linkedin.body}</p>
             {site.channels.linkedin && (
@@ -166,9 +168,15 @@ export default function AboutPage() {
                 href={site.channels.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-5 inline-block font-bold text-gold underline underline-offset-4"
+                className="group mt-5 inline-flex items-center gap-2 font-bold text-gold underline decoration-gold/40 underline-offset-4 transition-colors duration-200 hover:decoration-gold"
               >
                 افتح الصفحة على لينكدإن
+                <span
+                  aria-hidden="true"
+                  className="inline-block transition-transform duration-200 group-hover:-translate-x-1"
+                >
+                  ←
+                </span>
               </a>
             )}
           </div>
@@ -177,7 +185,7 @@ export default function AboutPage() {
 
       {/* ── Why teach secondary students ─────────────────────────────────── */}
       <Section tone="deep" width="prose">
-        <div className="border-s-2 border-gold ps-5 sm:ps-7">
+        <div data-reveal className="border-s-2 border-gold ps-5 sm:ps-7">
           <h2 className="text-title font-extrabold text-ink">{about.whyTeaching.title}</h2>
           <div className="mt-5 grid gap-4">
             {about.whyTeaching.body.map((paragraph) => (
@@ -189,12 +197,15 @@ export default function AboutPage() {
         </div>
       </Section>
 
-      <Section width="prose" className="text-center">
-        <h2 className="text-title font-extrabold text-ink">{about.cta.title}</h2>
-        <p className="mx-auto mt-4 max-w-prose text-body text-ink-muted">{about.cta.body}</p>
-        <ButtonLink href="/#start" className="mt-7">
-          {about.cta.button}
-        </ButtonLink>
+      <Section width="prose" space="lg" className="wash-top border-t border-navy-line text-center">
+        <div data-reveal>
+          <span aria-hidden="true" className="trace-rule mx-auto mb-5 origin-center" />
+          <h2 className="text-title font-extrabold text-ink">{about.cta.title}</h2>
+          <p className="mx-auto mt-4 max-w-prose text-body text-ink-muted">{about.cta.body}</p>
+          <ButtonLink href="/#start" className="mt-8">
+            {about.cta.button}
+          </ButtonLink>
+        </div>
       </Section>
     </>
   )

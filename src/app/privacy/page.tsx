@@ -16,12 +16,15 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <Section width="prose">
-      <h1 className="text-display font-extrabold text-ink">{privacy.title}</h1>
-      <p className="mt-3 text-sm text-ink-faint">{privacy.updated}</p>
+      <div data-reveal>
+        <span aria-hidden="true" className="trace-rule mb-6" />
+        <h1 className="text-display font-extrabold text-ink">{privacy.title}</h1>
+        <p className="mt-3 text-sm text-ink-faint">{privacy.updated}</p>
+      </div>
 
-      <div className="mt-10 grid gap-8">
+      <div data-reveal-stagger className="mt-10 grid gap-8">
         {privacy.sections.map((section) => (
-          <article key={section.title}>
+          <article key={section.title} className="border-s-2 border-navy-line ps-5">
             <h2 className="text-lg font-extrabold text-ink">{section.title}</h2>
             <p className="mt-2 text-body text-ink-muted">{section.body}</p>
           </article>
