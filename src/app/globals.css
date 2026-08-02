@@ -258,6 +258,31 @@
   details[open] > .disclosure-panel {
     animation: hero-rise 280ms var(--ease-trace) both;
   }
+
+  /* ── Reading progress ─────────────────────────────────────────────────
+   * The same 2px trace, this time drawn by the reader instead of by a
+   * reveal. It is a scroll-driven CSS animation: no scroll listener, no
+   * JavaScript, nothing running per frame. Browsers without support simply
+   * never scale it up, which leaves an invisible bar — the right outcome
+   * for a flourish that carries no information the page needs.
+   * ─────────────────────────────────────────────────────────────────────── */
+  .read-progress {
+    transform: scaleX(0);
+    transform-origin: 100% 50%;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .read-progress {
+      animation: read-progress linear forwards;
+      animation-timeline: scroll(root block);
+    }
+  }
+
+  @keyframes read-progress {
+    to {
+      transform: scaleX(1);
+    }
+  }
 }
 
 /**
@@ -287,5 +312,11 @@
   .js [data-reveal] .trace-rule {
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  /* The blanket duration override above would collapse a scroll-driven
+     animation to its end state, so this one is switched off outright. */
+  .read-progress {
+    animation: none !important;
   }
 }

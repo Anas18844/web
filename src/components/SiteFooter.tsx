@@ -17,8 +17,11 @@ export function SiteFooter() {
 
   return (
     <footer className="border-t border-navy-line bg-navy-deep py-12">
-      <Container className="flex flex-col gap-6 text-sm text-ink-faint sm:flex-row sm:items-center sm:justify-between">
-        <div>
+      {/* The nav grew past what a three-column row holds at 1440: `shrink-0`
+          keeps the mark and the copyright on one line each and lets the links
+          wrap instead, which is the column that can afford to. */}
+      <Container className="flex flex-col gap-6 text-sm text-ink-faint sm:flex-row sm:items-center sm:justify-between sm:gap-8">
+        <div className="shrink-0">
           <p className="font-bold text-ink">{site.name}</p>
           <p className="mt-1 flex items-center gap-2.5">
             <span aria-hidden="true" className="h-0.5 w-4 shrink-0 bg-gold/70" />
@@ -32,6 +35,9 @@ export function SiteFooter() {
           </Link>
           <Link href="/platform" className={link}>
             {common.nav.platform}
+          </Link>
+          <Link href="/knowledge" className={link}>
+            {common.nav.knowledge}
           </Link>
           <Link href="/about" className={link}>
             {common.nav.about}
@@ -56,7 +62,7 @@ export function SiteFooter() {
           </a>
         </nav>
 
-        <p>© {year} — {common.footer.rights}</p>
+        <p className="shrink-0">© {year} — {common.footer.rights}</p>
       </Container>
     </footer>
   )

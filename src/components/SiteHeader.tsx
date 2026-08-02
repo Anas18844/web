@@ -9,6 +9,7 @@ const NAV: NavItem[] = [
   { href: '/', label: common.nav.home },
   { href: '/courses', label: common.nav.courses },
   { href: '/platform', label: common.nav.platform },
+  { href: '/knowledge', label: common.nav.knowledge },
   { href: '/about', label: common.nav.about },
   { href: '/parents', label: common.nav.parents },
 ]

@@ -4,6 +4,7 @@ import { Audience } from '@/components/sections/Audience'
 import { FreeFirst } from '@/components/sections/FreeFirst'
 import { System } from '@/components/sections/System'
 import { Practical } from '@/components/sections/Practical'
+import { KnowledgeTeaser } from '@/components/sections/KnowledgeTeaser'
 import { ParentBridge } from '@/components/sections/ParentBridge'
 import { Capture } from '@/components/sections/Capture'
 import { JsonLd } from '@/components/JsonLd'
@@ -28,6 +29,7 @@ export default function HomePage() {
       <FreeFirst />
       <System />
       <Practical />
+      <KnowledgeTeaser />
       <ParentBridge />
       <Capture intent="curriculum" pageContext="home" />
     </>

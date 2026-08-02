@@ -135,6 +135,25 @@ export const home = {
   },
 
   /**
+   * The invitation to مركز المعرفة.
+   *
+   * Deliberately not an offer. It sits right after the questions section
+   * because that is the moment a visitor has just realised they have more
+   * questions than the page answers — and the honest response is "there is a
+   * place that keeps answering them", not another call to subscribe.
+   *
+   * The three headlines under it are pulled live from the Knowledge Center, so
+   * the section proves the claim instead of making it.
+   */
+  knowledge: {
+    title: 'مركز المعرفة',
+    body: 'لو عندك سؤال، أو عايز تفضل متابع اللي بيحصل في البرمجة، أو محتاج نصايح مذاكرة وشروحات ومقالات تعليمية — كل ده بينزل هنا أول بأول.',
+    note: 'الموقع ده مش بس عشان تشترك. ده مكان تفضل تتعلم منه.',
+    latestLabel: 'آخر اللي نزل',
+    cta: 'ادخل مركز المعرفة',
+  },
+
+  /**
    * The free-first model, compressed for the home page. It sits high because
    * it removes the biggest silent objection ("ده هيكلفني كام؟") before it
    * even forms.
@@ -467,6 +486,58 @@ export const parents = {
   },
 } as const
 
+/**
+ * The /knowledge page — "مركز المعرفة".
+ *
+ * The one page on the site that sells nothing, on purpose. Its job is to make
+ * a claim the rest of the site cannot make for itself: that this is somewhere
+ * a student keeps learning, not somewhere they buy something once. Every
+ * commercial device — the capture form, the WhatsApp bar, the price talk — is
+ * deliberately absent here, because a page that ends in a form contradicts the
+ * sentence it opens with.
+ */
+export const knowledge = {
+  meta: {
+    title: 'مركز المعرفة',
+    description:
+      'شروحات ومقالات تعليمية في البرمجة والذكاء الاصطناعي: إزاي تبدأ من الصفر، خطط مذاكرة، شرح مفاهيم برمجية، أخطاء شائعة، ومهارات التفكير المنطقي — لطلاب الثانوي والجامعة والمتعلمين ذاتياً.',
+  },
+
+  hero: {
+    eyebrow: 'مركز المعرفة',
+    title: 'مكان تفضل تتعلم منه',
+    lead: 'شروحات ونصايح مذاكرة وإجابات للأسئلة اللي بتتكرر — مقالات تعليمية بتنفعك سواء ذاكرت معانا أو لأ. بننشر هنا أول بأول.',
+  },
+
+  featuredLabel: 'ابدأ من هنا',
+  browseTitle: 'كل المقالات',
+  browseIntro: 'دوّر باسم المقال أو اختار موضوع.',
+
+  search: {
+    label: 'ابحث في المقالات',
+    placeholder: 'ابحث… مثال: لوب، مذاكرة، ذكاء اصطناعي',
+    all: 'الكل',
+    empty: 'مفيش نتيجة للبحث ده',
+    emptyHint: 'جرّب كلمة أقصر، أو اختار موضوع من فوق. ولو فيه حاجة نفسك نشرحها ومش لاقيها، ابعتلنا وهنكتب فيها.',
+    clear: 'امسح البحث',
+    /* Plain strings with a `{n}` token, not a formatter: these cross into a
+       client component, and functions cannot be serialised across that
+       boundary. Arabic needs all four forms — see `arabicPlural`. */
+    count: {
+      one: 'مقال واحد',
+      two: 'مقالين',
+      few: '{n} مقالات',
+      many: '{n} مقال',
+    },
+  },
+
+  article: {
+    back: 'كل المقالات',
+    relatedTitle: 'اقرأ بعد كده',
+    tagsLabel: 'الموضوعات',
+  },
+} as const
+
 export const links = {
   meta: {
     title: 'الروابط والحسابات الرسمية',
@@ -518,6 +589,7 @@ export const common = {
     home: 'الرئيسية',
     courses: 'الكورسات',
     platform: 'المنصة',
+    knowledge: 'مركز المعرفة',
     about: 'مين مستر أنس',
     parents: 'لولي الأمر',
     start: 'سجّل معانا',
