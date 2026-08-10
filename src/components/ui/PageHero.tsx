@@ -1,4 +1,5 @@
 import { Container } from './Container'
+import { Circuit } from './Circuit'
 
 /**
  * The opening block shared by every inner page.
@@ -22,8 +23,19 @@ export function PageHero({
   lead: string
 }) {
   return (
-    <section className="wash-start border-b border-navy-line bg-navy-deep py-16 sm:py-24">
-      <Container width="prose">
+    <section className="wash-start relative overflow-hidden border-b border-navy-line bg-navy-deep py-16 sm:py-24">
+      {/* The brand circuit, drawing itself in the far corner as the page
+          opens. `data-reveal` is already satisfied on load — the block is in
+          view — so the traces animate immediately after the copy lands. */}
+      <div
+        data-reveal
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-0 start-0 hidden opacity-50 lg:block"
+      >
+        <Circuit className="h-52 w-auto" />
+      </div>
+
+      <Container width="prose" className="relative">
         <span aria-hidden="true" className="trace-rule hero-enter mb-6" />
         <p className="hero-enter mb-4 text-sm font-semibold text-gold">{eyebrow}</p>
         <h1 className="hero-enter text-display font-extrabold text-ink">{title}</h1>

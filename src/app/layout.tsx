@@ -83,7 +83,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
        * (@vercel/analytics below is separate: product analytics, not GTM.)
        */}
       <GoogleTagManager gtmId="GTM-NVTM4X76" />
-      <body className="flex min-h-dvh flex-col">
+      {/* `grain` lays the film-texture tile over the whole document — the
+          cheapest single ingredient of the "printed surface" feel. */}
+      <body className="grain flex min-h-dvh flex-col">
         {/*
          * Marks the document JS-capable before anything below it is painted,
          * so scroll-reveal can start hidden without a flash — and so a visitor

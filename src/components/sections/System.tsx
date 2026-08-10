@@ -1,9 +1,17 @@
 import Image from 'next/image'
 import { Section, SectionHeading } from '@/components/ui/Section'
+import { IconPlate, type IconName } from '@/components/ui/Icon'
 import { VideoFacade } from '@/components/VideoFacade'
 import { home } from '@/content/copy'
 import { assets } from '@/content/assets'
 import { cn } from '@/lib/utils'
+
+/** The pillar glyphs: lesson → platform → follow-up. */
+const PILLAR_ICONS: Record<string, IconName> = {
+  session: 'board',
+  platform: 'terminal',
+  followup: 'chart',
+}
 
 /**
  * Layer 2 — the persuasion body (Doc 07 §2).
@@ -52,7 +60,10 @@ export function System() {
               <span aria-hidden="true" className="trace-rule absolute -top-px start-0 w-16" />
 
               <div>
-                <h3 className="text-xl font-extrabold text-ink sm:text-2xl">{pillar.title}</h3>
+                <div className="flex items-center gap-4">
+                  <IconPlate name={PILLAR_ICONS[pillar.id] ?? 'spark'} />
+                  <h3 className="text-xl font-extrabold text-ink sm:text-2xl">{pillar.title}</h3>
+                </div>
                 <p className={cn('mt-4 text-body text-ink-muted', !media && 'max-w-prose')}>
                   {pillar.body}
                 </p>

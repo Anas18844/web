@@ -128,6 +128,32 @@
   }
 
   /* ───────────────────────────────────────────────────────────────────────
+   * SPOTLIGHT — the Linear-style cursor glow.
+   *
+   * A radial gradient that follows the pointer across the card surface.
+   * Position comes from --spot-x/--spot-y, set by one delegated rAF-throttled
+   * pointermove listener in the Reveal island — no per-card JS, no re-render,
+   * nothing at all on touch devices (hover: none never shows it).
+   * ─────────────────────────────────────────────────────────────────────── */
+  .card::after {
+    content: '';
+    @apply pointer-events-none absolute inset-0;
+    opacity: 0;
+    background: radial-gradient(
+      280px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      rgba(203, 163, 82, 0.1),
+      transparent 65%
+    );
+    transition: opacity var(--dur-base) ease;
+  }
+
+  @media (hover: hover) {
+    .card:hover::after {
+      opacity: 1;
+    }
+  }
+
+  /* ───────────────────────────────────────────────────────────────────────
    * WASH — one soft gold gradient, used in exactly two places: the top of an
    * inner page, and the final call to action. It is a background-image on an
    * element that already exists, so it costs no extra node, no blur filter
@@ -147,6 +173,203 @@
       rgba(203, 163, 82, 0.1),
       transparent 62%
     );
+  }
+
+  /* ───────────────────────────────────────────────────────────────────────
+   * GRAIN — the film-texture layer.
+   *
+   * A 128px tile of SVG turbulence at 2.5% opacity over the whole document.
+   * This is the single cheapest thing separating "flat dark website" from
+   * "printed dark surface": it gives the navy physical tooth. A repeating
+   * background costs one decode; it never animates, never repaints.
+   * ─────────────────────────────────────────────────────────────────────── */
+  .grain::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    pointer-events: none;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='128' height='128' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ───────────────────────────────────────────────────────────────────────
+   * AURORA — the Stripe-style living background, in brand colours.
+   *
+   * Two soft masses (gold + the logo cyan, both far below full opacity)
+   * drifting on a 40s transform loop. Transform-only, GPU-composited, and
+   * confined to the two sections that mark the emotional poles of the page:
+   * the opening and the final call to action. Everywhere else stays still —
+   * a background that moves everywhere is a background nobody feels.
+   * ─────────────────────────────────────────────────────────────────────── */
+  .aurora {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .aurora::before,
+  .aurora::after {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    border-radius: 9999px;
+    pointer-events: none;
+    filter: blur(90px);
+  }
+
+  .aurora::before {
+    width: 44rem;
+    height: 44rem;
+    inset-inline-start: -12rem;
+    top: -18rem;
+    background: radial-gradient(closest-side, rgba(203, 163, 82, 0.16), transparent);
+    animation: aurora-a 40s ease-in-out infinite;
+  }
+
+  .aurora::after {
+    width: 38rem;
+    height: 38rem;
+    inset-inline-end: -14rem;
+    bottom: -16rem;
+    background: radial-gradient(closest-side, rgba(72, 200, 213, 0.1), transparent);
+    animation: aurora-b 52s ease-in-out infinite;
+  }
+
+  @keyframes aurora-a {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+      transform: translate3d(6rem, 4rem, 0) scale(1.15);
+    }
+  }
+
+  @keyframes aurora-b {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+      transform: translate3d(-5rem, -3rem, 0) scale(1.12);
+    }
+  }
+
+  /* ───────────────────────────────────────────────────────────────────────
+   * MARQUEE — the trust strip as a slow conveyor (the Vercel logo-row move).
+   *
+   * Content is rendered twice and the track slides one copy's width, so the
+   * loop is seamless. Direction is physical `right` because the document is
+   * RTL — names should travel the way the reader's eye already moves.
+   * Pauses on hover; collapses to a static row under reduced motion.
+   * ─────────────────────────────────────────────────────────────────────── */
+  .marquee {
+    position: relative;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to left, transparent, black 8%, black 92%, transparent);
+    mask-image: linear-gradient(to left, transparent, black 8%, black 92%, transparent);
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 36s linear infinite;
+  }
+
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
+    to {
+      transform: translateX(50%);
+    }
+  }
+
+  /* ───────────────────────────────────────────────────────────────────────
+   * SHINE — a light sweep across the primary button on hover.
+   * One pass, 700ms, only on the solid-gold surface where it reads as
+   * polished metal rather than as an effect.
+   * ─────────────────────────────────────────────────────────────────────── */
+  .shine {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shine::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(110%) skewX(-18deg);
+    background: linear-gradient(
+      90deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.35) 50%,
+      transparent 70%
+    );
+  }
+
+  @media (hover: hover) {
+    .shine:hover::before {
+      transition: transform 700ms var(--ease-trace);
+      transform: translateX(-110%) skewX(-18deg);
+    }
+  }
+
+  /* ───────────────────────────────────────────────────────────────────────
+   * CIRCUIT DRAW — the brand motif coming alive.
+   * SVG traces draw themselves when their section reveals; node dots pulse
+   * once the line reaches them. Runs once, then holds — a living ornament,
+   * not a looping distraction.
+   * ─────────────────────────────────────────────────────────────────────── */
+  .js [data-reveal] .circuit-path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  .js [data-reveal].is-revealed .circuit-path {
+    animation: circuit-draw 1400ms var(--ease-trace) 200ms forwards;
+  }
+
+  .js [data-reveal] .circuit-node {
+    opacity: 0;
+  }
+
+  .js [data-reveal].is-revealed .circuit-node {
+    animation: circuit-node 500ms ease-out 1100ms forwards;
+  }
+
+  @keyframes circuit-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes circuit-node {
+    from {
+      opacity: 0;
+      transform: scale(0.4);
+      transform-origin: center;
+      transform-box: fill-box;
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* ───────────────────────────────────────────────────────────────────────
+   * ORBIT BADGE — the rotating circular-text sticker.
+   * 24s per revolution; the play glyph in the middle stays upright.
+   * ─────────────────────────────────────────────────────────────────────── */
+  .orbit {
+    animation: orbit 24s linear infinite;
+  }
+
+  @keyframes orbit {
+    to {
+      transform: rotate(360deg);
+    }
   }
 }
 
@@ -259,6 +482,25 @@
     animation: hero-rise 280ms var(--ease-trace) both;
   }
 
+  /* ── Headline words ───────────────────────────────────────────────────
+   * Each word rises out of its own clipped line-box; the cubic-bezier
+   * overshoots ~4% past home, which reads as a spring settling. Gated on
+   * `.js` exactly like the reveal system, but NOT on hydration — the
+   * animation is pure CSS, so it plays even if React never arrives. Without
+   * `.js`, the words simply stand still: the no-JS visitor gets a headline,
+   * not a wait.
+   * ─────────────────────────────────────────────────────────────────────── */
+  .js .hero-word {
+    transform: translateY(112%);
+    animation: word-rise 620ms cubic-bezier(0.2, 0.9, 0.3, 1.08) forwards;
+  }
+
+  @keyframes word-rise {
+    to {
+      transform: translateY(0);
+    }
+  }
+
   /* ── Reading progress ─────────────────────────────────────────────────
    * The same 2px trace, this time drawn by the reader instead of by a
    * reveal. It is a scroll-driven CSS animation: no scroll listener, no
@@ -318,5 +560,23 @@
      animation to its end state, so this one is switched off outright. */
   .read-progress {
     animation: none !important;
+  }
+
+  /* Looping ambience has no "end state" worth jumping to — switch it off. */
+  .aurora::before,
+  .aurora::after,
+  .marquee-track,
+  .orbit {
+    animation: none !important;
+  }
+
+  /* The circuit ornament should simply be there, fully drawn. */
+  .js [data-reveal] .circuit-path {
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+
+  .js [data-reveal] .circuit-node {
+    opacity: 1 !important;
   }
 }

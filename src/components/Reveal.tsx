@@ -4,7 +4,9 @@ import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 
 /**
- * The site's entire scroll-motion engine, in one client island.
+ * The site's interaction engine, in one client island: scroll reveals and the
+ * card spotlight. Both are delegated — one observer and one pointer listener
+ * serve the whole document, and every visual they drive is CSS.
  *
  * Sections opt in declaratively with `data-reveal` (the block arrives as one)
  * or `data-reveal-stagger` (its children arrive in sequence). This component
@@ -50,6 +52,36 @@ export function Reveal() {
     nodes.forEach((node) => observer.observe(node))
     return () => observer.disconnect()
   }, [pathname])
+
+  /**
+   * Card spotlight: one document-level pointermove, rAF-throttled, that tells
+   * the hovered `.card` where the cursor is via two CSS custom properties.
+   * The gradient itself lives in CSS (`.card::after`). No per-card listeners,
+   * no React state, and the whole path is skipped on touch devices, where
+   * there is no hover for it to follow.
+   */
+  useEffect(() => {
+    if (!window.matchMedia('(hover: hover)').matches) return
+
+    let frame = 0
+    const onMove = (e: PointerEvent) => {
+      if (frame) return
+      frame = requestAnimationFrame(() => {
+        frame = 0
+        const card = (e.target as Element | null)?.closest?.<HTMLElement>('.card')
+        if (!card) return
+        const rect = card.getBoundingClientRect()
+        card.style.setProperty('--spot-x', `${e.clientX - rect.left}px`)
+        card.style.setProperty('--spot-y', `${e.clientY - rect.top}px`)
+      })
+    }
+
+    document.addEventListener('pointermove', onMove, { passive: true })
+    return () => {
+      document.removeEventListener('pointermove', onMove)
+      if (frame) cancelAnimationFrame(frame)
+    }
+  }, [])
 
   return null
 }

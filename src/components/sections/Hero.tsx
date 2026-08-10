@@ -1,6 +1,9 @@
 import Image from 'next/image'
 import { Container } from '@/components/ui/Container'
 import { ButtonLink } from '@/components/ui/Button'
+import { Marquee } from '@/components/ui/Marquee'
+import { HeroIntro } from '@/components/motion/HeroIntro'
+import { Magnetic } from '@/components/motion/Magnetic'
 import { home } from '@/content/copy'
 import { institutions } from '@/content/site'
 import { assets } from '@/content/assets'
@@ -13,21 +16,15 @@ import { assets } from '@/content/assets'
  * place instantly. The trust strip underneath answers "why listen to him?"
  * with places rather than a job title — the founder's core correction.
  *
- * One <Image> serves both breakpoints: an in-flow band on mobile (cropped to
- * the portrait) and a full background on desktop. Never two downloads.
+ * The entrance is the site's one full choreography: the headline rises word
+ * by word on springs, then the lead, actions and trust conveyor arrive as a
+ * block. The photograph is deliberately excluded from all of it — it is the
+ * LCP element, and fading it would delay the largest paint on every visit.
  *
- * The switch happens at `xl`, and the reason is geometric rather than
- * arbitrary. `object-cover` scales the banner to whichever axis is short, so
- * the narrower the viewport the TALLER the hero is relative to its width, the
- * harder the banner is cropped, and the further the portrait is pushed into
- * the copy column. Below 1280px he collides with the headline, and no scrim
- * fixes a collision — it only hides him behind a dark panel. So everything
- * under `xl` stacks: the photograph gets the full width, then the words do.
- *
- * `object-left-top` serves both crops. On the narrow bands the scale is
- * height-driven, so the horizontal anchor is what keeps him in frame; on the
- * wide banner bands it is width-driven, and the top anchor is what keeps his
- * head from being cut off.
+ * One <Image> serves both layouts: an in-flow band under `xl` (stacked, full
+ * width) and a full background above it. The switch lives at `xl` because
+ * `object-cover` crops harder as the viewport narrows — below 1280px the
+ * portrait collides with the copy column, and no scrim fixes a collision.
  */
 export function Hero() {
   const banner = assets.hero
@@ -68,54 +65,41 @@ export function Hero() {
         />
       )}
 
+      {/* The living atmosphere. Sits above the banner's scrim and below the
+          copy, so the drift reads as depth behind the words — never on them. */}
+      <div aria-hidden="true" className="aurora absolute inset-0" />
+
       <Container className="relative py-12 sm:py-16 xl:py-28">
-        {/*
-         * The entrance is two groups, not seven elements: the message lands,
-         * then the things you can act on follow it. Anything more granular
-         * turns an arrival into a queue.
-         *
-         * The photograph above is deliberately excluded — it is the largest
-         * paint on the page, and fading it in would push LCP back on every
-         * single visit for no gain the visitor can perceive.
-         */}
         <div className="xl:max-w-[56%]">
-          <div className="hero-enter">
-            <p className="mb-4 text-sm font-semibold leading-relaxed text-gold sm:mb-5">
-              {home.hero.eyebrow}
-            </p>
-
-            <h1 className="text-display font-extrabold text-ink">{home.hero.title}</h1>
-
+          <HeroIntro eyebrow={home.hero.eyebrow} title={home.hero.title}>
             <p className="mt-5 max-w-prose text-subtitle text-ink-muted sm:mt-6">
               {home.hero.lead}
             </p>
-          </div>
 
-          <div className="hero-enter-late">
-            <div className="mt-8 flex flex-wrap gap-3 sm:mt-9">
-              <ButtonLink href="/#start">{home.hero.primaryCta}</ButtonLink>
+            <div className="mt-8 flex flex-wrap items-center gap-3 sm:mt-9">
+              {/* The primary action leans toward the cursor — spring physics
+                  from the motion library, on the one element that deserves
+                  the site's strongest pull. */}
+              <Magnetic>
+                <ButtonLink href="/#start">{home.hero.primaryCta}</ButtonLink>
+              </Magnetic>
               <ButtonLink href="/courses" variant="secondary">
                 {home.hero.secondaryCta}
               </ButtonLink>
             </div>
 
-            {/* Trust strip: recognisable places, not a job title.
-                Deliberately NOT separated by rules — the row wraps at several
-                widths, and any per-item divider ends up orphaned at the start
-                of a wrapped line. Space does the same job and never breaks. */}
+            {/* Trust conveyor: recognisable places in slow motion. A moving
+                row holds the eye longer than a static list, and the loop
+                means no name is ever the one that got cut by the fold. */}
             <div className="mt-9 border-t border-navy-line/70 pt-6">
               <p className="text-xs font-semibold tracking-wide text-ink-faint">
                 {home.hero.trustLabel}
               </p>
-              <ul className="mt-3.5 flex flex-wrap items-center gap-x-6 gap-y-2.5">
-                {trustNames.map((name) => (
-                  <li key={name} className="text-sm font-bold tracking-wide text-ink-muted">
-                    {name}
-                  </li>
-                ))}
-              </ul>
+              <Marquee className="mt-4" itemClassName="text-sm font-bold tracking-wide text-ink-muted">
+                {trustNames}
+              </Marquee>
             </div>
-          </div>
+          </HeroIntro>
         </div>
       </Container>
     </section>

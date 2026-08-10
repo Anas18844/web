@@ -17,7 +17,7 @@ type Variant = 'primary' | 'secondary'
  */
 const styles: Record<Variant, string> = {
   primary:
-    'bg-gold text-navy hover:bg-gold-deep hover:text-ink hover:shadow-[0_0_28px_-8px_rgba(203,163,82,0.9)] focus-visible:ring-gold',
+    'shine bg-gold text-navy hover:bg-gold-deep hover:text-ink hover:shadow-[0_0_28px_-8px_rgba(203,163,82,0.9)] focus-visible:ring-gold',
   secondary:
     'border border-navy-line bg-transparent text-ink hover:border-gold hover:bg-gold/[0.06] hover:text-gold',
 }
