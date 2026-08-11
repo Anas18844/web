@@ -21,6 +21,22 @@ import { cn } from '@/lib/utils'
 type FieldKey = 'name' | 'phone' | 'whatsapp' | 'grade' | 'attendance' | 'branch' | 'heardFrom'
 type Errors = Partial<Record<FieldKey | 'form', string>>
 
+/**
+ * Two-step capture.
+ *
+ * Step one asks for the three things a follow-up call actually needs — name,
+ * phone, year — and SAVES THEM. Step two enriches the row that already exists.
+ *
+ * That ordering is the entire design. A student who fills three fields and
+ * then walks away used to leave nothing behind; now they leave a lead the team
+ * can ring. Every field after step one is a bonus on top of a capture we have
+ * already banked, which is also why step two never blocks the student: if it
+ * fails, their data is still safe and we say so rather than showing an error.
+ *
+ * There is deliberately no way back to step one. The row is written the moment
+ * step one succeeds, and a "back" button that let the phone number change
+ * would either orphan that row or silently create a second one.
+ */
 export function LeadForm({
   intent,
   pageContext,
@@ -30,14 +46,20 @@ export function LeadForm({
   pageContext: string
   className?: string
 }) {
-  const [state, setState] = useState<'idle' | 'sending' | 'done'>('idle')
+  const [step, setStep] = useState<1 | 2 | 'done'>(1)
+  const [sending, setSending] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
+
+  /** Handle to the saved row, handed back by step one. */
+  const lead = useRef<{ id: string; token: string } | null>(null)
+  /** Kept for the analytics event on completion, and to mirror into WhatsApp. */
+  const captured = useRef<{ grade: string; phone: string }>({ grade: '', phone: '' })
 
   // Controlled only where behaviour depends on the value:
   // the WhatsApp mirror button and the conditional branch question.
   const [phone, setPhone] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
-  const [sameAsPhone, setSameAsPhone] = useState(false)
+  const [sameAsPhone, setSameAsPhone] = useState(true)
   const [attendance, setAttendance] = useState<string>('')
 
   const mountedAt = useRef(Date.now())
@@ -45,32 +67,23 @@ export function LeadForm({
   function applySameAsPhone(checked: boolean) {
     setSameAsPhone(checked)
     if (checked) {
-      setWhatsapp(phone)
+      setWhatsapp(captured.current.phone)
       setErrors((prev) => ({ ...prev, whatsapp: undefined }))
     }
   }
 
-  function onPhoneChange(value: string) {
-    setPhone(value)
-    if (sameAsPhone) setWhatsapp(value)
-  }
-
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  // ── Step one ───────────────────────────────────────────────────────────────
+  async function submitStep1(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (state === 'sending') return
+    if (sending) return
 
     const data = new FormData(e.currentTarget)
-
     const name = String(data.get('name') || '')
     const grade = String(data.get('grade') || '')
-    const branch = String(data.get('branch') || '')
-    const heardFrom = String(data.get('heardFrom') || '')
     const normalizedPhone = normalizePhone(phone)
-    const normalizedWhatsapp = normalizePhone(sameAsPhone ? phone : whatsapp)
 
     // Client-side checks mirror the server's, purely for instant feedback.
     const next: Errors = {}
-
     switch (nameError(name)) {
       case 'empty':
         next.name = common.form.errorNameEmpty
@@ -82,10 +95,64 @@ export function LeadForm({
         next.name = common.form.errorNameTriple
         break
     }
-
     if (!EG_MOBILE.test(normalizedPhone)) next.phone = common.form.errorPhone
-    if (!EG_MOBILE.test(normalizedWhatsapp)) next.whatsapp = common.form.errorWhatsapp
     if (!grade) next.grade = common.form.errorGrade
+
+    if (Object.keys(next).length) {
+      setErrors(next)
+      return
+    }
+
+    setErrors({})
+    setSending(true)
+
+    try {
+      const res = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          phone: normalizedPhone,
+          grade,
+          intent,
+          pageContext,
+          utm: collectUtm(),
+          company: String(data.get('company') || ''), // honeypot
+          elapsed: Date.now() - mountedAt.current,
+        }),
+      })
+
+      const json = (await res.json()) as { ok?: boolean; id?: string; token?: string }
+      if (!res.ok || !json.ok || !json.id || !json.token) throw new Error('request failed')
+
+      lead.current = { id: json.id, token: json.token }
+      captured.current = { grade, phone: normalizedPhone }
+
+      // The number carries over by default — most students use one line.
+      setWhatsapp(normalizedPhone)
+
+      events.leadStarted(intent, grade)
+      setStep(2)
+    } catch {
+      // The visitor's input is preserved — we never clear the form on failure.
+      setErrors({ form: common.form.errorGeneric })
+    } finally {
+      setSending(false)
+    }
+  }
+
+  // ── Step two ───────────────────────────────────────────────────────────────
+  async function submitStep2(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    if (sending || !lead.current) return
+
+    const data = new FormData(e.currentTarget)
+    const branch = String(data.get('branch') || '')
+    const heardFrom = String(data.get('heardFrom') || '')
+    const normalizedWhatsapp = normalizePhone(sameAsPhone ? captured.current.phone : whatsapp)
+
+    const next: Errors = {}
+    if (!EG_MOBILE.test(normalizedWhatsapp)) next.whatsapp = common.form.errorWhatsapp
     if (!attendance) next.attendance = common.form.errorAttendance
     if (attendance === 'center' && !branch) next.branch = common.form.errorBranch
     if (!heardFrom) next.heardFrom = common.form.errorHeardFrom
@@ -96,41 +163,36 @@ export function LeadForm({
     }
 
     setErrors({})
-    setState('sending')
+    setSending(true)
 
     try {
       const res = await fetch('/api/lead', {
-        method: 'POST',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name,
-          phone: normalizedPhone,
+          id: lead.current.id,
+          token: lead.current.token,
           whatsapp: normalizedWhatsapp,
-          grade,
           attendance,
           branch: attendance === 'center' ? branch : undefined,
           heardFrom,
-          intent,
           note: String(data.get('note') || '').trim(),
-          pageContext,
-          utm: collectUtm(),
-          company: String(data.get('company') || ''), // honeypot
-          elapsed: Date.now() - mountedAt.current,
         }),
       })
 
       if (!res.ok) throw new Error('request failed')
 
-      events.leadSubmitted(intent, grade)
-      setState('done')
+      events.leadSubmitted(intent, captured.current.grade)
+      setStep('done')
     } catch {
-      // The visitor's input is preserved — we never clear the form on failure.
       setErrors({ form: common.form.errorGeneric })
-      setState('idle')
+    } finally {
+      setSending(false)
     }
   }
 
-  if (state === 'done') {
+  // ── Thanks ─────────────────────────────────────────────────────────────────
+  if (step === 'done') {
     return (
       <div
         className={cn(
@@ -151,16 +213,163 @@ export function LeadForm({
     )
   }
 
+  const shell = cn(
+    'rounded border border-navy-line bg-navy-soft/40 p-6 shadow-[0_24px_60px_-40px_rgba(0,0,0,0.9)] sm:p-8',
+    className,
+  )
+
+  // ── Step two form ──────────────────────────────────────────────────────────
+  if (step === 2) {
+    return (
+      <form onSubmit={submitStep2} noValidate className={shell}>
+        <StepBar step={2} />
+
+        <div className="mt-5 animate-fade-up">
+          <p className="text-lg font-extrabold text-gold">{common.form.step2Title}</p>
+          <p className="mt-2 text-sm leading-relaxed text-ink-muted">{common.form.step2Body}</p>
+        </div>
+
+        <div className="mt-7 grid gap-5">
+          <Field
+            id="whatsapp"
+            label={common.form.whatsapp}
+            hint={common.form.whatsappHint}
+            error={errors.whatsapp}
+            action={
+              <label className="flex cursor-pointer items-center gap-2 text-xs font-bold text-gold">
+                <input
+                  type="checkbox"
+                  checked={sameAsPhone}
+                  onChange={(e) => applySameAsPhone(e.target.checked)}
+                  className="h-4 w-4 accent-[#CBA352]"
+                />
+                {common.form.sameAsPhone}
+              </label>
+            }
+          >
+            <input
+              id="whatsapp"
+              name="whatsapp"
+              type="tel"
+              inputMode="tel"
+              dir="ltr"
+              value={sameAsPhone ? captured.current.phone : whatsapp}
+              onChange={(e) => setWhatsapp(e.target.value)}
+              readOnly={sameAsPhone}
+              placeholder={common.form.phonePlaceholder}
+              required
+              aria-invalid={Boolean(errors.whatsapp)}
+              aria-describedby={describedBy('whatsapp', errors.whatsapp, common.form.whatsappHint)}
+              className={cn(
+                inputClass(Boolean(errors.whatsapp)),
+                'text-start',
+                sameAsPhone && 'opacity-60',
+              )}
+            />
+          </Field>
+
+          {/* Two options — segmented buttons beat a dropdown on mobile. */}
+          <fieldset>
+            <legend className="mb-2 block text-sm font-bold text-ink">
+              {common.form.attendance}
+            </legend>
+            <div className="grid grid-cols-2 gap-3">
+              {ATTENDANCE.map((option) => (
+                <label
+                  key={option.value}
+                  className={cn(
+                    'flex min-h-[3rem] cursor-pointer items-center justify-center rounded border px-4 text-base font-bold',
+                    'transition-[background-color,border-color,color,box-shadow] duration-200',
+                    attendance === option.value
+                      ? 'border-gold bg-gold text-navy shadow-[0_0_20px_-8px_rgba(203,163,82,0.9)]'
+                      : 'border-navy-line bg-navy text-ink hover:border-gold/60 hover:bg-gold/[0.06]',
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name="attendance"
+                    value={option.value}
+                    checked={attendance === option.value}
+                    onChange={(e) => setAttendance(e.target.value)}
+                    className="sr-only"
+                  />
+                  {option.label}
+                </label>
+              ))}
+            </div>
+            {errors.attendance && <ErrorText id="attendance">{errors.attendance}</ErrorText>}
+          </fieldset>
+
+          {/* Revealed only for centre students — online students never see it. */}
+          {attendance === 'center' && (
+            <Field id="branch" label={common.form.branch} error={errors.branch}>
+              <select
+                id="branch"
+                name="branch"
+                required
+                defaultValue=""
+                aria-invalid={Boolean(errors.branch)}
+                aria-describedby={describedBy('branch', errors.branch)}
+                className={inputClass(Boolean(errors.branch))}
+              >
+                <option value="" disabled>
+                  {common.form.branchPlaceholder}
+                </option>
+                {BRANCHES.map((b) => (
+                  <option key={b.value} value={b.value}>
+                    {b.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          )}
+
+          <Field id="heardFrom" label={common.form.heardFrom} error={errors.heardFrom}>
+            <select
+              id="heardFrom"
+              name="heardFrom"
+              required
+              defaultValue=""
+              aria-invalid={Boolean(errors.heardFrom)}
+              aria-describedby={describedBy('heardFrom', errors.heardFrom)}
+              className={inputClass(Boolean(errors.heardFrom))}
+            >
+              <option value="" disabled>
+                {common.form.heardFromPlaceholder}
+              </option>
+              {HEARD_FROM.map((h) => (
+                <option key={h.value} value={h.value}>
+                  {h.label}
+                </option>
+              ))}
+            </select>
+          </Field>
+
+          <Field id="note" label={common.form.note}>
+            <textarea
+              id="note"
+              name="note"
+              rows={3}
+              maxLength={500}
+              placeholder={common.form.notePlaceholder}
+              className={inputClass(false)}
+            />
+          </Field>
+        </div>
+
+        {errors.form && <FormError>{errors.form}</FormError>}
+
+        <SubmitButton sending={sending} label={common.form.submit} busy={common.form.submitting} />
+      </form>
+    )
+  }
+
+  // ── Step one form ──────────────────────────────────────────────────────────
   return (
-    <form
-      onSubmit={onSubmit}
-      noValidate
-      className={cn(
-        'rounded border border-navy-line bg-navy-soft/40 p-6 shadow-[0_24px_60px_-40px_rgba(0,0,0,0.9)] sm:p-8',
-        className,
-      )}
-    >
-      <p className="mb-6 flex items-center gap-3 text-sm font-semibold text-gold">
+    <form onSubmit={submitStep1} noValidate className={shell}>
+      <StepBar step={1} />
+
+      <p className="mb-6 mt-5 flex items-center gap-3 text-sm font-semibold text-gold">
         <span aria-hidden="true" className="h-0.5 w-6 shrink-0 bg-gold" />
         {INTENTS[intent]}
       </p>
@@ -189,50 +398,12 @@ export function LeadForm({
             autoComplete="tel"
             dir="ltr"
             value={phone}
-            onChange={(e) => onPhoneChange(e.target.value)}
+            onChange={(e) => setPhone(e.target.value)}
             placeholder={common.form.phonePlaceholder}
             required
             aria-invalid={Boolean(errors.phone)}
             aria-describedby={describedBy('phone', errors.phone)}
             className={cn(inputClass(Boolean(errors.phone)), 'text-start')}
-          />
-        </Field>
-
-        <Field
-          id="whatsapp"
-          label={common.form.whatsapp}
-          hint={common.form.whatsappHint}
-          error={errors.whatsapp}
-          action={
-            <label className="flex cursor-pointer items-center gap-2 text-xs font-bold text-gold">
-              <input
-                type="checkbox"
-                checked={sameAsPhone}
-                onChange={(e) => applySameAsPhone(e.target.checked)}
-                className="h-4 w-4 accent-[#CBA352]"
-              />
-              {common.form.sameAsPhone}
-            </label>
-          }
-        >
-          <input
-            id="whatsapp"
-            name="whatsapp"
-            type="tel"
-            inputMode="tel"
-            dir="ltr"
-            value={whatsapp}
-            onChange={(e) => setWhatsapp(e.target.value)}
-            readOnly={sameAsPhone}
-            placeholder={common.form.phonePlaceholder}
-            required
-            aria-invalid={Boolean(errors.whatsapp)}
-            aria-describedby={describedBy('whatsapp', errors.whatsapp, common.form.whatsappHint)}
-            className={cn(
-              inputClass(Boolean(errors.whatsapp)),
-              'text-start',
-              sameAsPhone && 'opacity-60',
-            )}
           />
         </Field>
 
@@ -257,94 +428,6 @@ export function LeadForm({
           </select>
         </Field>
 
-        {/* Two options — segmented buttons beat a dropdown on mobile. */}
-        <fieldset>
-          <legend className="mb-2 block text-sm font-bold text-ink">
-            {common.form.attendance}
-          </legend>
-          <div className="grid grid-cols-2 gap-3">
-            {ATTENDANCE.map((option) => (
-              <label
-                key={option.value}
-                className={cn(
-                  'flex min-h-[3rem] cursor-pointer items-center justify-center rounded border px-4 text-base font-bold',
-                  'transition-[background-color,border-color,color,box-shadow] duration-200',
-                  attendance === option.value
-                    ? 'border-gold bg-gold text-navy shadow-[0_0_20px_-8px_rgba(203,163,82,0.9)]'
-                    : 'border-navy-line bg-navy text-ink hover:border-gold/60 hover:bg-gold/[0.06]',
-                )}
-              >
-                <input
-                  type="radio"
-                  name="attendance"
-                  value={option.value}
-                  checked={attendance === option.value}
-                  onChange={(e) => setAttendance(e.target.value)}
-                  className="sr-only"
-                />
-                {option.label}
-              </label>
-            ))}
-          </div>
-          {errors.attendance && <ErrorText id="attendance">{errors.attendance}</ErrorText>}
-        </fieldset>
-
-        {/* Revealed only for centre students — online students never see it. */}
-        {attendance === 'center' && (
-          <Field id="branch" label={common.form.branch} error={errors.branch}>
-            <select
-              id="branch"
-              name="branch"
-              required
-              defaultValue=""
-              aria-invalid={Boolean(errors.branch)}
-              aria-describedby={describedBy('branch', errors.branch)}
-              className={inputClass(Boolean(errors.branch))}
-            >
-              <option value="" disabled>
-                {common.form.branchPlaceholder}
-              </option>
-              {BRANCHES.map((b) => (
-                <option key={b.value} value={b.value}>
-                  {b.label}
-                </option>
-              ))}
-            </select>
-          </Field>
-        )}
-
-        <Field id="heardFrom" label={common.form.heardFrom} error={errors.heardFrom}>
-          <select
-            id="heardFrom"
-            name="heardFrom"
-            required
-            defaultValue=""
-            aria-invalid={Boolean(errors.heardFrom)}
-            aria-describedby={describedBy('heardFrom', errors.heardFrom)}
-            className={inputClass(Boolean(errors.heardFrom))}
-          >
-            <option value="" disabled>
-              {common.form.heardFromPlaceholder}
-            </option>
-            {HEARD_FROM.map((h) => (
-              <option key={h.value} value={h.value}>
-                {h.label}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <Field id="note" label={common.form.note}>
-          <textarea
-            id="note"
-            name="note"
-            rows={3}
-            maxLength={500}
-            placeholder={common.form.notePlaceholder}
-            className={inputClass(false)}
-          />
-        </Field>
-
         {/* Honeypot — hidden from humans and assistive tech, irresistible to bots. */}
         <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
           <label htmlFor="company">Company</label>
@@ -352,41 +435,92 @@ export function LeadForm({
         </div>
       </div>
 
-      {errors.form && (
-        <p
-          role="alert"
-          className="mt-5 rounded border border-red-400/40 bg-red-400/10 p-3 text-sm text-red-200"
-        >
-          {errors.form}
-        </p>
-      )}
+      {errors.form && <FormError>{errors.form}</FormError>}
 
-      <button
-        type="submit"
-        disabled={state === 'sending'}
-        className={cn(
-          'mt-7 inline-flex min-h-[3rem] w-full items-center justify-center gap-2.5 rounded bg-gold px-6 py-3 text-base font-extrabold text-navy',
-          'transition-[background-color,color,box-shadow,transform] duration-200',
-          'hover:bg-gold-deep hover:text-ink hover:shadow-[0_0_28px_-8px_rgba(203,163,82,0.9)]',
-          'active:translate-y-px motion-reduce:active:translate-y-0',
-          'disabled:cursor-wait disabled:opacity-70 disabled:hover:shadow-none',
-        )}
-      >
-        {/* A spinner instead of a frozen button: the only thing a visitor can
-            do while this is in flight is wonder whether it worked. */}
-        {state === 'sending' && (
-          <span
-            aria-hidden="true"
-            className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent motion-reduce:animate-none"
-          />
-        )}
-        {state === 'sending' ? common.form.submitting : common.form.submit}
-      </button>
+      <SubmitButton
+        sending={sending}
+        label={common.form.step1Submit}
+        busy={common.form.step1Submitting}
+      />
 
       <p className="mt-4 text-center text-xs leading-relaxed text-ink-faint">
         بياناتك بتُستخدم للتواصل معاك بس — مش بتتنشر ولا بتتشارك مع حد.
       </p>
     </form>
+  )
+}
+
+/**
+ * Two segments that fill as the student advances. Shows the cost of finishing
+ * up front — "two steps, you are on the first" — which is what stops a second
+ * screen from feeling like a form that keeps growing.
+ */
+function StepBar({ step }: { step: 1 | 2 }) {
+  return (
+    <div>
+      <div className="flex items-center gap-2" aria-hidden="true">
+        {[1, 2].map((n) => (
+          <span
+            key={n}
+            className={cn(
+              'h-1 flex-1 rounded-full transition-colors duration-500',
+              n <= step ? 'bg-gold' : 'bg-navy-line',
+            )}
+          />
+        ))}
+      </div>
+      <p className="mt-3 text-xs font-bold text-ink-faint">
+        {step === 1 ? common.form.step1Label : common.form.step2Label}
+        {step === 1 && (
+          <span className="font-semibold text-ink-faint/80"> — {common.form.step1Hint}</span>
+        )}
+      </p>
+    </div>
+  )
+}
+
+function SubmitButton({
+  sending,
+  label,
+  busy,
+}: {
+  sending: boolean
+  label: string
+  busy: string
+}) {
+  return (
+    <button
+      type="submit"
+      disabled={sending}
+      className={cn(
+        'mt-7 inline-flex min-h-[3rem] w-full items-center justify-center gap-2.5 rounded bg-gold px-6 py-3 text-base font-extrabold text-navy',
+        'shine transition-[background-color,color,box-shadow,transform] duration-200',
+        'hover:bg-gold-deep hover:text-ink hover:shadow-[0_0_28px_-8px_rgba(203,163,82,0.9)]',
+        'active:translate-y-px motion-reduce:active:translate-y-0',
+        'disabled:cursor-wait disabled:opacity-70 disabled:hover:shadow-none',
+      )}
+    >
+      {/* A spinner instead of a frozen button: the only thing a visitor can
+          do while this is in flight is wonder whether it worked. */}
+      {sending && (
+        <span
+          aria-hidden="true"
+          className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent motion-reduce:animate-none"
+        />
+      )}
+      {sending ? busy : label}
+    </button>
+  )
+}
+
+function FormError({ children }: { children: React.ReactNode }) {
+  return (
+    <p
+      role="alert"
+      className="mt-5 rounded border border-red-400/40 bg-red-400/10 p-3 text-sm text-red-200"
+    >
+      {children}
+    </p>
   )
 }
 

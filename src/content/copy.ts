@@ -595,6 +595,21 @@ export const common = {
     start: 'سجّل معانا',
   },
   form: {
+    /**
+     * The capture runs in two steps. Step one asks for the three things a
+     * follow-up call needs and saves immediately; step two enriches the row we
+     * already have. The wording of step two has to make that visible — a
+     * student who thinks they are only half-registered will not fill it in.
+     */
+    step1Label: 'الخطوة ١ من ٢',
+    step2Label: 'الخطوة ٢ من ٢',
+    step1Hint: 'تلات خانات بس. باقي التفاصيل بعدها.',
+    step1Submit: 'كمّل',
+    step1Submitting: 'بنحفظ…',
+
+    step2Title: 'وصلنا بياناتك ✓',
+    step2Body: 'باقي شوية تفاصيل عشان نظبّط المسار المناسب لك ونتواصل معاك على الواتساب.',
+
     name: 'اسم الطالب ثلاثي',
     namePlaceholder: 'مثال: أحمد محمد علي',
     nameHint: 'بالعربي، ثلاثي',
