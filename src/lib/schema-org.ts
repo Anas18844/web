@@ -1,5 +1,4 @@
 import { site, institutions } from '@/content/site'
-import { home } from '@/content/copy'
 
 /**
  * Structured data = the entity layer (Doc 06 §5).
@@ -69,7 +68,7 @@ export function organizationSchema() {
     url: site.url,
     slogan: site.motto,
     description:
-      'تعليم البرمجة والذكاء الاصطناعي لطلاب الصف الأول والثاني الثانوي، وطلاب كليات الحاسبات والهندسة والعلوم، والمتعلمين ذاتياً — بشرح من مهندس ممارس، ومنصة بتصحيح آلي، ومتابعة بالبيانات.',
+      'تعليم البرمجة والذكاء الاصطناعي لطلاب الصف الأول والثاني الثانوي — بشرح من مهندس ممارس، ونظام متابعة فيه امتحان تقييمي كل حصة ومشرف مخصص لكل طالب وتصحيح للواجب سؤالاً بسؤال.',
     founder: { '@id': PERSON_ID },
     areaServed: { '@type': 'Country', name: 'مصر' },
     ...(sameAs().length ? { sameAs: sameAs() } : {}),
@@ -80,37 +79,34 @@ export function courseSchema() {
   return {
     '@type': 'Course',
     name: 'البرمجة والذكاء الاصطناعي — من الصفر',
-    url: `${site.url}/courses`,
+    url: `${site.url}/#start`,
     description:
-      'مسار تعليمي في البرمجة والذكاء الاصطناعي يبدأ من الصفر، لطلاب الصف الأول والثاني الثانوي، وطلاب كليات الحاسبات والهندسة والعلوم، والمتعلمين ذاتياً. الحصص والمراجعات وحل الامتحانات والملازم تُنشر مجاناً على يوتيوب، والمنصة والسنتر اختياريان لمن يريد متابعة أقرب.',
+      'مسار تعليمي في البرمجة والذكاء الاصطناعي يبدأ من الصفر، لطلاب الصف الأول والثاني الثانوي. التحضير مبني على مراجع ومناهج أجنبية تُعرَّب ويُضاف إليها، والمتابعة بنظام فيه امتحان تقييمي كل حصة ومشرف مخصص لكل طالب وامتحان شهري بمستويات.',
     inLanguage: 'ar',
     provider: { '@id': ORG_ID },
     teaches: 'التفكير البرمجي، حل المشكلات، كتابة كود نظيف، وأساسيات الذكاء الاصطناعي',
-    isAccessibleForFree: true,
     audience: {
       '@type': 'EducationalAudience',
       educationalRole: 'student',
-      audienceType: 'طلاب الثانوي، وطلاب كليات الحاسبات والهندسة والعلوم، والمتعلمون ذاتياً',
+      audienceType: 'طلاب الصف الأول والثاني الثانوي',
     },
+    /**
+     * The free-first claims came out in August 2026 along with the sections
+     * that made them. Structured data has to match what the page says — a
+     * `isAccessibleForFree: true` that the site no longer states anywhere is
+     * exactly the kind of contradiction that costs an entity its credibility.
+     */
     hasCourseInstance: [
       {
         '@type': 'CourseInstance',
-        name: 'المحتوى المجاني على يوتيوب',
+        name: 'المنصة التعليمية',
         courseMode: 'online',
         description:
-          'الحصص والمراجعات وحل الامتحانات والملازم — تُنشر مجاناً بالكامل ودون اشتراك.',
-        isAccessibleForFree: true,
+          'الحصص والواجبات والامتحانات، بتصحيح للكود ومتابعة فردية من مشرف مخصص لكل طالب.',
       },
       {
         '@type': 'CourseInstance',
-        name: 'المنصة التعليمية (اختيارية)',
-        courseMode: 'online',
-        description:
-          'لمن يريد متابعة فردية وواجبات وامتحانات وتصحيحاً آلياً للكود — ليست شرطاً للنجاح.',
-      },
-      {
-        '@type': 'CourseInstance',
-        name: 'الحصص الحضورية (اختيارية)',
+        name: 'الحصص الحضورية',
         courseMode: 'onsite',
         description: 'سناتر في حلوان وحدائق حلوان ومدينة ١٥ مايو.',
         location: [
@@ -120,17 +116,6 @@ export function courseSchema() {
         ],
       },
     ],
-  }
-}
-
-export function faqSchema() {
-  return {
-    '@type': 'FAQPage',
-    mainEntity: home.practical.items.map((item) => ({
-      '@type': 'Question',
-      name: item.q,
-      acceptedAnswer: { '@type': 'Answer', text: item.a },
-    })),
   }
 }
 
@@ -153,7 +138,6 @@ export function homeGraph() {
       organizationSchema(),
       courseSchema(),
       websiteSchema(),
-      faqSchema(),
     ],
   }
 }

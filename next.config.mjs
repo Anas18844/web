@@ -8,6 +8,15 @@ const nextConfig = {
     // YouTube thumbnails are the only remote images used (video facades).
     remotePatterns: [{ protocol: 'https', hostname: 'i.ytimg.com' }],
   },
+  /**
+   * /courses was removed in August 2026. A 301 rather than a 404 so any link
+   * already shared, indexed or printed still lands somewhere useful — and so
+   * whatever ranking the URL earned passes to the home page instead of dying.
+   */
+  async redirects() {
+    return [{ source: '/courses', destination: '/', permanent: true }]
+  },
+
   async headers() {
     return [
       {

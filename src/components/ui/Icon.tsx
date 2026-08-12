@@ -95,6 +95,86 @@ const PATHS = {
       <path d="M8 10h8" />
     </>
   ),
+
+  // ── نظام الشرح ─────────────────────────────────────────────────────────────
+  /** Per-session quiz — a marked answer sheet. */
+  quiz: (
+    <>
+      <path d="M6 3h12v18H6z" />
+      <path d="m9 9 1.6 1.6L14 7" />
+      <path d="M9 15h6" />
+    </>
+  ),
+  /** The named supervisor — a person with a tick. */
+  mentor: (
+    <>
+      <circle cx="10" cy="8" r="3.5" />
+      <path d="M3.5 20c0-3.6 2.9-6.5 6.5-6.5 1 0 2 .2 2.8.6" />
+      <path d="m15 17 2 2 4-4" />
+    </>
+  ),
+  /** Question-by-question correction — a pen on a line of marks. */
+  pen: (
+    <>
+      <path d="M4 20h4L20 8l-4-4L4 16v4Z" />
+      <path d="m14 6 4 4" />
+    </>
+  ),
+  /** MCQ + essay formats — two answer shapes side by side. */
+  formats: (
+    <>
+      <path d="M4 5h6v6H4zM14 5h6v6h-6z" />
+      <path d="m5.5 8 1.2 1.2L9 7" />
+      <path d="M4 16h16M4 20h10" />
+    </>
+  ),
+  /** Levels — stacked plates, the top one lit. */
+  layers: (
+    <>
+      <path d="m12 3 9 4.5-9 4.5-9-4.5L12 3Z" />
+      <path d="m3 12 9 4.5 9-4.5" />
+      <path d="m3 16.5 9 4.5 9-4.5" />
+    </>
+  ),
+  /** Three support lines — a shield with a pulse through it. */
+  shield: (
+    <>
+      <path d="M12 3 4.5 6v6c0 4.2 3.1 7.6 7.5 9 4.4-1.4 7.5-4.8 7.5-9V6L12 3Z" />
+      <path d="M8 12h2l1.5-2.5L13 14l1-2h2" />
+    </>
+  ),
+
+  // ── التحضير ────────────────────────────────────────────────────────────────
+  /** Foreign sources — a globe with a meridian. */
+  globe: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18" />
+      <path d="M12 3c2.6 2.8 2.6 15.2 0 18-2.6-2.8-2.6-15.2 0-18Z" />
+    </>
+  ),
+  /** Arabising it — two scripts meeting. */
+  translate: (
+    <>
+      <path d="M3 6h9M7.5 6v2c0 3-2 5-4.5 6" />
+      <path d="M6 11c1.5 2 3.5 3.2 6 3.6" />
+      <path d="m13 21 4-10 4 10" />
+      <path d="M14.6 17.5h4.8" />
+    </>
+  ),
+  /** Adding our own work — a wrench over the material. */
+  wrench: (
+    <>
+      <path d="M15.5 3.5a5 5 0 0 0-4.6 6.9L3 18.3 5.7 21l7.9-7.9a5 5 0 0 0 6.9-4.6l-3.1 3.1-2.9-.5-.5-2.9 3.1-3.1Z" />
+    </>
+  ),
+  /** Rehearsed before it ships — a play button inside a frame. */
+  rehearse: (
+    <>
+      <rect x="3" y="4" width="18" height="16" />
+      <path d="M10 9.5v5l4.5-2.5L10 9.5Z" />
+    </>
+  ),
 } as const
 
 export function Icon({

@@ -1,7 +1,6 @@
 import { Section, SectionHeading } from '@/components/ui/Section'
 import { LeadForm } from '@/components/LeadForm'
 import { WhatsAppButton } from '@/components/WhatsAppButton'
-import { SocialLinks } from '@/components/SocialLinks'
 import { home } from '@/content/copy'
 import type { Intent } from '@/content/site'
 
@@ -36,7 +35,7 @@ export function Capture({
           that opened the page closes it, so start and finish rhyme. */}
       <div aria-hidden="true" className="aurora absolute inset-0" />
 
-      {/* On mobile the three blocks stack heading → form → contact: the form is
+      {/* On mobile the three blocks stack heading → form → WhatsApp: the form is
           the action we came for, and WhatsApp underneath it stays the fallback
           rather than the first thing a thumb reaches. On md+ the explicit
           row/column placement restores the two-column layout: heading and
@@ -54,13 +53,11 @@ export function Capture({
           className="md:col-start-2 md:row-start-1 md:row-span-2"
         />
 
-        {/* Fills the space beside the form, and gives the hesitant visitor
-            a lower-commitment way to stay connected. */}
+        {/* The lower-commitment route, for the visitor who would rather talk than
+            type. The channel grid that used to sit here now lives in the
+            footer — beside a form it was competing with the form. */}
         <div data-reveal className="md:col-start-1 md:row-start-2">
           <WhatsAppButton context={pageContext}>كلّمنا على الواتساب</WhatsAppButton>
-          <div className="mt-8">
-            <SocialLinks />
-          </div>
         </div>
       </div>
     </Section>

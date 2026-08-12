@@ -1,23 +1,23 @@
+import { JsonLd } from '@/components/JsonLd'
+import { homeGraph } from '@/lib/schema-org'
 import { Hero } from '@/components/sections/Hero'
 import { AboutTeaser } from '@/components/sections/AboutTeaser'
 import { Audience } from '@/components/sections/Audience'
-import { FreeFirst } from '@/components/sections/FreeFirst'
+import { Preparation } from '@/components/sections/Preparation'
 import { System } from '@/components/sections/System'
-import { Practical } from '@/components/sections/Practical'
+import { Outcome } from '@/components/sections/Outcome'
 import { KnowledgeTeaser } from '@/components/sections/KnowledgeTeaser'
 import { ParentBridge } from '@/components/sections/ParentBridge'
 import { Capture } from '@/components/sections/Capture'
-import { JsonLd } from '@/components/JsonLd'
-import { homeGraph } from '@/lib/schema-org'
 
 /**
  * The home page answers, in order: "who is teaching me?", "is this for me?",
- * "what does it cost?", "how does it work?", "what do I do now?".
+ * "how much work goes into this?", "how does it hold me?", "what do I walk
+ * away with?", "where do I keep learning?", "what do I do now?".
  *
- * The founder block comes first, directly under the hero — the visitor arrives
- * from his video and wants the person named before anything else. It stays a
- * short teaser that links to /about, where the full credentials and their
- * proof screenshots live.
+ * Rebuilt in August 2026 around two grades and one promise. The free-content
+ * teaser, the question list and the courses page all came out: the page now
+ * argues the teaching, not the offer.
  */
 export default function HomePage() {
   return (
@@ -26,9 +26,9 @@ export default function HomePage() {
       <Hero />
       <AboutTeaser />
       <Audience />
-      <FreeFirst />
+      <Preparation />
       <System />
-      <Practical />
+      <Outcome />
       <KnowledgeTeaser />
       <ParentBridge />
       <Capture intent="curriculum" pageContext="home" />

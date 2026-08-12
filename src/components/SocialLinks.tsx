@@ -93,26 +93,12 @@ export function SocialLinks() {
   ].filter(Boolean) as Channel[]
 
   return (
-    <div className="rounded border border-navy-line bg-navy/60 p-6">
-      <div className="flex items-center gap-3">
-        <Image
-          src="/images/logo.png"
-          alt=""
-          width={48}
-          height={48}
-          sizes="48px"
-          loading="lazy"
-          className="h-12 w-12 rounded border border-navy-line object-cover"
-        />
-        <div>
-          <p className="font-extrabold text-ink">{site.name}</p>
-          <p className="text-xs text-ink-faint">Mr Anas Ahmed</p>
-        </div>
-      </div>
+    <div>
+      <h2 className="text-xs font-extrabold tracking-wide text-ink">
+        الحسابات الرسمية — نفس الاسم في كل مكان
+      </h2>
 
-      <p className="mt-5 text-sm text-ink-muted">تابعنا على كل المنصات — نفس الاسم في كل مكان:</p>
-
-      <ul className="mt-4 grid grid-cols-2 gap-2">
+      <ul className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
         {channels.map((channel) => (
           <li key={channel.key}>
             <a
@@ -120,7 +106,7 @@ export function SocialLinks() {
               {...(channel.key === 'email'
                 ? {}
                 : { target: '_blank', rel: 'noopener noreferrer' })}
-              className="group flex items-center gap-2.5 rounded border border-transparent px-3 py-2.5 text-sm font-bold text-ink-muted transition-[color,border-color,background-color] duration-200 hover:border-gold/40 hover:bg-gold/[0.06] hover:text-gold"
+              className="group flex items-center gap-2.5 rounded border border-navy-line/70 px-3 py-3 text-sm font-bold text-ink-muted transition-[color,border-color,background-color] duration-200 hover:border-gold/50 hover:bg-gold/[0.06] hover:text-gold"
             >
               {/* The icon leads the colour change by a beat, so the row reads
                   as one object responding rather than two. */}
@@ -132,10 +118,6 @@ export function SocialLinks() {
           </li>
         ))}
       </ul>
-
-      <p className="mt-4 break-all text-xs text-ink-faint" dir="ltr">
-        {site.email}
-      </p>
     </div>
   )
 }

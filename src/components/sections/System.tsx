@@ -1,128 +1,77 @@
-import Image from 'next/image'
 import { Section, SectionHeading } from '@/components/ui/Section'
 import { IconPlate, type IconName } from '@/components/ui/Icon'
 import { VideoFacade } from '@/components/VideoFacade'
 import { home } from '@/content/copy'
 import { assets } from '@/content/assets'
-import { cn } from '@/lib/utils'
 
-/** The pillar glyphs: lesson → platform → follow-up. */
-const PILLAR_ICONS: Record<string, IconName> = {
-  session: 'board',
-  platform: 'terminal',
-  followup: 'chart',
+/** One glyph per mechanism, keyed to the pillar ids in copy.ts. */
+const ICONS: Record<string, IconName> = {
+  quiz: 'quiz',
+  mentor: 'mentor',
+  correction: 'pen',
+  formats: 'formats',
+  monthly: 'layers',
+  support: 'shield',
 }
 
 /**
- * Layer 2 — the persuasion body (Doc 07 §2).
- * Each pillar states a claim; media proof sits directly beside the claim it
- * serves (Doc 04 §1.1 — adjacency), and disappears entirely when absent.
+ * نظام الشرح — the teaching system.
  *
- * The three pillars are a sequence — explain, practise, follow up — so each
- * one arrives on its own rather than as a block. That staging is what makes
- * the section read as a system with steps instead of three parallel claims.
+ * Six mechanisms, not six adjectives. Each card names something that actually
+ * happens on a schedule: a test before every session, a supervisor with a
+ * name, a correction method, an exam format, a monthly level split, three
+ * support lines. That is the founder's whole argument — the system carries the
+ * student, so the student does not have to carry themselves.
  *
- * LAYOUT: a pillar only splits into two columns when it actually has proof to
- * put in the second one. While the media slots are empty the pillar runs at
- * full width with the copy held to a readable measure — otherwise every row
- * reserves half the page for nothing, which is the single easiest way to make
- * a section look unfinished.
+ * A six-card grid rather than the old three stacked rows: at six items the
+ * stacked layout ran the section past two screens, and mechanisms read better
+ * scanned side by side than argued one after another.
  */
 export function System() {
-  const { teachingSample, platformDemo, platformStills, parentReportSample } = assets
-
-  const mediaFor = (id: string) => {
-    if (id === 'session') return teachingSample ? 'video' : null
-    if (id === 'platform') return platformDemo || platformStills.length > 0 ? 'platform' : null
-    if (id === 'followup') return parentReportSample ? 'report' : null
-    return null
-  }
+  const { teachingSample } = assets
 
   return (
     <Section id="system">
-      <SectionHeading title={home.system.title} />
+      <SectionHeading title={home.system.title} intro={home.system.intro} />
 
-      <div className="grid gap-10 sm:gap-12">
-        {home.system.pillars.map((pillar) => {
-          const media = mediaFor(pillar.id)
+      {/* A real teaching clip outranks any description of the teaching. Shown
+          the moment the asset exists, and absent entirely until then. */}
+      {teachingSample && (
+        <div data-reveal className="mb-10">
+          <VideoFacade
+            video={teachingSample}
+            proofName="teaching_sample"
+            caption="مقطع من شرح فعلي"
+          />
+        </div>
+      )}
 
-          return (
-            <article
-              key={pillar.id}
-              data-reveal
-              className={cn(
-                'relative grid gap-6 border-t border-navy-line pt-8',
-                media && 'md:grid-cols-[1fr_1.1fr] md:gap-10',
-              )}
-            >
-              {/* The trace picks up where the section heading's left off: each
-                  step lights its own rule as it arrives. */}
-              <span aria-hidden="true" className="trace-rule absolute -top-px start-0 w-16" />
+      <div data-reveal-stagger className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+        {home.system.pillars.map((pillar) => (
+          <article key={pillar.id} className="group/card card flex flex-col p-6 sm:p-7">
+            <IconPlate
+              name={ICONS[pillar.id] ?? 'spark'}
+              className="mb-5 group-hover/card:border-gold/60 group-hover/card:bg-gold/[0.12]"
+            />
+            <h3 className="text-lg font-extrabold leading-snug text-ink">{pillar.title}</h3>
+            <p className="mt-3 flex-1 text-body text-ink-muted">{pillar.body}</p>
+          </article>
+        ))}
+      </div>
 
-              <div>
-                <div className="flex items-center gap-4">
-                  <IconPlate name={PILLAR_ICONS[pillar.id] ?? 'spark'} />
-                  <h3 className="text-xl font-extrabold text-ink sm:text-2xl">{pillar.title}</h3>
-                </div>
-                <p className={cn('mt-4 text-body text-ink-muted', !media && 'max-w-prose')}>
-                  {pillar.body}
-                </p>
-              </div>
-
-              {media && (
-                <div className="md:pt-1">
-                  {media === 'video' && teachingSample && (
-                    <VideoFacade
-                      video={teachingSample}
-                      proofName="teaching_sample"
-                      caption="مقطع من شرح فعلي"
-                    />
-                  )}
-
-                  {media === 'platform' && platformDemo && (
-                    <VideoFacade
-                      video={platformDemo}
-                      proofName="platform_demo"
-                      caption="المنصة أثناء الاستخدام: كتابة الكود، التشغيل، ثم التصحيح"
-                    />
-                  )}
-
-                  {media === 'platform' && !platformDemo && (
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      {platformStills.slice(0, 2).map((shot) => (
-                        <Image
-                          key={shot.src}
-                          src={shot.src}
-                          alt={shot.alt}
-                          width={shot.width}
-                          height={shot.height}
-                          sizes="(max-width: 640px) 100vw, 320px"
-                          className="rounded border border-navy-line"
-                        />
-                      ))}
-                    </div>
-                  )}
-
-                  {media === 'report' && parentReportSample && (
-                    <figure>
-                      <Image
-                        src={parentReportSample.src}
-                        alt={parentReportSample.alt}
-                        width={parentReportSample.width}
-                        height={parentReportSample.height}
-                        sizes="(max-width: 768px) 100vw, 460px"
-                        className="rounded border border-navy-line"
-                      />
-                      <figcaption className="mt-3 text-sm text-ink-faint">
-                        نموذج من التقرير الأسبوعي اللي بيوصل لولي الأمر
-                      </figcaption>
-                    </figure>
-                  )}
-                </div>
-              )}
-            </article>
-          )
-        })}
+      {/* Why the system is shaped this way — the one place the section is
+          allowed to make a claim rather than name a mechanism. */}
+      <div
+        data-reveal
+        className="card card-lit mt-10 bg-navy-soft/25 p-7 sm:p-9 lg:mt-12"
+      >
+        <h3 className="text-xl font-extrabold text-ink sm:text-2xl">
+          {home.system.outro.title}
+        </h3>
+        <p className="mt-4 max-w-prose text-body text-ink-muted">{home.system.outro.body}</p>
+        <p className="mt-5 max-w-prose border-s-2 border-gold/60 ps-4 text-body font-bold text-ink">
+          {home.system.outro.note}
+        </p>
       </div>
     </Section>
   )

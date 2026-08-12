@@ -1,25 +1,22 @@
 import Image from 'next/image'
 import { Container } from '@/components/ui/Container'
 import { ButtonLink } from '@/components/ui/Button'
-import { Marquee } from '@/components/ui/Marquee'
 import { HeroIntro } from '@/components/motion/HeroIntro'
 import { Magnetic } from '@/components/motion/Magnetic'
 import { home } from '@/content/copy'
-import { institutions } from '@/content/site'
 import { assets } from '@/content/assets'
 
 /**
  * Layer 1 — the immediate (Doc 07 §2).
  *
- * The banner carries the founder's face on the left and the brand circuit
- * motif on the right, so the visitor arriving from a video recognises the
- * place instantly. The trust strip underneath answers "why listen to him?"
- * with places rather than a job title — the founder's core correction.
+ * One promise, one action. The headline states exactly what the student gets
+ * ("من الأساس لحد الدرجة النهائية") and the only button books a place. The
+ * trust strip, the second button and the gold ambience were all removed in
+ * August 2026 — three competing things in a hero is three ways to leave it.
  *
- * The entrance is the site's one full choreography: the headline rises word
- * by word on springs, then the lead, actions and trust conveyor arrive as a
- * block. The photograph is deliberately excluded from all of it — it is the
- * LCP element, and fading it would delay the largest paint on every visit.
+ * The headline rises word by word on load; that entrance is pure CSS so the
+ * words exist, visible, in the first byte of HTML. This is the LCP text, and
+ * animating it through a JS library would ship it hidden until hydration.
  *
  * One <Image> serves both layouts: an in-flow band under `xl` (stacked, full
  * width) and a full background above it. The switch lives at `xl` because
@@ -28,10 +25,6 @@ import { assets } from '@/content/assets'
  */
 export function Hero() {
   const banner = assets.hero
-  const trustNames = [
-    ...institutions.teaching.map((i) => i.name),
-    ...institutions.industry.map((i) => i.name),
-  ].filter((name, index, all) => all.indexOf(name) === index)
 
   return (
     <section className="relative overflow-hidden border-b border-navy-line bg-navy-deep">
@@ -65,10 +58,6 @@ export function Hero() {
         />
       )}
 
-      {/* The living atmosphere. Sits above the banner's scrim and below the
-          copy, so the drift reads as depth behind the words — never on them. */}
-      <div aria-hidden="true" className="aurora absolute inset-0" />
-
       <Container className="relative py-12 sm:py-16 xl:py-28">
         <div className="xl:max-w-[56%]">
           <HeroIntro eyebrow={home.hero.eyebrow} title={home.hero.title}>
@@ -76,28 +65,14 @@ export function Hero() {
               {home.hero.lead}
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3 sm:mt-9">
-              {/* The primary action leans toward the cursor — spring physics
-                  from the motion library, on the one element that deserves
-                  the site's strongest pull. */}
+            <div className="mt-8 sm:mt-10">
+              {/* The single action leans toward the cursor — spring physics on
+                  the one element the whole page is pointing at. */}
               <Magnetic>
-                <ButtonLink href="/#start">{home.hero.primaryCta}</ButtonLink>
+                <ButtonLink href="/#start" className="px-8 text-lg">
+                  {home.hero.primaryCta}
+                </ButtonLink>
               </Magnetic>
-              <ButtonLink href="/courses" variant="secondary">
-                {home.hero.secondaryCta}
-              </ButtonLink>
-            </div>
-
-            {/* Trust conveyor: recognisable places in slow motion. A moving
-                row holds the eye longer than a static list, and the loop
-                means no name is ever the one that got cut by the fold. */}
-            <div className="mt-9 border-t border-navy-line/70 pt-6">
-              <p className="text-xs font-semibold tracking-wide text-ink-faint">
-                {home.hero.trustLabel}
-              </p>
-              <Marquee className="mt-4" itemClassName="text-sm font-bold tracking-wide text-ink-muted">
-                {trustNames}
-              </Marquee>
             </div>
           </HeroIntro>
         </div>

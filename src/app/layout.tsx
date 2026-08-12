@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     template: `%s — ${site.name}`,
   },
   description:
-    'اتعلّم البرمجة من حد بيشتغل بيها كل يوم. ٤ سنين تدريس في iSchool وأشبال مصر الرقمية ورواد، و٤ سنين شغل هندسي مع Microsoft Egypt وiTech Solutions. لطلاب الثانوي والجامعة والمتعلمين ذاتياً.',
+    'اتعلّم البرمجة من حد بيشتغل بيها كل يوم. ٤ سنين تدريس في iSchool وأشبال مصر الرقمية ورواد، و٤ سنين شغل هندسي مع Microsoft Egypt وiTech Solutions. لطلاب أولى وتانية ثانوي.',
   applicationName: site.name,
   authors: [{ name: site.name }],
   creator: site.name,
@@ -50,14 +50,14 @@ export const metadata: Metadata = {
     siteName: site.name,
     title: `${site.name} — اتعلّم البرمجة من حد بيشتغل بيها`,
     description:
-      '٤ سنين تدريس في iSchool وأشبال مصر الرقمية ورواد، و٤ سنين شغل هندسي مع Microsoft Egypt وiTech Solutions — لطلاب الثانوي والجامعة والمتعلمين ذاتياً.',
+      '٤ سنين تدريس في iSchool وأشبال مصر الرقمية ورواد، و٤ سنين شغل هندسي مع Microsoft Egypt وiTech Solutions — لطلاب أولى وتانية ثانوي.',
     url: '/',
   },
   twitter: {
     card: 'summary_large_image',
     title: `${site.name} — اتعلّم البرمجة من حد بيشتغل بيها`,
     description:
-      'خبرة تدريس وشغل هندسي حقيقي — لطلاب الثانوي والجامعة والمتعلمين ذاتياً.',
+      'خبرة تدريس وشغل هندسي حقيقي — لطلاب أولى وتانية ثانوي.',
   },
   robots: {
     index: true,

@@ -469,12 +469,13 @@ function StepBar({ step }: { step: 1 | 2 }) {
           />
         ))}
       </div>
-      <p className="mt-3 text-xs font-bold text-ink-faint">
-        {step === 1 ? common.form.step1Label : common.form.step2Label}
-        {step === 1 && (
-          <span className="font-semibold text-ink-faint/80"> — {common.form.step1Hint}</span>
-        )}
-      </p>
+      {/* Step one carries no label at all (founder request, August 2026): the
+          two segments already say "there is a second part", and a sentence
+          counting the steps made a three-field form look longer than it is.
+          Step two keeps its label, where it reassures instead of warning. */}
+      {step === 2 && (
+        <p className="mt-3 text-xs font-bold text-ink-faint">{common.form.step2Label}</p>
+      )}
     </div>
   )
 }
