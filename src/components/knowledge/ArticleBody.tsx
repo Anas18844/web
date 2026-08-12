@@ -65,7 +65,7 @@ export function ArticleBody({ blocks }: { blocks: readonly Block[] }) {
             return (
               <p
                 key={i}
-                className="card card-lit bg-navy-soft/25 px-5 py-4 text-body font-bold text-ink sm:px-6 sm:py-5"
+                className="card card-lit bg-card px-5 py-4 text-body font-bold text-ink sm:px-6 sm:py-5"
               >
                 {block.x}
               </p>

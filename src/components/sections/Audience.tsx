@@ -17,7 +17,7 @@ const AUDIENCE_ICONS: readonly IconName[] = ['book', 'branch', 'university', 'co
  */
 export function Audience() {
   return (
-    <Section id="audience">
+    <Section id="audience" tone="paperSoft">
       <SectionHeading title={home.audience.title} />
 
       <div data-reveal-stagger className="grid gap-5 sm:grid-cols-2">

@@ -22,16 +22,12 @@ export function KnowledgeTeaser() {
   const latest = byDate.slice(0, 3)
 
   return (
-    <Section id="knowledge" tone="deep">
+    <Section id="knowledge" tone="paperSoft">
       <div className="grid gap-10 md:grid-cols-[1fr_1.15fr] md:gap-14">
         <div data-reveal>
           <span aria-hidden="true" className="trace-rule mb-5" />
           <h2 className="text-title font-extrabold text-ink">{home.knowledge.title}</h2>
           <p className="mt-4 max-w-prose text-body text-ink-muted">{home.knowledge.body}</p>
-
-          <p className="mt-6 border-s-2 border-gold ps-4 text-body font-bold text-ink">
-            {home.knowledge.note}
-          </p>
 
           <ButtonLink href="/knowledge" variant="secondary" className="mt-7">
             {home.knowledge.cta}

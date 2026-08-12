@@ -13,10 +13,10 @@ import { home } from '@/content/copy'
  */
 export function ParentBridge() {
   return (
-    <Section tone="raised" space="sm">
+    <Section tone="paper" space="sm">
       <div
         data-reveal
-        className="card card-lit flex flex-col items-start gap-6 bg-navy/30 p-7 sm:flex-row sm:items-center sm:justify-between sm:p-9"
+        className="card card-lit flex flex-col items-start gap-6 bg-card p-7 sm:flex-row sm:items-center sm:justify-between sm:p-9"
       >
         <h2 className="text-xl font-extrabold text-ink sm:text-2xl">
           {home.parentBridge.title}

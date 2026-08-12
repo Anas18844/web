@@ -44,7 +44,7 @@ function AnimatedValue({ value, className }: { value: string; className?: string
 
 export function AboutTeaser() {
   return (
-    <Section id="about-teaser" tone="raised">
+    <Section id="about-teaser" tone="paper">
       <div className="grid gap-9 md:grid-cols-[1.2fr_1fr] md:items-center md:gap-12">
         <div data-reveal>
           <span aria-hidden="true" className="trace-rule mb-5" />
@@ -57,7 +57,7 @@ export function AboutTeaser() {
 
         <dl data-reveal-stagger className="grid gap-4">
           {home.aboutTeaser.stats.map((stat) => (
-            <div key={stat.value} className="card card-lit bg-navy/30 px-5 py-4">
+            <div key={stat.value} className="card card-lit bg-card px-5 py-4">
               <dt className="text-xl font-extrabold text-gold sm:text-2xl">
                 <AnimatedValue value={stat.value} />
               </dt>

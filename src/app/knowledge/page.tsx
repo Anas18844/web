@@ -98,7 +98,7 @@ export default function KnowledgePage() {
 
       {/* ── The door ─────────────────────────────────────────────────────── */}
       <Section space="sm">
-        <article data-reveal className="card card-lit bg-navy-soft/25 p-7 sm:p-10 lg:p-12">
+        <article data-reveal className="card card-lit bg-card p-7 sm:p-10 lg:p-12">
           <p className="text-xs font-extrabold tracking-wide text-gold">
             {knowledge.featuredLabel}
           </p>

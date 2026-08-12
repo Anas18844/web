@@ -41,7 +41,7 @@ export const home = {
    * page promises a service that does not exist.
    */
   audience: {
-    title: 'ده مناسب لمين؟',
+    title: 'أنا بدرّس لمين؟',
     items: [
       {
         title: 'طالب أولى ثانوي',
@@ -69,36 +69,6 @@ export const home = {
     cta: 'اعرف التفاصيل كاملة',
   },
 
-  /**
-   * Preparation — the answer to "why is this different from a recorded video".
-   *
-   * The claim is about WORK, not about talent: days of preparation per lecture,
-   * built from foreign university material that gets read, translated and
-   * rebuilt for an Egyptian secondary student. Stated as effort we put in,
-   * never as a promised outcome.
-   */
-  preparation: {
-    title: 'الحصة الواحدة بتاخد أيام تحضير',
-    intro: 'الشرح اللي بيوصلك في ساعة، وراه شغل بأيام. ده اللي بيحصل قبل ما تدخل الحصة:',
-    items: [
-      {
-        title: 'بنقرا من المصادر الأصلية',
-        body: 'مراجع وكتب أجنبية ومناهج جامعات كبيرة برّه — بنرجع للمصدر اللي المحتوى العربي نفسه متترجم منه، مش لملخّص عن ملخّص.',
-      },
-      {
-        title: 'بنعرّبه ونعيد بناءه',
-        body: 'المحتوى الأجنبي مكتوب لطالب بيتكلم إنجليزي. بناخده ونترجمه ونعيد ترتيبه بأمثلة من عندنا، لحد ما يبقى مفهوم لطالب في أولى ثانوي.',
-      },
-      {
-        title: 'بنضيف عليه من شغلنا',
-        body: 'الجزء اللي مش موجود في أي كتاب: إزاي الحاجة دي بتتستخدم فعلاً في الشغل. ده جاي من ٤ سنين هندسة برمجيات وذكاء اصطناعي، مش من مذاكرة.',
-      },
-      {
-        title: 'وبنجرّبه قبل ما يوصلك',
-        body: 'كل مثال وكل تمرين بيتكتب ويتشغّل قبل الحصة. ولو فيه نقطة معروف إن الطلاب بيقفوا عندها، بتتظبط قبل ما تشوفها إنت.',
-      },
-    ],
-  },
 
   /**
    * The teaching system — renamed from "بنشتغل إزاي؟" in August 2026.
@@ -145,12 +115,6 @@ export const home = {
         body: 'تلات خطوط منفصلة: مشكلة في المنصة، سؤال في المادة، أو إنك حاسس إنك واقف ومش قادر تكمّل. التالت ده اللي أغلب الأماكن بتتجاهله.',
       },
     ],
-    /** The closing claims, kept as claims about the work rather than results. */
-    outro: {
-      title: 'ليه النظام اتبنى كده؟',
-      body: 'النظام اتطوّر بالتعاون مع منظمات وخبراء في التعليم، والهدف منه واضح: إن طالب كاره البرمجة يوصل لدرجات عالية وفهم حقيقي للمادة — مش يعدّي الامتحان وخلاص.',
-      note: 'وبنتدرّب على أسئلة أصعب من مستوى الامتحان طول السنة، عشان يوم الامتحان يبقى أسهل حاجة عدّت عليك.',
-    },
   },
 
   /** The graduation promise, in the founder's words. */
@@ -170,7 +134,6 @@ export const home = {
   knowledge: {
     title: 'مركز المعرفة',
     body: 'لو عندك سؤال، أو عايز تفضل متابع اللي بيحصل في البرمجة، أو محتاج نصايح مذاكرة وشروحات ومقالات تعليمية — كل ده بينزل هنا أول بأول.',
-    note: 'الموقع ده مش بس عشان تشترك. ده مكان تفضل تتعلم منه.',
     latestLabel: 'آخر اللي نزل',
     cta: 'ادخل مركز المعرفة',
   },
@@ -181,9 +144,14 @@ export const home = {
     cta: 'اتفضل من هنا',
   },
 
+  /**
+   * The capture section is now the form and nothing else — no heading, no
+   * standfirst, no second button competing with it. The only thing under the
+   * form is the WhatsApp route, in WhatsApp's own green, for the visitor who
+   * would rather talk than type.
+   */
   capture: {
-    title: 'ابدأ بخطوة صغيرة',
-    body: 'سيب بياناتك وهنتواصل معاك على الواتساب ونظبّط المسار المناسب لك. مفيش أي التزام مالي في الخطوة دي.',
+    whatsappCta: 'أو كلّمنا على واتساب',
   },
 } as const
 

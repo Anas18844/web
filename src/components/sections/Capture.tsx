@@ -1,28 +1,27 @@
-import { Section, SectionHeading } from '@/components/ui/Section'
+import { Section } from '@/components/ui/Section'
 import { LeadForm } from '@/components/LeadForm'
 import { WhatsAppButton } from '@/components/WhatsAppButton'
 import { home } from '@/content/copy'
 import type { Intent } from '@/content/site'
 
 /**
- * The capture point (Doc 05). Placed after the proof has been shown, never
- * before it — and the WhatsApp route stays visible but secondary, because a
- * click that never becomes a message is a lead we lose without seeing it.
+ * The capture point (Doc 05) — the form, and nothing else.
  *
- * This is the last beat on every page, so it is given the most room on the
- * site and the one gold wash: by the time a visitor reaches it the page should
- * feel like it has opened up rather than closed in.
+ * The heading, the standfirst and the outline WhatsApp button all came out in
+ * August 2026. Anything beside a form is something to read instead of filling
+ * it in, and the form's own copy already says what it wants.
+ *
+ * What is left under it is the one alternative route, in WhatsApp's own green.
+ * It sits BELOW the form at every breakpoint on purpose: a visitor willing to
+ * type should meet the fields first, and the person who would rather talk
+ * finds the green the moment they look past them.
  */
 export function Capture({
   intent = 'curriculum',
   pageContext = 'home',
-  title = home.capture.title,
-  body = home.capture.body,
 }: {
   intent?: Intent
   pageContext?: string
-  title?: string
-  body?: string
 }) {
   return (
     <Section
@@ -35,30 +34,12 @@ export function Capture({
           that opened the page closes it, so start and finish rhyme. */}
       <div aria-hidden="true" className="aurora absolute inset-0" />
 
-      {/* On mobile the three blocks stack heading → form → WhatsApp: the form is
-          the action we came for, and WhatsApp underneath it stays the fallback
-          rather than the first thing a thumb reaches. On md+ the explicit
-          row/column placement restores the two-column layout: heading and
-          contact on one side, form beside them. */}
-      <div className="relative grid gap-9 md:grid-cols-2 md:grid-rows-[auto_1fr] md:items-start md:gap-x-12 md:gap-y-8">
-        {/* The heading's own bottom margin is dropped — the grid gap is what
-            separates it from whatever follows it at this breakpoint. */}
-        <div className="md:col-start-1 md:row-start-1 [&>header]:mb-0">
-          <SectionHeading title={title} intro={body} />
-        </div>
+      <div className="relative mx-auto w-full max-w-xl">
+        <LeadForm intent={intent} pageContext={pageContext} />
 
-        <LeadForm
-          intent={intent}
-          pageContext={pageContext}
-          className="md:col-start-2 md:row-start-1 md:row-span-2"
-        />
-
-        {/* The lower-commitment route, for the visitor who would rather talk than
-            type. The channel grid that used to sit here now lives in the
-            footer — beside a form it was competing with the form. */}
-        <div data-reveal className="md:col-start-1 md:row-start-2">
-          <WhatsAppButton context={pageContext}>كلّمنا على الواتساب</WhatsAppButton>
-        </div>
+        <WhatsAppButton context={pageContext} variant="whatsapp" className="mt-4">
+          {home.capture.whatsappCta}
+        </WhatsAppButton>
       </div>
     </Section>
   )

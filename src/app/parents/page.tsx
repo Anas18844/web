@@ -128,12 +128,7 @@ export default function ParentsPage() {
         </div>
       </Section>
 
-      <Capture
-        intent="parent"
-        pageContext="parents"
-        title={parents.capture.title}
-        body={parents.capture.body}
-      />
+      <Capture intent="parent" pageContext="parents" />
     </>
   )
 }

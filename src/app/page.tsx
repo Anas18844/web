@@ -3,7 +3,6 @@ import { homeGraph } from '@/lib/schema-org'
 import { Hero } from '@/components/sections/Hero'
 import { AboutTeaser } from '@/components/sections/AboutTeaser'
 import { Audience } from '@/components/sections/Audience'
-import { Preparation } from '@/components/sections/Preparation'
 import { System } from '@/components/sections/System'
 import { Outcome } from '@/components/sections/Outcome'
 import { KnowledgeTeaser } from '@/components/sections/KnowledgeTeaser'
@@ -12,8 +11,8 @@ import { Capture } from '@/components/sections/Capture'
 
 /**
  * The home page answers, in order: "who is teaching me?", "is this for me?",
- * "how much work goes into this?", "how does it hold me?", "what do I walk
- * away with?", "where do I keep learning?", "what do I do now?".
+ * "how does it hold me?", "what do I walk away with?", "where do I keep
+ * learning?", "what do I do now?".
  *
  * Rebuilt in August 2026 around two grades and one promise. The free-content
  * teaser, the question list and the courses page all came out: the page now
@@ -26,7 +25,6 @@ export default function HomePage() {
       <Hero />
       <AboutTeaser />
       <Audience />
-      <Preparation />
       <System />
       <Outcome />
       <KnowledgeTeaser />

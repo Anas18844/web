@@ -6,15 +6,12 @@ import { common } from '@/content/copy'
 import { site } from '@/content/site'
 
 /**
- * The footer now carries the contact block that used to sit beside the form.
+ * Four columns, one row, no sub-sections.
  *
- * Beside the form it competed with the form — a visitor mid-signup was being
- * offered five other places to go. Down here it does the job a footer is for:
- * every official channel in one organised place, so the page ends with "here
- * is how to reach us" instead of "here is another thing to click".
- *
- * Four columns on desktop, stacking cleanly to one on mobile: the mark and
- * what we do, the site map, direct contact, then the channel grid.
+ * The official channels used to sit in a band of their own under a divider,
+ * which made the footer read as two footers stacked. They are now simply the
+ * fourth column — a vertical list beside the site map and the contact
+ * details, which is where a reader already expects to find them.
  */
 
 const link =
@@ -31,13 +28,22 @@ const PAGES = [
   { href: '/privacy', label: common.footer.privacy },
 ]
 
+function ColumnHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="flex items-center gap-2.5 text-xs font-extrabold tracking-wide text-ink">
+      <span aria-hidden="true" className="h-0.5 w-3.5 shrink-0 bg-gold" />
+      {children}
+    </h2>
+  )
+}
+
 export function SiteFooter() {
   const year = new Date().getFullYear()
 
   return (
     <footer className="border-t border-navy-line bg-navy-deep">
       <Container className="py-14 sm:py-16">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr] lg:gap-12">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr] lg:gap-12">
           {/* ── The mark ──────────────────────────────────────────────────── */}
           <div>
             <div className="flex items-center gap-3">
@@ -68,7 +74,7 @@ export function SiteFooter() {
 
           {/* ── Site map ──────────────────────────────────────────────────── */}
           <nav aria-label="روابط الموقع">
-            <h2 className="text-xs font-extrabold tracking-wide text-ink">الموقع</h2>
+            <ColumnHeading>الموقع</ColumnHeading>
             <ul className="mt-5 grid gap-3 text-sm">
               {PAGES.map((page) => (
                 <li key={page.href}>
@@ -82,7 +88,7 @@ export function SiteFooter() {
 
           {/* ── Direct contact ────────────────────────────────────────────── */}
           <div>
-            <h2 className="text-xs font-extrabold tracking-wide text-ink">التواصل</h2>
+            <ColumnHeading>التواصل</ColumnHeading>
             <ul className="mt-5 grid gap-3 text-sm">
               <li>
                 <a
@@ -114,14 +120,15 @@ export function SiteFooter() {
               </li>
             </ul>
           </div>
+
+          {/* ── Official channels, as the fourth column ───────────────────── */}
+          <div>
+            <ColumnHeading>{common.footer.links}</ColumnHeading>
+            <SocialLinks className="mt-5" />
+          </div>
         </div>
 
-        {/* ── Official channels ───────────────────────────────────────────── */}
-        <div className="mt-12 border-t border-navy-line pt-10">
-          <SocialLinks />
-        </div>
-
-        <div className="mt-10 flex flex-col gap-3 border-t border-navy-line pt-6 text-xs text-ink-faint sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-3 border-t border-navy-line pt-6 text-xs text-ink-faint sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {year} — {common.footer.rights}
           </p>

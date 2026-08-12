@@ -13,6 +13,42 @@
     --dur-fast: 150ms;
     --dur-base: 240ms;
     --dur-reveal: 560ms;
+
+    /**
+     * SURFACE TOKENS — the dark surface, which is the default.
+     *
+     * Space-separated RGB channels, because Tailwind composes them with
+     * `<alpha-value>` (`text-ink-muted/60` has to keep working).
+     */
+    --ink: 255 255 255;
+    --ink-muted: 174 186 204;
+    --ink-faint: 126 140 163;
+    --navy-line: 35 56 92;
+    --navy-soft: 22 41 74;
+    --surface-card: 22 41 74;
+    --gold: 203 163 82;
+    --ring-offset: #0d1b33;
+  }
+
+  /**
+   * THE WHITE SURFACE.
+   *
+   * Applied by the `paper` section tones. Every token above flips; the ink
+   * becomes the brand navy rather than black, so a white section still reads
+   * as part of the same identity, and the gold darkens to #8D6A14 because the
+   * logo tone measures ~2.4:1 on white and would fail as text.
+   */
+  .surface-light {
+    --ink: 13 27 51;
+    --ink-muted: 71 88 120;
+    /* 5.2:1 on white. The dark-surface value would have measured 3.8:1 here,
+       which fails AA for the dates and labels this token is used on. */
+    --ink-faint: 95 110 134;
+    --navy-line: 214 222 235;
+    --navy-soft: 240 244 250;
+    --surface-card: 255 255 255;
+    --gold: 141 106 20;
+    --ring-offset: #ffffff;
   }
 
   html {
@@ -33,11 +69,12 @@
 
   /* Visible, on-brand focus ring for keyboard users (accessibility baseline). */
   :focus-visible {
-    @apply outline-none ring-2 ring-gold ring-offset-2 ring-offset-navy;
+    @apply outline-none ring-2 ring-gold ring-offset-2;
+    --tw-ring-offset-color: var(--ring-offset);
   }
 
   ::selection {
-    @apply bg-gold text-navy;
+    @apply bg-gold-brand text-navy;
   }
 
   /* Touch devices should never show a grey tap flash over our own states. */
@@ -103,7 +140,7 @@
 
   .card:hover,
   .card:focus-within {
-    @apply border-gold/45 bg-navy-soft/25;
+    @apply border-gold/45 bg-navy-soft/40;
   }
 
   .card:hover::before,
@@ -127,6 +164,26 @@
     transform: scaleY(1);
   }
 
+  /**
+   * On white, a hairline outline alone reads as flat — a light surface needs
+   * a shadow to say "this sits above the page". Kept to a soft navy-tinted
+   * ambient (never black), and deepened on hover so the lift is felt as well
+   * as seen. Dark sections keep the pure-outline treatment, where a shadow
+   * would be invisible anyway.
+   */
+  .surface-light .card {
+    box-shadow: 0 1px 2px rgb(13 27 51 / 0.05), 0 8px 24px -18px rgb(13 27 51 / 0.35);
+    transition:
+      border-color var(--dur-base) ease,
+      background-color var(--dur-base) ease,
+      box-shadow var(--dur-base) ease,
+      transform var(--dur-base) var(--ease-trace);
+  }
+
+  .surface-light .card:hover {
+    box-shadow: 0 2px 4px rgb(13 27 51 / 0.06), 0 18px 40px -24px rgb(13 27 51 / 0.45);
+  }
+
   /* ───────────────────────────────────────────────────────────────────────
    * SPOTLIGHT — the Linear-style cursor glow.
    *
@@ -141,7 +198,7 @@
     opacity: 0;
     background: radial-gradient(
       280px circle at var(--spot-x, 50%) var(--spot-y, 50%),
-      rgba(203, 163, 82, 0.1),
+      rgb(var(--gold) / 0.12),
       transparent 65%
     );
     transition: opacity var(--dur-base) ease;

@@ -31,7 +31,7 @@ export function System() {
   const { teachingSample } = assets
 
   return (
-    <Section id="system">
+    <Section id="system" tone="paper">
       <SectionHeading title={home.system.title} intro={home.system.intro} />
 
       {/* A real teaching clip outranks any description of the teaching. Shown
@@ -57,21 +57,6 @@ export function System() {
             <p className="mt-3 flex-1 text-body text-ink-muted">{pillar.body}</p>
           </article>
         ))}
-      </div>
-
-      {/* Why the system is shaped this way — the one place the section is
-          allowed to make a claim rather than name a mechanism. */}
-      <div
-        data-reveal
-        className="card card-lit mt-10 bg-navy-soft/25 p-7 sm:p-9 lg:mt-12"
-      >
-        <h3 className="text-xl font-extrabold text-ink sm:text-2xl">
-          {home.system.outro.title}
-        </h3>
-        <p className="mt-4 max-w-prose text-body text-ink-muted">{home.system.outro.body}</p>
-        <p className="mt-5 max-w-prose border-s-2 border-gold/60 ps-4 text-body font-bold text-ink">
-          {home.system.outro.note}
-        </p>
       </div>
     </Section>
   )

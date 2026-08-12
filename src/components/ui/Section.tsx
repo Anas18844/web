@@ -12,6 +12,23 @@ const spaces = {
   lg: 'py-20 sm:py-28',
 }
 
+/**
+ * The page runs on two surfaces: navy and white.
+ *
+ * The `paper` tones carry `surface-light`, which flips the ink, hairline,
+ * card and accent tokens (globals.css) — so a section becomes a white section
+ * by changing one prop, and everything inside it inverts without being
+ * touched. `bg-paper` is pure white; `bg-paper-soft` is its quieter sibling,
+ * for when two light sections sit next to each other and need separating.
+ */
+const tones = {
+  base: 'bg-navy',
+  raised: 'bg-navy-soft/40',
+  deep: 'bg-navy-deep',
+  paper: 'surface-light bg-paper',
+  paperSoft: 'surface-light bg-paper-soft',
+}
+
 export function Section({
   children,
   id,
@@ -23,15 +40,10 @@ export function Section({
   children: React.ReactNode
   id?: string
   className?: string
-  tone?: 'base' | 'raised' | 'deep'
+  tone?: keyof typeof tones
   width?: 'content' | 'prose'
   space?: keyof typeof spaces
 }) {
-  const tones = {
-    base: 'bg-navy',
-    raised: 'bg-navy-soft/40',
-    deep: 'bg-navy-deep',
-  }
 
   return (
     <section id={id} className={cn('scroll-mt-16', spaces[space], tones[tone], className)}>

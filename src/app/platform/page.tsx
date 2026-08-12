@@ -143,12 +143,7 @@ export default function PlatformPage() {
         </div>
       </Section>
 
-      <Capture
-        intent="curriculum"
-        pageContext="platform"
-        title={platform.cta.title}
-        body={platform.cta.body}
-      />
+      <Capture intent="curriculum" pageContext="platform" />
     </>
   )
 }

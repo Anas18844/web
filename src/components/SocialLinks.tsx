@@ -1,8 +1,8 @@
-import Image from 'next/image'
 import { site } from '@/content/site'
+import { cn } from '@/lib/utils'
 
 /**
- * The official channel card, shown beside the form.
+ * The official channels, as a footer column.
  *
  * Two jobs: it gives the visitor who is not ready to submit a lighter way to
  * stay in touch (never punish hesitation — Doc 05 §6.5), and it doubles as the
@@ -20,7 +20,7 @@ type Channel = {
 
 const ICON = 'h-5 w-5 shrink-0'
 
-export function SocialLinks() {
+export function SocialLinks({ className }: { className?: string }) {
   const channels: Channel[] = [
     site.channels.youtube && {
       key: 'youtube',
@@ -93,31 +93,28 @@ export function SocialLinks() {
   ].filter(Boolean) as Channel[]
 
   return (
-    <div>
-      <h2 className="text-xs font-extrabold tracking-wide text-ink">
-        الحسابات الرسمية — نفس الاسم في كل مكان
-      </h2>
-
-      <ul className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-        {channels.map((channel) => (
-          <li key={channel.key}>
-            <a
-              href={channel.href}
-              {...(channel.key === 'email'
-                ? {}
-                : { target: '_blank', rel: 'noopener noreferrer' })}
-              className="group flex items-center gap-2.5 rounded border border-navy-line/70 px-3 py-3 text-sm font-bold text-ink-muted transition-[color,border-color,background-color] duration-200 hover:border-gold/50 hover:bg-gold/[0.06] hover:text-gold"
-            >
-              {/* The icon leads the colour change by a beat, so the row reads
-                  as one object responding rather than two. */}
-              <span className="transition-transform duration-200 group-hover:scale-110">
-                {channel.icon}
-              </span>
-              <span>{channel.label}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
+    /* A plain vertical list, styled like every other footer column — the
+       channels are navigation, not a widget, and boxing them made them read
+       as a separate block bolted onto the footer. */
+    <ul className={cn('grid gap-3 text-sm', className)}>
+      {channels.map((channel) => (
+        <li key={channel.key}>
+          <a
+            href={channel.href}
+            {...(channel.key === 'email' ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
+            className="group inline-flex items-center gap-2.5 text-ink-faint transition-colors duration-200 hover:text-ink"
+          >
+            {/* The icon leads the colour change by a beat, so the row reads
+                as one object responding rather than two. */}
+            <span className="text-ink-faint transition-[color,transform] duration-200 group-hover:scale-110 group-hover:text-gold">
+              {channel.icon}
+            </span>
+            <span className="relative after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-right after:scale-x-0 after:bg-gold after:transition-transform after:duration-200 after:ease-out group-hover:after:scale-x-100">
+              {channel.label}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
   )
 }
