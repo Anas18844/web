@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getSupabaseAdmin } from '@/lib/supabase'
+import { getSupabaseAdmin, resolveConfig } from '@/lib/supabase'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -9,28 +9,26 @@ export const dynamic = 'force-dynamic'
  *
  *   https://<site>/api/health
  *
- * Added after a debugging session where the failing layer could not be told
+ * Built after a debugging session where the failing layer could not be told
  * apart from the outside: the form showed one generic message whether the
- * cause was a missing variable, a rejected key, or a schema that had drifted.
- * This turns that into a ten-second check.
+ * cause was a missing variable, a wrong key, or a schema that had drifted.
  *
- * It reports which environment variables are present, the SHAPE of the key
- * (not the key), which project the URL points at, whether reads work, and
- * whether WRITES work — the last one matters most, because a stale key or a
- * revoked grant can read happily and still refuse every insert, which is
- * exactly the failure this endpoint was built to catch.
+ * It reports which variable NAMES the deployment can actually see, the role
+ * inside the key, and — the part that matters most — whether a real INSERT
+ * succeeds. A key with the wrong role reads perfectly and is refused by
+ * row-level security on every write, which from the outside is indisput-
+ * ably "the site is not saving anything" with no clue as to why.
  *
- * No secret is ever returned: only booleans, lengths, and a prefix.
+ * No secret is ever returned: names, roles, lengths and booleans only.
  */
+
 /**
- * Reads the role out of a legacy Supabase JWT without verifying it — this is
- * a diagnostic, not an authorisation check. Returns null for the current
+ * Reads the role out of a legacy Supabase JWT without verifying it — a
+ * diagnostic, not an authorisation check. Returns null for the current
  * `sb_secret_` format, which carries no readable payload.
  *
- * Worth surfacing because pasting the `anon` key where the `service_role` key
- * belongs is the single easiest configuration mistake to make, and it fails
- * in the most confusing possible way: reads succeed, writes are silently
- * refused by row-level security.
+ * Surfaced because pasting the `anon` key where `service_role` belongs is the
+ * easiest mistake to make and the most confusing to debug.
  */
 function readJwtRole(key: string): string | null {
   if (!key.startsWith('eyJ')) return null
@@ -44,39 +42,36 @@ function readJwtRole(key: string): string | null {
 }
 
 export async function GET() {
-  const url = process.env.SUPABASE_URL || ''
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+  const config = resolveConfig()
 
   const env = {
-    SUPABASE_URL: Boolean(url),
-    SUPABASE_SERVICE_ROLE_KEY: Boolean(key),
-    /** Which Supabase project this deployment actually talks to. */
-    projectRef: url.match(/https:\/\/([a-z0-9]+)\.supabase\.co/)?.[1] ?? null,
+    /** Which variable supplied each value — "built-in default" means none did. */
+    urlFrom: config.urlFrom,
+    keyFrom: config.keyFrom,
+    projectRef: config.url.match(/https:\/\/([a-z0-9]+)\.supabase\.co/)?.[1] ?? null,
+    keyFormat: !config.key
+      ? 'missing'
+      : config.key.startsWith('sb_secret_')
+        ? 'current (sb_secret_)'
+        : config.key.startsWith('eyJ')
+          ? 'legacy JWT'
+          : 'unrecognised',
+    keyRole: config.key ? readJwtRole(config.key) : null,
+    keyLength: config.key?.length ?? null,
     /**
-     * `sb_secret_…` is the current format; `eyJ…` is the legacy JWT, which
-     * still works on projects that have not disabled legacy keys.
-     *
-     * The format is NOT what decides whether things work — the `write` probe
-     * below is. What actually matters is the ROLE inside the key: an `anon`
-     * key reads happily and is refused by row-level security on every insert,
-     * which looks exactly like a broken database from the outside.
+     * Every SUPABASE-ish variable the deployment can see. If this is empty,
+     * nothing was set. If it lists a name that is not the one being read, the
+     * variable exists under the wrong name — which looks identical from the
+     * form's side and is invisible without this line.
      */
-    keyFormat: key.startsWith('sb_secret_')
-      ? 'current (sb_secret_)'
-      : key.startsWith('eyJ')
-        ? 'legacy JWT'
-        : key
-          ? 'unrecognised'
-          : 'missing',
-    keyRole: readJwtRole(key),
-    keyLength: key.length || null,
+    namesPresent: config.namesPresent,
   }
 
   let read = 'skipped'
   let write = 'skipped'
   let latencyMs: number | null = null
 
-  if (env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY) {
+  if (config.key) {
     const supabase = getSupabaseAdmin()
     const started = Date.now()
 
@@ -88,20 +83,23 @@ export async function GET() {
     }
 
     /**
-     * The real test. Inserts a row, reads back its id, and deletes it — so a
+     * The real test. Inserts a row, reads back its id, then deletes it — so a
      * health check never leaves anything behind for the follow-up team to
      * wonder about.
      */
     try {
-      const probe = {
-        name: 'فحص تلقائي للنظام',
-        phone: '01000000000',
-        grade: 'first_sec',
-        intent: 'curriculum',
-        stage: 'partial',
-        page_context: '__healthcheck__',
-      }
-      const { data, error } = await supabase.from('leads').insert(probe).select('id').single()
+      const { data, error } = await supabase
+        .from('leads')
+        .insert({
+          name: 'فحص تلقائي للنظام',
+          phone: '01000000000',
+          grade: 'first_sec',
+          intent: 'curriculum',
+          stage: 'partial',
+          page_context: '__healthcheck__',
+        })
+        .select('id')
+        .single()
 
       if (error) {
         write = `error: ${error.message}${error.hint ? ' | hint: ' + error.hint : ''}`
@@ -116,7 +114,7 @@ export async function GET() {
     latencyMs = Date.now() - started
   }
 
-  const ok = env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY && read === 'ok' && write === 'ok'
+  const ok = read === 'ok' && write === 'ok'
 
   return NextResponse.json(
     { ok, env, read, write, latencyMs, time: new Date().toISOString() },
