@@ -30,9 +30,27 @@ const context = {
    * and answers with a success shape, so bots never learn the field is a trap.
    */
   company: z.string().max(200).optional(),
-  /** Milliseconds the form stayed open. Sub-second submissions are bots. */
+  /** Milliseconds the form stayed open. A signal for the team, never a filter. */
   elapsed: z.number().int().nonnegative().optional(),
 }
+
+/** The step-two answers, on their own — reused by the recovery path. */
+const enrichment = {
+  whatsapp: phone,
+  attendance: z.enum(['online', 'center']),
+  branch: z.enum(['helwan', 'hadayek_helwan', 'may15', 'other']).optional(),
+  heardFrom: z.enum(['facebook', 'youtube', 'google', 'tiktok', 'friend', 'other']),
+  note: z.string().trim().max(500).optional().or(z.literal('')),
+}
+
+/** A branch only makes sense for centre students, and is required for them. */
+const branchRule = <T extends { attendance: string; branch?: string }>(schema: z.ZodType<T>) =>
+  schema
+    .refine((d) => (d.attendance === 'center' ? Boolean(d.branch) : true), {
+      message: 'branch_required',
+      path: ['branch'],
+    })
+    .transform((d) => ({ ...d, branch: d.attendance === 'center' ? d.branch : undefined }))
 
 /** STEP ONE — the whole point of the redesign: three fields, then save. */
 export const leadStep1Schema = z.object({
@@ -42,23 +60,43 @@ export const leadStep1Schema = z.object({
   ...context,
 })
 
-/** STEP TWO — everything else, attached to the row step one created. */
-export const leadStep2Schema = z
-  .object({
+/**
+ * STEP TWO — attached to the row step one created.
+ *
+ * Identified by `id` AND `phone`, not by a signed token. The signature was
+ * removed in August 2026: it made completion depend on a server secret being
+ * byte-identical across two separate requests, and every way that can drift —
+ * a redeploy mid-session, a rotated key, one environment answering the first
+ * request and another the second — surfaced to the student as a dead end with
+ * a red box. Matching the id against the phone already on the row needs no
+ * secret, cannot desync, and still requires knowing both.
+ */
+export const leadStep2Schema = branchRule(
+  z.object({
     id: z.string().uuid(),
-    token: z.string().min(16).max(200),
-    whatsapp: phone,
-    attendance: z.enum(['online', 'center']),
-    branch: z.enum(['helwan', 'hadayek_helwan', 'may15', 'other']).optional(),
-    heardFrom: z.enum(['facebook', 'youtube', 'google', 'tiktok', 'friend', 'other']),
-    note: z.string().trim().max(500).optional().or(z.literal('')),
-  })
-  // A branch only makes sense for centre students, and is required for them.
-  .refine((d) => (d.attendance === 'center' ? Boolean(d.branch) : true), {
-    message: 'branch_required',
-    path: ['branch'],
-  })
-  .transform((d) => ({ ...d, branch: d.attendance === 'center' ? d.branch : undefined }))
+    phone,
+    ...enrichment,
+  }),
+)
+
+/**
+ * RECOVERY — a complete lead in one shot.
+ *
+ * Used when step two cannot attach to its row for any reason. Rather than
+ * showing the student an error over data we may already hold, the client
+ * re-sends everything and the server upserts by phone. A duplicate row is a
+ * far cheaper failure than a lost lead.
+ */
+export const leadRecoverySchema = branchRule(
+  z.object({
+    name: z.string().transform(normalizeName).refine(isValidArabicTripleName, 'invalid_name'),
+    phone,
+    grade: z.enum(['first_sec', 'second_bacc']),
+    ...enrichment,
+    ...context,
+  }),
+)
 
 export type LeadStep1Input = z.infer<typeof leadStep1Schema>
 export type LeadStep2Input = z.infer<typeof leadStep2Schema>
+export type LeadRecoveryInput = z.infer<typeof leadRecoverySchema>

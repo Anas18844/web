@@ -50,10 +50,17 @@ export function LeadForm({
   const [sending, setSending] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
 
-  /** Handle to the saved row, handed back by step one. */
-  const lead = useRef<{ id: string; token: string } | null>(null)
-  /** Kept for the analytics event on completion, and to mirror into WhatsApp. */
-  const captured = useRef<{ grade: string; phone: string }>({ grade: '', phone: '' })
+  /** The id of the row step one saved. Null if step one could not reach it. */
+  const leadId = useRef<string | null>(null)
+  /**
+   * Everything step one collected, kept so step two can (a) identify the row
+   * by phone and (b) re-send the whole lead if attaching to that row fails.
+   */
+  const captured = useRef<{ name: string; grade: string; phone: string }>({
+    name: '',
+    grade: '',
+    phone: '',
+  })
 
   // Controlled only where behaviour depends on the value:
   // the WhatsApp mirror button and the conditional branch question.
@@ -122,11 +129,11 @@ export function LeadForm({
         }),
       })
 
-      const json = (await res.json()) as { ok?: boolean; id?: string; token?: string }
-      if (!res.ok || !json.ok || !json.id || !json.token) throw new Error('request failed')
+      const json = (await res.json()) as { ok?: boolean; id?: string }
+      if (!res.ok || !json.ok) throw new Error('request failed')
 
-      lead.current = { id: json.id, token: json.token }
-      captured.current = { grade, phone: normalizedPhone }
+      leadId.current = json.id ?? null
+      captured.current = { name, grade, phone: normalizedPhone }
 
       // The number carries over by default — most students use one line.
       setWhatsapp(normalizedPhone)
@@ -141,14 +148,32 @@ export function LeadForm({
     }
   }
 
-  // ── Step two ───────────────────────────────────────────────────────────────
+  /**
+   * ── Step two ─────────────────────────────────────────────────────────────
+   *
+   * Three routes to the same place, tried in order, so this step has no way to
+   * dead-end:
+   *
+   *   1. PATCH — attach the answers to the row step one saved.
+   *   2. If that cannot find the row (expired, wrong id, whatever), POST the
+   *      WHOLE lead. The server completes the open row for that phone, or
+   *      writes a finished one. A duplicate row is a far cheaper failure than
+   *      a lost student.
+   *   3. If even that fails, still show the thanks screen. Step one already
+   *      saved their name, phone and year, so the team can call them — and a
+   *      red box over data we are holding would only lose us the call.
+   *
+   * Nothing about the interface changes: the student sees the same button and
+   * the same confirmation. The recovery is entirely behind it.
+   */
   async function submitStep2(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (sending || !lead.current) return
+    if (sending) return
 
     const data = new FormData(e.currentTarget)
     const branch = String(data.get('branch') || '')
     const heardFrom = String(data.get('heardFrom') || '')
+    const note = String(data.get('note') || '').trim()
     const normalizedWhatsapp = normalizePhone(sameAsPhone ? captured.current.phone : whatsapp)
 
     const next: Errors = {}
@@ -165,29 +190,63 @@ export function LeadForm({
     setErrors({})
     setSending(true)
 
-    try {
-      const res = await fetch('/api/lead', {
-        method: 'PATCH',
+    const enrichment = {
+      whatsapp: normalizedWhatsapp,
+      attendance,
+      branch: attendance === 'center' ? branch : undefined,
+      heardFrom,
+      note,
+    }
+
+    const send = (method: 'PATCH' | 'POST', payload: object) =>
+      fetch('/api/lead', {
+        method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: lead.current.id,
-          token: lead.current.token,
-          whatsapp: normalizedWhatsapp,
-          attendance,
-          branch: attendance === 'center' ? branch : undefined,
-          heardFrom,
-          note: String(data.get('note') || '').trim(),
-        }),
+        body: JSON.stringify(payload),
       })
 
-      if (!res.ok) throw new Error('request failed')
+    try {
+      // 1 — attach to the existing row.
+      if (leadId.current) {
+        const res = await send('PATCH', {
+          id: leadId.current,
+          phone: captured.current.phone,
+          ...enrichment,
+        })
+        const json = res.ok
+          ? ((await res.json()) as { matched?: boolean; already?: boolean })
+          : null
+        // `already` covers a double-submit: the answers are in, and re-sending
+        // them would only risk overwriting them with the same thing.
+        if (json?.matched || json?.already) {
+          finish()
+          return
+        }
+      }
 
-      events.leadSubmitted(intent, captured.current.grade)
-      setStep('done')
+      // 2 — re-send everything and let the server sort it out.
+      const recovery = await send('POST', {
+        ...captured.current,
+        ...enrichment,
+        intent,
+        pageContext,
+        utm: collectUtm(),
+      })
+      if (!recovery.ok) throw new Error('recovery failed')
+
+      finish()
     } catch {
-      setErrors({ form: common.form.errorGeneric })
+      // 3 — their lead exists from step one. Confirm, and record that the
+      // extra answers did not land so the gap is visible in analytics.
+      events.leadRecoveryFailed(intent, captured.current.grade)
+      finish()
     } finally {
       setSending(false)
+    }
+
+    function finish() {
+      events.leadSubmitted(intent, captured.current.grade)
+      setStep('done')
     }
   }
 
