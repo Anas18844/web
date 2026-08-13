@@ -3,6 +3,7 @@ import {
   leadRecoverySchema,
   leadStep1Schema,
   leadStep2Schema,
+  type LeadStep1Input,
 } from '@/lib/validation'
 import { getSupabaseAdmin } from '@/lib/supabase'
 
@@ -27,6 +28,51 @@ const COMPLETION_WINDOW_MINUTES = 180
  * enrichment (see PATCH).
  */
 export async function POST(request: Request) {
+  /**
+   * A NATIVE form post — no JavaScript involved.
+   *
+   * This is the floor the whole capture stands on. If the page's JavaScript
+   * never arrives (a chunk 404s after a deploy, a script is blocked, a slow
+   * phone gives up), the browser still submits the form the way browsers have
+   * always submitted forms, and the lead is still saved. Without this branch
+   * that submission becomes a GET, the student's details end up in the address
+   * bar, and nothing is written anywhere.
+   *
+   * Answered with a redirect to a static confirmation, because a browser doing
+   * a native post expects a page back, not JSON.
+   */
+  const contentType = request.headers.get('content-type') || ''
+  if (contentType.includes('application/x-www-form-urlencoded')) {
+    try {
+      const form = await request.formData()
+      const value = (k: string) => {
+        const v = form.get(k)
+        return typeof v === 'string' ? v : undefined
+      }
+      const parsed = leadStep1Schema.safeParse({
+        name: value('name'),
+        phone: value('phone'),
+        grade: value('grade'),
+        intent: value('intent') || 'curriculum',
+        pageContext: value('pageContext') || 'no-js',
+        company: value('company'),
+      })
+      if (!parsed.success) {
+        console.error(
+          '[lead] no-js payload rejected',
+          parsed.error.issues.map((i) => `${i.path.join('.')}:${i.message}`),
+        )
+      } else if (!parsed.data.company) {
+        await saveEarly(parsed.data)
+      }
+    } catch (error) {
+      console.error('[lead] no-js submission failed', error)
+    }
+    // Always the same destination: the student's part is done either way, and
+    // an error page here would be the dead end this branch exists to prevent.
+    return NextResponse.redirect(new URL('/thanks', request.url), 303)
+  }
+
   let body: unknown
   try {
     body = await request.json()
@@ -67,47 +113,58 @@ export async function POST(request: Request) {
   const suspiciouslyFast = typeof lead.elapsed === 'number' && lead.elapsed < 1200
 
   try {
-    const supabase = getSupabaseAdmin()
-
-    // Idempotency: a double-tap or a refresh continues the SAME row rather
-    // than opening a second one the team would have to merge by hand.
-    const since = new Date(Date.now() - DEDUPE_WINDOW_MINUTES * 60_000).toISOString()
-    const { data: existing } = await supabase
-      .from('leads')
-      .select('id')
-      .eq('phone', lead.phone)
-      .gte('created_at', since)
-      .limit(1)
-
-    if (existing && existing.length > 0) {
-      return NextResponse.json({ ok: true, id: existing[0].id, deduped: true })
-    }
-
-    const { data, error } = await supabase
-      .from('leads')
-      .insert({
-        name: lead.name,
-        phone: lead.phone,
-        grade: lead.grade,
-        intent: lead.intent,
-        stage: 'partial',
-        page_context: lead.pageContext || null,
-        source: lead.utm?.utm_source || lead.utm?.referrer || null,
-        utm: lead.utm && Object.keys(lead.utm).length ? lead.utm : null,
-      })
-      .select('id')
-      .single()
-
-    if (error) throw error
-
-    // Fire-and-forget: automation must never be able to fail a capture.
-    void notifyAutomation({ id: data.id, stage: 'partial', suspiciouslyFast, ...lead })
-
-    return NextResponse.json({ ok: true, id: data.id })
+    const id = await saveEarly(lead, suspiciouslyFast)
+    return NextResponse.json({ ok: true, id })
   } catch (error) {
     console.error('[lead] step 1 insert failed', error)
     return NextResponse.json({ ok: false }, { status: 500 })
   }
+}
+
+/**
+ * Writes the early capture — name, phone, year — and returns the row id.
+ * Shared by the JSON path and the no-JavaScript form post, so both routes
+ * produce exactly the same record.
+ */
+async function saveEarly(
+  lead: LeadStep1Input,
+  suspiciouslyFast = false,
+): Promise<string> {
+  const supabase = getSupabaseAdmin()
+
+  // Idempotency: a double-tap or a refresh continues the SAME row rather
+  // than opening a second one the team would have to merge by hand.
+  const since = new Date(Date.now() - DEDUPE_WINDOW_MINUTES * 60_000).toISOString()
+  const { data: existing } = await supabase
+    .from('leads')
+    .select('id')
+    .eq('phone', lead.phone)
+    .gte('created_at', since)
+    .limit(1)
+
+  if (existing && existing.length > 0) return existing[0].id
+
+  const { data, error } = await supabase
+    .from('leads')
+    .insert({
+      name: lead.name,
+      phone: lead.phone,
+      grade: lead.grade,
+      intent: lead.intent,
+      stage: 'partial',
+      page_context: lead.pageContext || null,
+      source: lead.utm?.utm_source || lead.utm?.referrer || null,
+      utm: lead.utm && Object.keys(lead.utm).length ? lead.utm : null,
+    })
+    .select('id')
+    .single()
+
+  if (error) throw error
+
+  // Fire-and-forget: automation must never be able to fail a capture.
+  void notifyAutomation({ id: data.id, stage: 'partial', suspiciouslyFast, ...lead })
+
+  return data.id
 }
 
 /**

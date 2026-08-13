@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   ATTENDANCE,
   BRANCHES,
@@ -15,6 +15,7 @@ import { collectUtm } from '@/lib/utm'
 import { events } from '@/lib/analytics'
 import { EG_MOBILE, normalizePhone } from '@/lib/phone'
 import { nameError } from '@/lib/name'
+import { enqueue, flush, startOutbox } from '@/lib/outbox'
 import { WhatsAppButton } from '@/components/WhatsAppButton'
 import { cn } from '@/lib/utils'
 
@@ -71,6 +72,26 @@ export function LeadForm({
 
   const mountedAt = useRef(Date.now())
 
+  /**
+   * Identifies THIS student's submission across retries, so a queued lead
+   * re-sent tomorrow is recognisable as the same one rather than a new person.
+   */
+  const submissionKey = useRef<string>(
+    typeof crypto !== 'undefined' && 'randomUUID' in crypto
+      ? crypto.randomUUID()
+      : `lead-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  )
+
+  /**
+   * Anything left in the outbox from a previous visit goes out now — before
+   * this student even touches the form. A lead queued during an outage is
+   * delivered by the next person to open the page on that device, which in
+   * practice is the same student coming back.
+   */
+  useEffect(() => {
+    startOutbox()
+  }, [])
+
   function applySameAsPhone(checked: boolean) {
     setSameAsPhone(checked)
     if (checked) {
@@ -79,7 +100,42 @@ export function LeadForm({
     }
   }
 
-  // ── Step one ───────────────────────────────────────────────────────────────
+  /**
+   * One request, one retry. The retry covers transient network blips and 5xx;
+   * a 4xx is deterministic — the same payload will fail the same way — so it
+   * comes back immediately and the caller falls through to its next route.
+   */
+  async function sendLead(method: 'POST' | 'PATCH', payload: object): Promise<Response> {
+    const attempt = () =>
+      fetch('/api/lead', {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+    try {
+      const res = await attempt()
+      if (res.status >= 500) throw new Error(String(res.status))
+      return res
+    } catch {
+      await new Promise((r) => setTimeout(r, 650))
+      return attempt()
+    }
+  }
+
+  /**
+   * ── Step one ─────────────────────────────────────────────────────────────
+   *
+   * Saves early when it can — but NEVER blocks on it. If the early save fails
+   * for any reason (a stale server running an older API, a dead connection, a
+   * database hiccup), the student is moved forward anyway with `leadId` left
+   * null, everything they typed held in refs, and the COMPLETE lead sent at
+   * the end through the recovery path instead.
+   *
+   * This is the radical guarantee: there is no response a server can give to
+   * step one that stops the form. The early save is an optimisation for the
+   * follow-up team, not a gate the student has to pass.
+   */
   async function submitStep1(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (sending) return
@@ -114,36 +170,36 @@ export function LeadForm({
     setSending(true)
 
     try {
-      const res = await fetch('/api/lead', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          phone: normalizedPhone,
-          grade,
-          intent,
-          pageContext,
-          utm: collectUtm(),
-          company: String(data.get('company') || ''), // honeypot
-          elapsed: Date.now() - mountedAt.current,
-        }),
+      const res = await sendLead('POST', {
+        name,
+        phone: normalizedPhone,
+        grade,
+        intent,
+        pageContext,
+        utm: collectUtm(),
+        company: String(data.get('company') || ''), // honeypot
+        elapsed: Date.now() - mountedAt.current,
       })
 
-      const json = (await res.json()) as { ok?: boolean; id?: string }
-      if (!res.ok || !json.ok) throw new Error('request failed')
-
-      leadId.current = json.id ?? null
+      const json = res.ok ? ((await res.json()) as { ok?: boolean; id?: string }) : null
+      if (json?.ok) {
+        leadId.current = json.id ?? null
+        events.leadStarted(intent, grade)
+      } else {
+        // The early save did not land. Not the student's problem: the full
+        // lead goes out at the end of step two instead. Tracked, because a
+        // silent fallback with no signal is how a broken server stays broken.
+        leadId.current = null
+        events.leadStep1Deferred(intent, grade)
+      }
+    } catch {
+      leadId.current = null
+      events.leadStep1Deferred(intent, grade)
+    } finally {
       captured.current = { name, grade, phone: normalizedPhone }
-
       // The number carries over by default — most students use one line.
       setWhatsapp(normalizedPhone)
-
-      events.leadStarted(intent, grade)
       setStep(2)
-    } catch {
-      // The visitor's input is preserved — we never clear the form on failure.
-      setErrors({ form: common.form.errorGeneric })
-    } finally {
       setSending(false)
     }
   }
@@ -198,47 +254,69 @@ export function LeadForm({
       note,
     }
 
-    const send = (method: 'PATCH' | 'POST', payload: object) =>
-      fetch('/api/lead', {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
-
     try {
-      // 1 — attach to the existing row.
+      // 1 — attach to the existing row, if step one managed to create one.
       if (leadId.current) {
-        const res = await send('PATCH', {
-          id: leadId.current,
-          phone: captured.current.phone,
-          ...enrichment,
-        })
-        const json = res.ok
-          ? ((await res.json()) as { matched?: boolean; already?: boolean })
-          : null
-        // `already` covers a double-submit: the answers are in, and re-sending
-        // them would only risk overwriting them with the same thing.
-        if (json?.matched || json?.already) {
-          finish()
-          return
+        try {
+          const res = await sendLead('PATCH', {
+            id: leadId.current,
+            phone: captured.current.phone,
+            ...enrichment,
+          })
+          const json = res.ok
+            ? ((await res.json()) as { ok?: boolean; matched?: boolean; already?: boolean })
+            : null
+          // `already` covers a double-submit: the answers are in, and re-sending
+          // them would only risk overwriting them with the same thing.
+          if (json?.matched || json?.already) {
+            finish()
+            return
+          }
+        } catch {
+          // Fall through — the full re-send below carries everything anyway.
         }
       }
 
-      // 2 — re-send everything and let the server sort it out.
-      const recovery = await send('POST', {
+      // 2 — send the WHOLE lead and let the server sort it out. This payload
+      // also happens to satisfy the pre-two-step API schema, so it succeeds
+      // even against a server running older code.
+      const recovery = await sendLead('POST', {
         ...captured.current,
         ...enrichment,
         intent,
         pageContext,
         utm: collectUtm(),
+        elapsed: Date.now() - mountedAt.current,
       })
-      if (!recovery.ok) throw new Error('recovery failed')
+      const json = recovery.ok ? ((await recovery.json()) as { ok?: boolean }) : null
+      if (!json?.ok) throw new Error('recovery failed')
 
       finish()
     } catch {
-      // 3 — their lead exists from step one. Confirm, and record that the
-      // extra answers did not land so the gap is visible in analytics.
-      events.leadRecoveryFailed(intent, captured.current.grade)
+      /**
+       * 3 — nothing reached the server. The lead is NOT lost: it goes into the
+       * outbox, which keeps it on the device and re-sends it on the next page
+       * load, when the browser comes back online, or on a backoff timer.
+       *
+       * This is the last hole closed. Before the outbox, a student who filled
+       * everything in during an outage was either shown a red box (and left)
+       * or thanked for data nobody kept. Now the answers are held until they
+       * can be delivered, and the student is confirmed — because from their
+       * side the job really is done.
+       */
+      enqueue(
+        {
+          ...captured.current,
+          ...enrichment,
+          intent,
+          pageContext,
+          utm: collectUtm(),
+          queuedAt: new Date().toISOString(),
+        },
+        submissionKey.current,
+      )
+      events.leadQueued(intent, captured.current.grade)
+      void flush()
       finish()
     } finally {
       setSending(false)
@@ -425,7 +503,24 @@ export function LeadForm({
 
   // ── Step one form ──────────────────────────────────────────────────────────
   return (
-    <form onSubmit={submitStep1} noValidate className={shell}>
+    /**
+     * `action` and `method` are the no-JavaScript floor.
+     *
+     * React's onSubmit calls preventDefault and takes over whenever it is
+     * alive. When it is NOT — a chunk that 404s after a deploy, a blocked
+     * script, a browser that gave up — the browser falls back to these
+     * attributes and posts the form natively to the same endpoint, which saves
+     * the lead and redirects to /thanks. Without them the fallback is a GET
+     * that puts the student's phone number in the address bar and saves
+     * nothing at all.
+     */
+    <form
+      onSubmit={submitStep1}
+      action="/api/lead"
+      method="post"
+      noValidate
+      className={shell}
+    >
       <StepBar step={1} />
 
       <p className="mb-6 mt-5 flex items-center gap-3 text-sm font-semibold text-gold">
@@ -486,6 +581,11 @@ export function LeadForm({
             ))}
           </select>
         </Field>
+
+        {/* Context the JSON path sends in its payload; the native post has to
+            carry it as fields or the server would lose it. */}
+        <input type="hidden" name="intent" value={intent} />
+        <input type="hidden" name="pageContext" value={pageContext} />
 
         {/* Honeypot — hidden from humans and assistive tech, irresistible to bots. */}
         <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
