@@ -22,6 +22,27 @@ export const dynamic = 'force-dynamic'
  *
  * No secret is ever returned: only booleans, lengths, and a prefix.
  */
+/**
+ * Reads the role out of a legacy Supabase JWT without verifying it — this is
+ * a diagnostic, not an authorisation check. Returns null for the current
+ * `sb_secret_` format, which carries no readable payload.
+ *
+ * Worth surfacing because pasting the `anon` key where the `service_role` key
+ * belongs is the single easiest configuration mistake to make, and it fails
+ * in the most confusing possible way: reads succeed, writes are silently
+ * refused by row-level security.
+ */
+function readJwtRole(key: string): string | null {
+  if (!key.startsWith('eyJ')) return null
+  try {
+    const payload = JSON.parse(Buffer.from(key.split('.')[1], 'base64').toString())
+    const role = typeof payload.role === 'string' ? payload.role : null
+    return role === 'anon' ? 'anon — WRONG KEY, this one cannot write' : role
+  } catch {
+    return null
+  }
+}
+
 export async function GET() {
   const url = process.env.SUPABASE_URL || ''
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
@@ -32,17 +53,22 @@ export async function GET() {
     /** Which Supabase project this deployment actually talks to. */
     projectRef: url.match(/https:\/\/([a-z0-9]+)\.supabase\.co/)?.[1] ?? null,
     /**
-     * `sb_secret_…` is the current key format; `eyJ…` is the legacy JWT.
-     * A deployment still holding a legacy key after the project stopped
-     * accepting them fails on every write while looking perfectly configured.
+     * `sb_secret_…` is the current format; `eyJ…` is the legacy JWT, which
+     * still works on projects that have not disabled legacy keys.
+     *
+     * The format is NOT what decides whether things work — the `write` probe
+     * below is. What actually matters is the ROLE inside the key: an `anon`
+     * key reads happily and is refused by row-level security on every insert,
+     * which looks exactly like a broken database from the outside.
      */
     keyFormat: key.startsWith('sb_secret_')
       ? 'current (sb_secret_)'
       : key.startsWith('eyJ')
-        ? 'LEGACY JWT — likely revoked'
+        ? 'legacy JWT'
         : key
           ? 'unrecognised'
           : 'missing',
+    keyRole: readJwtRole(key),
     keyLength: key.length || null,
   }
 
