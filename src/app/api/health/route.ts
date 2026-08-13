@@ -41,8 +41,43 @@ function readJwtRole(key: string): string | null {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const config = resolveConfig()
+
+  /**
+   * Detail is gated. Unauthenticated callers get a yes/no on the database and
+   * nothing else — because the full report names every SUPABASE variable the
+   * deployment can see, and the write probe inserts a real row on every hit.
+   * Left open, this endpoint is both a map of the configuration and a free
+   * write amplifier against the production table.
+   *
+   * Set HEALTH_TOKEN in the deployment and call /api/health?key=<token> for
+   * the full diagnosis.
+   */
+  const token = process.env.HEALTH_TOKEN
+  const provided = new URL(request.url).searchParams.get('key')
+  const detailed = Boolean(token && provided && provided === token)
+
+  if (!detailed) {
+    let reachable = false
+    try {
+      if (config.key) {
+        const { error } = await getSupabaseAdmin().from('leads').select('id', { head: true }).limit(1)
+        reachable = !error
+      }
+    } catch {
+      reachable = false
+    }
+    return NextResponse.json(
+      {
+        ok: reachable,
+        database: reachable ? 'ok' : 'unreachable',
+        detail: token ? 'add ?key=… for the full report' : 'set HEALTH_TOKEN to enable details',
+        time: new Date().toISOString(),
+      },
+      { status: reachable ? 200 : 503 },
+    )
+  }
 
   const env = {
     /** Which variable supplied each value — "built-in default" means none did. */

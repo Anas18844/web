@@ -29,6 +29,23 @@ const tones = {
   paperSoft: 'surface-light bg-paper-soft',
 }
 
+/**
+ * THE SEAM — how one surface hands off to the next.
+ *
+ * Where the page flips between navy and white, a hard cut reads as two
+ * websites stapled together. `seam` bleeds the surface above a few
+ * centimetres into this one, so the eye crosses a threshold instead of hitting
+ * a wall. It is set explicitly, per section, because only the author of a page
+ * knows what came before it — and because two light sections in a row need
+ * nothing at all.
+ */
+const seams = {
+  /** This light section follows a dark one: the navy above casts down. */
+  fromDark: 'seam seam-from-dark',
+  /** This dark section follows a light one: the paper above glows down. */
+  fromLight: 'seam seam-from-light',
+}
+
 export function Section({
   children,
   id,
@@ -36,6 +53,7 @@ export function Section({
   tone = 'base',
   width = 'content',
   space = 'base',
+  seam,
 }: {
   children: React.ReactNode
   id?: string
@@ -43,10 +61,19 @@ export function Section({
   tone?: keyof typeof tones
   width?: 'content' | 'prose'
   space?: keyof typeof spaces
+  seam?: keyof typeof seams
 }) {
-
   return (
-    <section id={id} className={cn('scroll-mt-16', spaces[space], tones[tone], className)}>
+    <section
+      id={id}
+      className={cn(
+        'scroll-mt-16',
+        spaces[space],
+        tones[tone],
+        seam && seams[seam],
+        className,
+      )}
+    >
       <Container width={width}>{children}</Container>
     </section>
   )

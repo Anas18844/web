@@ -11,7 +11,7 @@ import { home } from '@/content/copy'
  */
 export function Outcome() {
   return (
-    <Section tone="deep" space="sm" width="prose" className="text-center">
+    <Section tone="deep" space="sm" width="prose" seam="fromLight" className="text-center">
       <div data-reveal>
         <span aria-hidden="true" className="trace-rule mx-auto mb-6 origin-center" />
         <h2 className="text-title font-extrabold text-ink">{home.outcome.title}</h2>

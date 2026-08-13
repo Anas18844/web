@@ -22,7 +22,7 @@ export function KnowledgeTeaser() {
   const latest = byDate.slice(0, 3)
 
   return (
-    <Section id="knowledge" tone="paperSoft">
+    <Section id="knowledge" tone="paperSoft" seam="fromDark">
       <div className="grid gap-10 md:grid-cols-[1fr_1.15fr] md:gap-14">
         <div data-reveal>
           <span aria-hidden="true" className="trace-rule mb-5" />

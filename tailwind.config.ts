@@ -60,6 +60,14 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['var(--font-cairo)', 'system-ui', 'sans-serif'],
+        /**
+         * Headlines only (h1/h2, wired up in globals.css). IBM Plex Sans Arabic
+         * was drawn for an engineering company: flat-cut terminals, tighter
+         * counters, less warmth than Cairo. Set beside Cairo's body text it
+         * reads as the technical voice against the teaching voice — which is
+         * exactly the two things this page is.
+         */
+        display: ['var(--font-display)', 'var(--font-cairo)', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         // The identity is built on sharp, angular cuts — no soft curves.

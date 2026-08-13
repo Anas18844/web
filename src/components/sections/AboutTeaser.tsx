@@ -44,7 +44,7 @@ function AnimatedValue({ value, className }: { value: string; className?: string
 
 export function AboutTeaser() {
   return (
-    <Section id="about-teaser" tone="paper">
+    <Section id="about-teaser" tone="paper" seam="fromDark">
       <div className="grid gap-9 md:grid-cols-[1.2fr_1fr] md:items-center md:gap-12">
         <div data-reveal>
           <span aria-hidden="true" className="trace-rule mb-5" />

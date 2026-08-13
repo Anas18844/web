@@ -22,7 +22,10 @@
      */
     --ink: 255 255 255;
     --ink-muted: 174 186 204;
-    --ink-faint: 126 140 163;
+    /* 4.9:1 on a raised card, the darkest surface it lands on. The previous
+       #7E8CA3 measured 4.25:1 there — under AA for the 12px meta text (dates,
+       reading times, field hints) this token exists to carry. */
+    --ink-faint: 138 151 173;
     --navy-line: 35 56 92;
     --navy-soft: 22 41 74;
     --surface-card: 22 41 74;
@@ -60,6 +63,18 @@
   body {
     @apply bg-navy text-ink font-sans antialiased;
     text-rendering: optimizeLegibility;
+  }
+
+  /**
+   * The display face is wired to the two heading levels that carry a section's
+   * argument, and nowhere else. h3 and below stay in Cairo — so the moment the
+   * type changes voice actually means something, rather than being the default
+   * everywhere. One rule here beats a `font-display` class on forty elements,
+   * and it cannot be forgotten on the forty-first.
+   */
+  h1,
+  h2 {
+    @apply font-display;
   }
 
   /* Arabic numerals render more consistently across devices with these settings. */
@@ -313,37 +328,6 @@
   }
 
   /* ───────────────────────────────────────────────────────────────────────
-   * MARQUEE — the trust strip as a slow conveyor (the Vercel logo-row move).
-   *
-   * Content is rendered twice and the track slides one copy's width, so the
-   * loop is seamless. Direction is physical `right` because the document is
-   * RTL — names should travel the way the reader's eye already moves.
-   * Pauses on hover; collapses to a static row under reduced motion.
-   * ─────────────────────────────────────────────────────────────────────── */
-  .marquee {
-    position: relative;
-    overflow: hidden;
-    -webkit-mask-image: linear-gradient(to left, transparent, black 8%, black 92%, transparent);
-    mask-image: linear-gradient(to left, transparent, black 8%, black 92%, transparent);
-  }
-
-  .marquee-track {
-    display: flex;
-    width: max-content;
-    animation: marquee 36s linear infinite;
-  }
-
-  .marquee:hover .marquee-track {
-    animation-play-state: paused;
-  }
-
-  @keyframes marquee {
-    to {
-      transform: translateX(50%);
-    }
-  }
-
-  /* ───────────────────────────────────────────────────────────────────────
    * SHINE — a light sweep across the primary button on hover.
    * One pass, 700ms, only on the solid-gold surface where it reads as
    * polished metal rather than as an effect.
@@ -416,17 +400,194 @@
   }
 
   /* ───────────────────────────────────────────────────────────────────────
-   * ORBIT BADGE — the rotating circular-text sticker.
-   * 24s per revolution; the play glyph in the middle stays upright.
+   * CIRCUIT PULSE — current running through the drawn traces.
+   *
+   * A 4%-long bright dash travelling the full length of a `pathLength=1` path,
+   * so one rule works on every trace regardless of its real length. It starts
+   * only after the draw-in has finished, and each trace is offset by its own
+   * `--pulse-delay` so the current staggers down the board instead of firing
+   * as one block. Stroke-dashoffset animation on five short paths is a handful
+   * of pixels of repaint per frame — this is not a filter or a shadow.
    * ─────────────────────────────────────────────────────────────────────── */
-  .orbit {
-    animation: orbit 24s linear infinite;
+  /* 4% lit, 100% dark — one short head with a long gap behind it, expressed
+     against `pathLength=1` so the same numbers work on a trace of any length. */
+  .circuit-pulse {
+    stroke-dasharray: 0.04 1;
+    opacity: 0;
   }
 
-  @keyframes orbit {
-    to {
-      transform: rotate(360deg);
+  .js [data-reveal].is-revealed .circuit-pulse {
+    animation: circuit-pulse 3.2s linear var(--pulse-delay, 0s) infinite;
+  }
+
+  @keyframes circuit-pulse {
+    0% {
+      opacity: 0;
+      stroke-dashoffset: 0.04;
     }
+    12%,
+    72% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      stroke-dashoffset: -1;
+    }
+  }
+
+  /* ───────────────────────────────────────────────────────────────────────
+   * THE PATH — the site's spine.
+   *
+   * The trace that opens every section, extended to the length of the whole
+   * document: one hairline pinned to the reader's edge (physical right, since
+   * the page is RTL), filling cyan-to-gold as they descend, with a lit head
+   * riding the leading edge. It is the circuit metaphor taken literally — the
+   * reader IS the current, and the page is the board.
+   *
+   * Driven entirely by `animation-timeline: scroll()`. There is no scroll
+   * listener, no rAF, no JavaScript of any kind; on a browser without support
+   * the fill simply never grows and the faint rail reads as a deliberate edge
+   * rule, which is a perfectly good outcome for a flourish.
+   * ─────────────────────────────────────────────────────────────────────── */
+  .page-spine {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    inset-inline-start: 0;
+    width: 2px;
+    z-index: 40;
+    pointer-events: none;
+    /* One fixed slate rather than the surface token. The spine is a single
+       element spanning a page that alternates navy and white, so a colour that
+       flips with the section under it is not available — this one is lighter
+       than the navy and darker than the paper, and reads on both. */
+    background: rgba(122, 142, 178, 0.4);
+  }
+
+  /* Where a desktop browser paints a classic scrollbar, a line flush to the
+     edge reads as part of it. Held off the edge by a clear margin instead, so
+     it is unmistakably a rule on the page. Phones have no visible scrollbar
+     and no width to spare, so there it stays flush. */
+  @media (min-width: 768px) {
+    .page-spine {
+      inset-inline-start: 1.125rem;
+    }
+  }
+
+  .page-spine-fill,
+  .page-spine-head {
+    position: absolute;
+    inset-inline: 0;
+  }
+
+  .page-spine-fill {
+    top: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, #48c8d5, rgba(203, 163, 82, 0.9));
+    transform: scaleY(0);
+    transform-origin: 50% 0;
+  }
+
+  .page-spine-head {
+    top: -5px;
+    height: 10px;
+    inset-inline: -4px;
+    opacity: 0;
+    background: radial-gradient(closest-side, rgba(72, 200, 213, 0.95), transparent);
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .page-spine-fill {
+      animation: spine-fill linear forwards;
+      animation-timeline: scroll(root block);
+    }
+
+    .page-spine-head {
+      opacity: 1;
+      animation: spine-head linear forwards;
+      animation-timeline: scroll(root block);
+    }
+  }
+
+  @keyframes spine-fill {
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes spine-head {
+    to {
+      transform: translateY(100vh);
+    }
+  }
+
+  /* ───────────────────────────────────────────────────────────────────────
+   * SEAMS — how one surface hands off to the next.
+   *
+   * The page alternates navy and white, and a hard cut between them reads as
+   * two websites stapled together. A seam bleeds the previous surface a few
+   * centimetres into the new one, so the eye crosses a threshold instead of
+   * hitting a wall. It is applied only where the surface actually flips —
+   * two light sections in a row need nothing.
+   *
+   * `z-index: -1` puts the gradient above the section's own background and
+   * below its content, which is the one place it can sit without either being
+   * painted over or painting over the text.
+   * ─────────────────────────────────────────────────────────────────────── */
+  .seam {
+    position: relative;
+  }
+
+  .seam::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset-inline: 0;
+    top: 0;
+    height: 8rem;
+    pointer-events: none;
+  }
+
+  /* Entering a light section from a dark one: the navy above casts down. */
+  .seam-from-dark::before {
+    background: linear-gradient(to bottom, rgba(10, 21, 38, 0.2), transparent 75%);
+  }
+
+  /* Entering a dark section from a light one: the paper above glows down. */
+  .seam-from-light::before {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.11), transparent 75%);
+  }
+
+  /* ───────────────────────────────────────────────────────────────────────
+   * DOCK — the floating action bar on small screens.
+   *
+   * A phone has no sticky sidebar and no room for a persistent header CTA, so
+   * once the hero's button has scrolled away the primary action is simply gone
+   * for the rest of a long page. The dock brings it back on glass, and — the
+   * part that matters — takes itself away again the moment the real form is on
+   * screen, because a floating "book now" button sitting on top of the booking
+   * form is an obstacle, not an offer.
+   * ─────────────────────────────────────────────────────────────────────── */
+  .dock {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 45;
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+    background: rgba(13, 27, 51, 0.72);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    backdrop-filter: blur(20px) saturate(150%);
+    padding: 0.7rem 1rem calc(0.7rem + env(safe-area-inset-bottom, 0px));
+    opacity: 0;
+    transform: translateY(115%);
+    transition:
+      transform var(--dur-base) var(--ease-trace),
+      opacity var(--dur-base) ease;
+  }
+
+  .dock[data-shown='true'] {
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -539,22 +700,113 @@
     animation: hero-rise 280ms var(--ease-trace) both;
   }
 
-  /* ── Headline words ───────────────────────────────────────────────────
-   * Each word rises out of its own clipped line-box; the cubic-bezier
-   * overshoots ~4% past home, which reads as a spring settling. Gated on
-   * `.js` exactly like the reveal system, but NOT on hydration — the
-   * animation is pure CSS, so it plays even if React never arrives. Without
-   * `.js`, the words simply stand still: the no-JS visitor gets a headline,
-   * not a wait.
+  /* ── Stroke headline ──────────────────────────────────────────────────
+   * The hero headline arrives as a gold outline and fills with white in one
+   * sweep from the right — the reading direction, and the same direction
+   * every trace on the site grows in. The outline is not removed afterwards;
+   * it stays as a hairline rim, which is the one place on the page where the
+   * gold touches the type itself.
+   *
+   * Why this and not the react-bits StrokeText component: that one splits the
+   * string into one <tspan> per character, which severs the cursive joins that
+   * Arabic is written with — «هفهمك» would render as five disconnected,
+   * wrongly-shaped letterforms. Here the h1 is never split, never replaced by
+   * an SVG, and never given role="img"; it is the same heading it always was,
+   * with a paint treatment on top. Arabic shaping, the document outline and
+   * text selection all survive, and it costs zero kilobytes of JavaScript on
+   * the element that measures LCP.
+   *
+   * The @supports gate matters: without background-clip the fill would never
+   * paint and `color: transparent` would leave an invisible headline. Any
+   * browser that cannot do this gets plain white text.
    * ─────────────────────────────────────────────────────────────────────── */
-  .js .hero-word {
-    transform: translateY(112%);
-    animation: word-rise 620ms cubic-bezier(0.2, 0.9, 0.3, 1.08) forwards;
+  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    .js .hero-stroke {
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(203, 163, 82, 0.85);
+      background-image: linear-gradient(
+        to left,
+        rgb(255 255 255) 44%,
+        rgb(255 255 255 / 0) 56%
+      );
+      background-repeat: no-repeat;
+      background-size: 220% 100%;
+      background-position: 0 0;
+      -webkit-background-clip: text;
+      background-clip: text;
+      animation: stroke-fill 1150ms var(--ease-trace) 220ms forwards;
+    }
   }
 
-  @keyframes word-rise {
+  @keyframes stroke-fill {
     to {
-      transform: translateY(0);
+      background-position: 100% 0;
+    }
+  }
+
+  /**
+   * Windows High Contrast and friends. Forced-colors mode strips background
+   * images, and this headline's entire fill IS a background image — leaving
+   * `color: transparent` behind would erase the first sentence on the site for
+   * exactly the readers who need it most. The treatment is dropped outright and
+   * the h1 goes back to being ordinary text in the user's chosen colours, which
+   * is the whole point of the mode.
+   */
+  @media (forced-colors: active) {
+    .js .hero-stroke {
+      color: CanvasText;
+      background-image: none;
+      -webkit-text-stroke: 0;
+      animation: none;
+    }
+  }
+
+  /* ── Hero parallax ────────────────────────────────────────────────────
+   * The photograph travels at roughly two-thirds the page's speed through the
+   * first screenful, so the copy lifts away from it and the hero gains a
+   * front and a back. The 1.08 scale is what pays for the drift: it puts 4%
+   * of overscan on each edge, so translating ±3% can never expose a gap.
+   *
+   * Scroll-driven CSS, so the LCP image is still a plain <img> that decodes
+   * and paints with nothing waiting on it — the transform is composited
+   * afterwards and costs no layout, no repaint and no main-thread work.
+   * ─────────────────────────────────────────────────────────────────────── */
+  @supports (animation-timeline: scroll()) {
+    @media (min-width: 1280px) {
+      .hero-media {
+        animation: hero-drift linear both;
+        animation-timeline: scroll(root block);
+        animation-range: 0 100vh;
+      }
+    }
+  }
+
+  @keyframes hero-drift {
+    from {
+      transform: translate3d(0, -3%, 0) scale(1.08);
+    }
+    to {
+      transform: translate3d(0, 3%, 0) scale(1.08);
+    }
+  }
+
+  /* ── Page transition ──────────────────────────────────────────────────
+   * Navigating between pages fades the new one in rather than swapping it.
+   * Opacity only, deliberately: a transform here would make this element the
+   * containing block for every `position: fixed` descendant of the page, and
+   * 260ms is short enough that the reveals underneath still read as the main
+   * event. Never runs on first load — see RouteFade.
+   * ─────────────────────────────────────────────────────────────────────── */
+  .route-fade {
+    animation: route-in 260ms var(--ease-trace) both;
+  }
+
+  @keyframes route-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
     }
   }
 
@@ -614,17 +866,32 @@
   }
 
   /* The blanket duration override above would collapse a scroll-driven
-     animation to its end state, so this one is switched off outright. */
-  .read-progress {
+     animation to its end state — a full progress bar, a spine drawn to the
+     bottom, a hero cropped as if it had already been scrolled past. Each of
+     these is switched off outright instead. */
+  .read-progress,
+  .page-spine-fill,
+  .page-spine-head,
+  .hero-media {
     animation: none !important;
+  }
+
+  /* The rail stays as a quiet edge rule; the lit head is pure motion and has
+     nothing to say standing still. */
+  .page-spine-head {
+    display: none;
   }
 
   /* Looping ambience has no "end state" worth jumping to — switch it off. */
   .aurora::before,
-  .aurora::after,
-  .marquee-track,
-  .orbit {
+  .aurora::after {
     animation: none !important;
+  }
+
+  /* The pulse is a moving highlight over a trace that is already drawn. With
+     the movement gone it would just be a stray dash sitting on the line. */
+  .circuit-pulse {
+    display: none !important;
   }
 
   /* The circuit ornament should simply be there, fully drawn. */

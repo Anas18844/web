@@ -29,7 +29,7 @@ export default function HomePage() {
       <Outcome />
       <KnowledgeTeaser />
       <ParentBridge />
-      <Capture intent="curriculum" pageContext="home" />
+      <Capture intent="curriculum" pageContext="home" seam="fromLight" />
     </>
   )
 }

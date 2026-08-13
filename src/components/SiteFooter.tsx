@@ -42,7 +42,10 @@ export function SiteFooter() {
 
   return (
     <footer className="border-t border-navy-line bg-navy-deep">
-      <Container className="py-14 sm:py-16">
+      {/* The extra bottom padding on phones is clearance for the floating dock,
+          which is still on screen on pages that have no form for it to retreat
+          behind. Without it the last line of the footer sits under the glass. */}
+      <Container className="pb-28 pt-14 sm:py-16">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr] lg:gap-12">
           {/* ── The mark ──────────────────────────────────────────────────── */}
           <div>

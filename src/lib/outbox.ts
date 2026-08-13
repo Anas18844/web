@@ -124,9 +124,22 @@ export async function flush(): Promise<{ sent: number; remaining: number }> {
       }
     }
 
-    write(keep)
-    schedule(keep)
-    return { sent, remaining: keep.length }
+    /**
+     * Merge, never overwrite.
+     *
+     * `jobs` was read before the network work began, and a student can submit
+     * while that work is still in flight. Writing the stale snapshot back
+     * would erase their lead — silently, after they had already been shown the
+     * confirmation. So anything that appeared in storage meanwhile is carried
+     * forward, and only the keys this pass actually handled are replaced.
+     */
+    const handled = new Set(jobs.map((j) => j.key))
+    const arrivedDuringFlush = read().filter((j) => !handled.has(j.key))
+    const next = [...keep, ...arrivedDuringFlush]
+
+    write(next)
+    schedule(next)
+    return { sent, remaining: next.length }
   } finally {
     flushing = false
   }

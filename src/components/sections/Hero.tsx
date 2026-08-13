@@ -14,9 +14,16 @@ import { assets } from '@/content/assets'
  * trust strip, the second button and the gold ambience were all removed in
  * August 2026 — three competing things in a hero is three ways to leave it.
  *
- * The headline rises word by word on load; that entrance is pure CSS so the
- * words exist, visible, in the first byte of HTML. This is the LCP text, and
- * animating it through a JS library would ship it hidden until hydration.
+ * The headline paints as a gold outline and fills white in one sweep. That
+ * entrance is pure CSS on the real <h1>, so the words exist, visible and
+ * selectable, in the first byte of HTML. This is the LCP text, and animating it
+ * through a JS library would ship it hidden until hydration.
+ *
+ * On wide screens the photograph drifts at about two-thirds the page's speed
+ * through the first screenful (`.hero-media`), which separates the portrait
+ * from the copy standing in front of it. Below `xl` the image is in the flow
+ * rather than behind the text, so there are no planes to separate and the
+ * parallax is switched off — it would only shift the crop.
  *
  * One <Image> serves both layouts: an in-flow band under `xl` (stacked, full
  * width) and a full background above it. The switch lives at `xl` because
@@ -29,7 +36,7 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-navy-line bg-navy-deep">
       {banner ? (
-        <div className="relative aspect-[4/3] w-full sm:aspect-[16/9] md:aspect-[5/2] xl:absolute xl:inset-0 xl:aspect-auto xl:h-full">
+        <div className="hero-media relative aspect-[4/3] w-full sm:aspect-[16/9] md:aspect-[5/2] xl:absolute xl:inset-0 xl:aspect-auto xl:h-full">
           <Image
             src={banner.src}
             alt={banner.alt}

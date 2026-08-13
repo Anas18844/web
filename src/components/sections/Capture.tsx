@@ -19,15 +19,19 @@ import type { Intent } from '@/content/site'
 export function Capture({
   intent = 'curriculum',
   pageContext = 'home',
+  seam,
 }: {
   intent?: Intent
   pageContext?: string
+  /** Set by the page when the section above this one is a light surface. */
+  seam?: 'fromLight'
 }) {
   return (
     <Section
       id="start"
       tone="deep"
       space="lg"
+      seam={seam}
       className="wash-top relative overflow-hidden border-t border-navy-line"
     >
       {/* The atmosphere returns for the finale — the same living background

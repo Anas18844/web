@@ -1,25 +1,46 @@
 import type { Metadata, Viewport } from 'next'
-import { Cairo } from 'next/font/google'
+import { Cairo, IBM_Plex_Sans_Arabic } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react'
 import { GoogleTagManager } from '@next/third-parties/google'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
 import { Reveal } from '@/components/Reveal'
+import { RouteFade } from '@/components/RouteFade'
+import { PageSpine } from '@/components/PageSpine'
+import { MobileDock } from '@/components/MobileDock'
 import { site } from '@/content/site'
 import './globals.css'
 
 /**
- * next/font downloads and self-hosts the font at build time, so there is not a
- * single request to an external domain at runtime (roadmap §3.4).
+ * next/font downloads and self-hosts both faces at build time, so there is not
+ * a single request to an external domain at runtime (roadmap §3.4).
  *
- * ⚠️ OPEN DECISION #2: the exact brand typeface is still TBD. Cairo matches the
- * documented direction (bold geometric Arabic sans). To swap it later, change
- * this import only — every component reads `var(--font-cairo)` through Tailwind.
+ * Two faces, two jobs. Cairo carries the reading — it is the calmest Arabic
+ * geometric sans at paragraph sizes and the site is mostly paragraphs. IBM Plex
+ * Sans Arabic carries the headlines only: it was drawn for an engineering
+ * company, its terminals are cut flat rather than rounded, and next to Cairo it
+ * reads as the technical voice against the teaching voice. That is the whole
+ * point of the pairing — the page is a programmer teaching, and the type says
+ * so before a word is read.
+ *
+ * Plex is loaded at ONE weight, and that is deliberate. Every h1 and h2 on this
+ * site is `font-extrabold`; Plex Sans Arabic tops out at 700, so 700 is what
+ * every heading resolves to and any other weight would be preloaded and never
+ * drawn. (No faux-bold results: browsers only synthesise when the matched face
+ * is under 600.) Cutting the second weight took ~47KB off the preload — real
+ * bytes on the critical path, spent on nothing.
  */
 const cairo = Cairo({
   subsets: ['arabic', 'latin'],
   display: 'swap',
   variable: '--font-cairo',
+})
+
+const display = IBM_Plex_Sans_Arabic({
+  subsets: ['arabic', 'latin'],
+  weight: ['700'],
+  display: 'swap',
+  variable: '--font-display',
 })
 
 export const metadata: Metadata = {
@@ -29,7 +50,7 @@ export const metadata: Metadata = {
     template: `%s — ${site.name}`,
   },
   description:
-    'اتعلّم البرمجة من حد بيشتغل بيها كل يوم. ٤ سنين تدريس في iSchool وأشبال مصر الرقمية ورواد، و٤ سنين شغل هندسي مع Microsoft Egypt وiTech Solutions. لطلاب أولى وتانية ثانوي.',
+    'اتعلّم البرمجة من حد بيشتغل بيها كل يوم. ٤ سنين تدريس في iSchool وأشبال مصر الرقمية، و٤ سنين شغل هندسي مع Microsoft Egypt — لطلاب أولى وتانية ثانوي.',
   applicationName: site.name,
   authors: [{ name: site.name }],
   creator: site.name,
@@ -75,7 +96,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={cairo.variable}>
+    <html lang="ar" dir="rtl" className={`${cairo.variable} ${display.variable}`}>
       {/*
        * Google Tag Manager — the single tag container for the whole site.
        * GA4 and any other tags are configured inside GTM, never pasted here,
@@ -97,11 +118,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main" className="skip-link">
           تخطَّ إلى المحتوى
         </a>
+        {/* The path — one trace down the reader's edge, filling as they
+            descend. Fixed, so it must sit outside <main>, where a page-level
+            transform could never become its containing block. */}
+        <PageSpine />
         <SiteHeader />
         <main id="main" className="flex-1">
-          {children}
+          <RouteFade>{children}</RouteFade>
         </main>
         <SiteFooter />
+        <MobileDock />
         <Reveal />
         <Analytics />
       </body>

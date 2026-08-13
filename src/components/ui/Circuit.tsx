@@ -29,6 +29,35 @@ export function Circuit({ className, flip = false }: { className?: string; flip?
       <g stroke="#48C8D5" strokeWidth="2">
         <path className="circuit-path" pathLength={1} d="M208 210v-46l96-96" />
       </g>
+
+      {/*
+        Current, once the board is drawn. Two traces carry a pulse, not six —
+        the motif should look powered, not like a fairground. They are separate
+        paths laid exactly over the ones above, so the trace keeps its own
+        steady colour and only the bright head moves.
+
+        The delays are longer than they look because `.circuit-pulse` starts
+        counting from the reveal, and the draw-in takes 1.6s before there is
+        anything to run current through.
+      */}
+      <g fill="none" strokeLinecap="round">
+        <path
+          className="circuit-pulse"
+          pathLength={1}
+          stroke="#48C8D5"
+          strokeWidth="3"
+          style={{ '--pulse-delay': '1.7s' } as React.CSSProperties}
+          d="M208 210v-46l96-96"
+        />
+        <path
+          className="circuit-pulse"
+          pathLength={1}
+          stroke="#F0DCA8"
+          strokeWidth="2.5"
+          style={{ '--pulse-delay': '2.9s' } as React.CSSProperties}
+          d="M88 210 88 160 150 98 150 12"
+        />
+      </g>
       <g fill="#CBA352">
         <circle className="circuit-node" cx="60" cy="24" r="4" />
         <circle className="circuit-node" cx="108" cy="56" r="4" />
