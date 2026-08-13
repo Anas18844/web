@@ -127,14 +127,6 @@ export default function PlatformPage() {
         </div>
       </Section>
 
-      <Section width="prose" space="sm">
-        <div data-reveal>
-          <span aria-hidden="true" className="trace-rule mb-5" />
-          <h2 className="text-title font-extrabold text-ink">{platform.cost.title}</h2>
-          <p className="mt-4 text-body text-ink-muted">{platform.cost.body}</p>
-        </div>
-      </Section>
-
       {/* The restraint that makes the offer credible. */}
       <Section tone="deep" width="prose">
         <div data-reveal className="border-s-2 border-gold ps-5 sm:ps-7">

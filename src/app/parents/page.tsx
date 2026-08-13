@@ -93,14 +93,6 @@ export default function ParentsPage() {
         )}
       </Section>
 
-      <Section width="prose" space="sm">
-        <div data-reveal>
-          <span aria-hidden="true" className="trace-rule mb-5" />
-          <h2 className="text-title font-extrabold text-ink">{parents.cost.title}</h2>
-          <p className="mt-4 text-body text-ink-muted">{parents.cost.body}</p>
-        </div>
-      </Section>
-
       <Section tone="deep" width="prose">
         <div data-reveal className="border-s-2 border-gold ps-5 sm:ps-7">
           <h2 className="text-title font-extrabold text-ink">{parents.transparency.title}</h2>

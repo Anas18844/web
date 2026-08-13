@@ -724,17 +724,36 @@
     .js .hero-stroke {
       color: transparent;
       -webkit-text-stroke: 1px rgba(203, 163, 82, 0.85);
+      /* A wide, soft boundary between filled and empty — 20% of the sweep is
+         the edge itself. A hard stop crosses the whole headline as a line; a
+         band this wide reads as the fill arriving, which is the thing worth
+         watching. */
       background-image: linear-gradient(
         to left,
-        rgb(255 255 255) 44%,
-        rgb(255 255 255 / 0) 56%
+        rgb(255 255 255) 40%,
+        rgb(255 255 255 / 0) 60%
       );
       background-repeat: no-repeat;
       background-size: 220% 100%;
       background-position: 0 0;
       -webkit-background-clip: text;
       background-clip: text;
-      animation: stroke-fill 1150ms var(--ease-trace) 220ms forwards;
+      /**
+       * This is the one animation on the site that does NOT use --ease-trace,
+       * and the reason is measurable. That curve is cubic-bezier(.16,1,.3,1):
+       * it reaches 94% of the way in the first second and then crawls through
+       * the remainder. On a reveal that is exactly right — the thing lands and
+       * settles. On a sweep it means the fill crosses the entire headline in a
+       * blink and then spends a second finishing a few pixels, which is what
+       * made this read as too fast no matter how long the duration was set to.
+       *
+       * An ease-in-out spends its time where the movement is: off the mark
+       * without hesitating, steady across the words, gentle into the last one.
+       * The lead-in is kept short on purpose — a fully symmetric curve held
+       * the headline at 2% for the best part of a second, which stops reading
+       * as anticipation and starts reading as a page that has not loaded.
+       */
+      animation: stroke-fill 1900ms cubic-bezier(0.32, 0, 0.32, 1) 240ms forwards;
     }
   }
 
@@ -762,10 +781,19 @@
   }
 
   /* ── Hero parallax ────────────────────────────────────────────────────
-   * The photograph travels at roughly two-thirds the page's speed through the
-   * first screenful, so the copy lifts away from it and the hero gains a
-   * front and a back. The 1.08 scale is what pays for the drift: it puts 4%
-   * of overscan on each edge, so translating ±3% can never expose a gap.
+   * The photograph travels slower than the page through the first screenful,
+   * so the copy lifts away from it and the hero gains a front and a back.
+   *
+   * It starts at translateY(0), and that is the correction that matters. The
+   * first version opened at -3% — the drift was centred on zero, so at rest
+   * the portrait sat three per cent higher than it was framed to, and the
+   * whole composition read as having been nudged upwards. The travel now runs
+   * downwards only from the photograph's true position: at the top of the page
+   * you see exactly the crop the image was composed for, and the movement is
+   * something that happens as you scroll rather than a state you arrive in.
+   *
+   * The 1.06 scale is what pays for that travel — 3% of overscan on each edge
+   * against 2.5% of drift, so the top can never open a gap.
    *
    * Scroll-driven CSS, so the LCP image is still a plain <img> that decodes
    * and paints with nothing waiting on it — the transform is composited
@@ -783,10 +811,10 @@
 
   @keyframes hero-drift {
     from {
-      transform: translate3d(0, -3%, 0) scale(1.08);
+      transform: translate3d(0, 0, 0) scale(1.06);
     }
     to {
-      transform: translate3d(0, 3%, 0) scale(1.08);
+      transform: translate3d(0, 2.5%, 0) scale(1.06);
     }
   }
 

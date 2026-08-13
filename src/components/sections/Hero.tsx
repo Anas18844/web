@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { Container } from '@/components/ui/Container'
 import { ButtonLink } from '@/components/ui/Button'
+import { Circuit } from '@/components/ui/Circuit'
 import { HeroIntro } from '@/components/motion/HeroIntro'
 import { Magnetic } from '@/components/motion/Magnetic'
 import { home } from '@/content/copy'
@@ -64,6 +65,25 @@ export function Hero() {
           }}
         />
       )}
+
+      {/* The same live circuit that opens every inner page, brought home.
+          The photograph already carries these traces as artwork on its right
+          side; this is the drawn version of them, in the corner where the
+          scrim is at its most opaque and there is nothing behind it to fight.
+          It draws itself as the page opens and then carries the two pulses,
+          so the motif the whole identity is built on is finally moving on the
+          first screen a visitor sees.
+
+          Desktop only. Below xl the hero is stacked — photograph on top, copy
+          beneath on flat navy — and there is no corner for it to occupy that
+          is not already someone's text. */}
+      <div
+        data-reveal
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-0 start-0 hidden opacity-40 xl:block"
+      >
+        <Circuit className="h-44 w-auto" />
+      </div>
 
       <Container className="relative py-12 sm:py-16 xl:py-28">
         <div className="xl:max-w-[56%]">
