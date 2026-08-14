@@ -64,6 +64,7 @@ export function SiteHeader() {
           {/* RTL end — physical LEFT: the primary action. */}
           <Link
             href="/#start"
+            data-cta="header"
             className="shrink-0 rounded bg-gold px-4 py-2 text-sm font-extrabold text-navy transition-[background-color,color,box-shadow,transform] duration-200 hover:bg-gold-deep hover:text-ink hover:shadow-[0_0_24px_-6px_rgba(203,163,82,0.8)] active:translate-y-px sm:px-5"
           >
             {common.nav.start}

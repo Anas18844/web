@@ -92,6 +92,41 @@ export function LeadForm({
     startOutbox()
   }, [])
 
+  /**
+   * The form reports itself as seen, once.
+   *
+   * Without this there is no denominator: `lead_started` on its own says how
+   * many students filled the form in, and nothing at all about how many looked
+   * at it and walked away — which is the number that says whether the problem
+   * is the traffic or the form.
+   *
+   * `once` is a ref rather than state because re-rendering on it would be a
+   * re-render of the whole form to change nothing visible, and because the
+   * observer disconnects itself the moment it fires anyway.
+   */
+  const formRef = useRef<HTMLFormElement>(null)
+  const reportedView = useRef(false)
+
+  useEffect(() => {
+    const node = formRef.current
+    if (!node || reportedView.current || typeof IntersectionObserver === 'undefined') return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || reportedView.current) return
+        reportedView.current = true
+        events.formViewed(pageContext)
+        observer.disconnect()
+      },
+      // A third of it on screen — scrolling past the top edge on the way to the
+      // footer is not "seeing the form".
+      { threshold: 0.33 },
+    )
+
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [pageContext])
+
   function applySameAsPhone(checked: boolean) {
     setSameAsPhone(checked)
     if (checked) {
@@ -163,6 +198,10 @@ export function LeadForm({
 
     if (Object.keys(next).length) {
       setErrors(next)
+      // Which of our own fields failed — never what was typed into them. One
+      // field dominating this event means that field is written wrong, not
+      // that students keep filling it in wrong.
+      events.formRejected(1, Object.keys(next))
       return
     }
 
@@ -201,6 +240,11 @@ export function LeadForm({
       setWhatsapp(normalizedPhone)
       setStep(2)
       setSending(false)
+      // Fired here rather than beside `leadStarted`, because reaching step two
+      // is what the student did and saving step one is what the server did.
+      // They come apart precisely when something is broken, which is the only
+      // time either number is interesting.
+      events.leadStep2Reached(intent, grade)
     }
   }
 
@@ -240,6 +284,7 @@ export function LeadForm({
 
     if (Object.keys(next).length) {
       setErrors(next)
+      events.formRejected(2, Object.keys(next))
       return
     }
 
@@ -315,6 +360,17 @@ export function LeadForm({
         },
         submissionKey.current,
       )
+      /**
+       * Two events, because two different things went wrong and only one of
+       * them is recoverable on its own.
+       *
+       * `leadRecoveryFailed` says the step-two answers did not reach the row —
+       * somebody has to chase that. `leadQueued` says the whole submission is
+       * now sitting on this student's device waiting for a network. Firing
+       * only the second would make an API outage look like a connectivity
+       * blip, which is how a broken server stays broken for a week.
+       */
+      events.leadRecoveryFailed(intent, captured.current.grade)
       events.leadQueued(intent, captured.current.grade)
       void flush()
       finish()
@@ -515,6 +571,7 @@ export function LeadForm({
      * nothing at all.
      */
     <form
+      ref={formRef}
       onSubmit={submitStep1}
       action="/api/lead"
       method="post"

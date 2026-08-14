@@ -5,6 +5,7 @@ import { Container } from '@/components/ui/Container'
 import { Section } from '@/components/ui/Section'
 import { ArticleBody } from '@/components/knowledge/ArticleBody'
 import { ArticleCard, Meta } from '@/components/knowledge/ArticleCard'
+import { ArticleAnalytics } from '@/components/ArticleAnalytics'
 import { JsonLd } from '@/components/JsonLd'
 import { pageGraph } from '@/lib/schema-org'
 import { knowledge } from '@/content/copy'
@@ -177,8 +178,13 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
               </ul>
             </footer>
           )}
+
+          {/* The finish line. Reaching this is what `article_read` means. */}
+          <div id="article-end" aria-hidden="true" className="h-px w-full" />
         </Section>
       </article>
+
+      <ArticleAnalytics slug={article.slug} category={article.category} />
 
       {related.length > 0 && (
         <Section tone="raised">

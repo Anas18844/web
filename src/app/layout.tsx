@@ -5,6 +5,7 @@ import { GoogleTagManager } from '@next/third-parties/google'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
 import { Reveal } from '@/components/Reveal'
+import { RouteAnalytics } from '@/components/RouteAnalytics'
 import { RouteFade } from '@/components/RouteFade'
 import { PageSpine } from '@/components/PageSpine'
 import { MobileDock } from '@/components/MobileDock'
@@ -129,6 +130,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteFooter />
         <MobileDock />
         <Reveal />
+        <RouteAnalytics />
         <Analytics />
       </body>
     </html>

@@ -21,7 +21,12 @@ export function ParentBridge() {
         <h2 className="text-xl font-extrabold text-ink sm:text-2xl">
           {home.parentBridge.title}
         </h2>
-        <ButtonLink href="/parents" variant="secondary" className="shrink-0">
+        <ButtonLink
+          href="/parents"
+          data-cta="parent_bridge"
+          variant="secondary"
+          className="shrink-0"
+        >
           {home.parentBridge.cta}
         </ButtonLink>
       </div>

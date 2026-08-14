@@ -50,7 +50,7 @@ export function AboutTeaser() {
           <span aria-hidden="true" className="trace-rule mb-5" />
           <h2 className="text-title font-extrabold text-ink">{home.aboutTeaser.title}</h2>
           <p className="mt-4 max-w-prose text-body text-ink-muted">{home.aboutTeaser.body}</p>
-          <ButtonLink href="/about" variant="secondary" className="mt-7">
+          <ButtonLink href="/about" data-cta="about_teaser" variant="secondary" className="mt-7">
             {home.aboutTeaser.cta}
           </ButtonLink>
         </div>

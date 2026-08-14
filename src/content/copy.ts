@@ -365,7 +365,7 @@ export const privacy = {
     description: 'إزاي بنتعامل مع البيانات اللي بتسيبها على الموقع.',
   },
   title: 'سياسة الخصوصية',
-  updated: 'آخر تحديث: يوليو ٢٠٢٦',
+  updated: 'آخر تحديث: أغسطس ٢٠٢٦',
   sections: [
     {
       title: 'إيه البيانات اللي بنجمعها؟',
@@ -378,6 +378,22 @@ export const privacy = {
     {
       title: 'بنشاركها مع حد؟',
       body: 'لأ. البيانات دي مش بتتباع ولا بتتشارك مع أي طرف تاني لأي سبب.',
+    },
+    /**
+     * Added with the measurement layer (August 2026), because the policy has to
+     * match what the system actually does — and the site now runs a tag manager
+     * that can forward to Google, Meta and TikTok. Saying nothing about that
+     * while the section above promises "no third party" would have made the
+     * whole page untrue.
+     *
+     * The promise below is not a wording choice, it is enforced: `redact()` in
+     * src/lib/analytics.ts strips identifying keys before anything reaches the
+     * dataLayer. If this paragraph ever has to change, that function is the
+     * thing that changed.
+     */
+    {
+      title: 'وأدوات القياس؟',
+      body: 'بنستخدم أدوات بتقولنا كام حد دخل الموقع، وجه منين، وقعد على أنهي صفحة، وضغط على أنهي زرار. الأدوات دي بتشوف سلوك مجهول الهوية — صفحات وضغطات وأرقام. اسمك ورقمك مابيوصلوش لها أبداً: البيانات اللي بتسيبها في الفورم بتروح لقاعدة بياناتنا بس، وبتفضل عندنا.',
     },
     {
       title: 'الطلاب تحت ١٨ سنة',

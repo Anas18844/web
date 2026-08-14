@@ -19,6 +19,8 @@
  * its own errors, because a broken outbox must never be able to break a form.
  */
 
+import { events } from '@/lib/analytics'
+
 const KEY = 'lead-outbox-v1'
 /** Older than this and the student has almost certainly enquired elsewhere. */
 const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000
@@ -139,6 +141,17 @@ export async function flush(): Promise<{ sent: number; remaining: number }> {
 
     write(next)
     schedule(next)
+
+    /**
+     * A lead that was stranded on a device has now landed. Reported without
+     * intent or year: this fires on a LATER page load than the submission, so
+     * the only thing known for certain here is that the delivery happened.
+     * Attaching a guess would be worse than attaching nothing.
+     */
+    if (sent > 0) {
+      for (let i = 0; i < sent; i++) events.leadRecovered()
+    }
+
     return { sent, remaining: next.length }
   } finally {
     flushing = false

@@ -29,7 +29,12 @@ export function KnowledgeTeaser() {
           <h2 className="text-title font-extrabold text-ink">{home.knowledge.title}</h2>
           <p className="mt-4 max-w-prose text-body text-ink-muted">{home.knowledge.body}</p>
 
-          <ButtonLink href="/knowledge" variant="secondary" className="mt-7">
+          <ButtonLink
+            href="/knowledge"
+            data-cta="knowledge_teaser"
+            variant="secondary"
+            className="mt-7"
+          >
             {home.knowledge.cta}
           </ButtonLink>
         </div>

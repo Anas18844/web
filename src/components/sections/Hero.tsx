@@ -96,7 +96,7 @@ export function Hero() {
               {/* The single action leans toward the cursor — spring physics on
                   the one element the whole page is pointing at. */}
               <Magnetic>
-                <ButtonLink href="/#start" className="px-8 text-lg">
+                <ButtonLink href="/#start" data-cta="hero" className="px-8 text-lg">
                   {home.hero.primaryCta}
                 </ButtonLink>
               </Magnetic>

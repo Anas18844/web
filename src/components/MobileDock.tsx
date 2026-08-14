@@ -109,6 +109,7 @@ export function MobileDock() {
       <div className="flex items-center gap-2.5">
         <Link
           href="/#start"
+          data-cta="dock"
           className="flex min-h-[3rem] flex-1 items-center justify-center rounded bg-gold px-5 text-base font-extrabold text-navy transition-[background-color,transform] duration-200 active:translate-y-px"
         >
           {common.nav.start}

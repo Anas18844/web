@@ -202,7 +202,7 @@ export default function AboutPage() {
           <span aria-hidden="true" className="trace-rule mx-auto mb-5 origin-center" />
           <h2 className="text-title font-extrabold text-ink">{about.cta.title}</h2>
           <p className="mx-auto mt-4 max-w-prose text-body text-ink-muted">{about.cta.body}</p>
-          <ButtonLink href="/#start" className="mt-8">
+          <ButtonLink href="/#start" data-cta="about_page" className="mt-8">
             {about.cta.button}
           </ButtonLink>
         </div>
