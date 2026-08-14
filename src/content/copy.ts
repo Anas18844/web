@@ -156,87 +156,12 @@ export const home = {
 } as const
 
 /**
- * The /platform page — "المنصة".
+ * ⚠️ REMOVED (August 2026): the `platform` export and the /platform page it fed.
  *
- * Framing rule inherited from the courses page: the platform is presented as
- * OPTIONAL, never as the thing that decides whether a student passes. Selling
- * it as essential would contradict the free-first model that the whole brand
- * rests on — so every section here keeps that boundary explicit.
- *
- * Feature list comes from the approved system description. The AI assistant is
- * deliberately absent: it is deferred and not in the first release, so
- * mentioning it would be a promise we cannot keep today.
+ * The platform itself has not gone anywhere — it is still what "نظام الشرح" on
+ * the home page describes, and the parents page still explains the follow-up it
+ * produces. What went is the standalone page arguing for it.
  */
-export const platform = {
-  meta: {
-    title: 'المنصة',
-    description:
-      'منصة فيها محرر أكواد بتشغّل فيه الكود، وتصحيح آلي للواجبات، وفيديو بيشرح غلطك إنت، والحصص والامتحانات، ومتابعة من التيم.',
-  },
-
-  hero: {
-    eyebrow: 'المنصة',
-    title: 'مكان واحد تذاكر فيه… وتتابَع فيه',
-    lead: 'المنصة مش بديل عن المحتوى المجاني ولا شرط عشان تنجح. هي مساحة لطالب عايز يشتغل أكتر ويتابعه حد فعلاً — مش يذاكر لوحده ويستنى النتيجة.',
-  },
-
-  forWho: {
-    title: 'المنصة دي لمين؟',
-    items: [
-      'عايز متابعة حقيقية مش يذاكر لوحده',
-      'عايز يحل أسئلة وواجبات أكتر من اللي في الفيديوهات',
-      'عايز يكتب كود ويشغّله ويصلّحه أكتر من مرة',
-      'عايز حد من التيم يمشي معاه خطوة خطوة',
-    ],
-    note: 'لو مش من دول — المحتوى المجاني على اليوتيوب هيكفيك، وده كلام بجد مش تواضع.',
-  },
-
-  features: {
-    title: 'إيه اللي جوّه المنصة؟',
-    items: [
-      {
-        title: 'محرر أكواد شغّال',
-        body: 'بتكتب الكود جوّه المنصة وتشغّله وتشوف نتيجته بنفسك على طول — من غير ما تنزّل أي برنامج على جهازك.',
-      },
-      {
-        title: 'تصحيح آلي فوري',
-        body: 'ترفع الواجب ويتصحّح أوتوماتيك. مش هتستنى حد يفضى يصححلك عشان تعرف إنت صح ولا غلط.',
-      },
-      {
-        title: 'فيديو تصحيح لغلطك إنت',
-        body: 'بعد التصحيح بيتفتح لك فيديو بيشرح الأسئلة اللي غلطت فيها بالتحديد — مش شرح عام للكل.',
-      },
-      {
-        title: 'الحصص والملازم',
-        body: 'كل الحصص والملازم متجمّعة في مكان واحد مرتّب، تفتحها في أي وقت من الموبايل أو اللاب.',
-      },
-      {
-        title: 'الواجبات والامتحانات',
-        body: 'واجبات بعد كل درس، وامتحانات دورية بتقيس مستواك فعلاً — مش بس بتديك درجة.',
-      },
-      {
-        title: 'مجتمع الطلاب',
-        body: 'مساحة تسأل فيها وتتناقش مع باقي الطلاب والمساعدين، بدل ما تفضل واقف عند سؤال لوحدك.',
-      },
-    ],
-  },
-
-  followUp: {
-    title: 'المتابعة — الجزء اللي بيفرق فعلاً',
-    body: 'المنصة مش بتسيبك تذاكر لوحدك. مستواك متتبَّع بالأرقام: حضورك، ونتايجك في الامتحانات القبلية، والتزامك بالواجبات.',
-    parent: 'ولطلاب المدارس، ولي الأمر بيوصله تقرير أسبوعي على الواتساب فيه الحضور والأداء — عشان محدش يستنى لآخر السنة يعرف هو واقف فين.',
-  },
-
-  honest: {
-    title: 'ونكررها تاني',
-    body: 'المنصة اختيار مش شرط. المحتوى المجاني على اليوتيوب كافي عشان تقفل الامتحان. المنصة بتفرق مع الطالب اللي عايز يشتغل أكتر ويتابعه حد — بس مش هي اللي هتقرر تنجح ولا لأ.',
-  },
-
-  cta: {
-    title: 'عايز تجرّب؟',
-    body: 'سيب بياناتك والفريق هيتواصل معاك ويشرحلك التفاصيل والأسعار قبل أي التزام.',
-  },
-} as const
 
 /**
  * The /about page — "مين مستر أنس".
@@ -472,7 +397,6 @@ export const privacy = {
 export const common = {
   nav: {
     home: 'الرئيسية',
-    platform: 'المنصة',
     knowledge: 'مركز المعرفة',
     about: 'مين مستر أنس',
     parents: 'لولي الأمر',

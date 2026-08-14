@@ -7,7 +7,6 @@ import { site } from '@/content/site'
 
 const NAV: NavItem[] = [
   { href: '/', label: common.nav.home },
-  { href: '/platform', label: common.nav.platform },
   { href: '/knowledge', label: common.nav.knowledge },
   { href: '/about', label: common.nav.about },
   { href: '/parents', label: common.nav.parents },

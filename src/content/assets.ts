@@ -97,11 +97,9 @@ export const assets = {
   /** A real teaching clip — the strongest single proof for a student. */
   teachingSample: null as VideoAsset | null,
 
-  /** The platform in real use: code → run → auto-grade → correction video. */
-  platformDemo: null as VideoAsset | null,
-
-  /** Stills of the platform, for visitors who will not play a video. Max 2. */
-  platformStills: [] as ImageAsset[],
+  /* `platformDemo` and `platformStills` were removed with the /platform page —
+     nothing renders them any more, and an asset slot nothing reads is a slot
+     someone eventually fills for nothing. */
 
   /** Weekly parent report sample — the strongest single asset for a parent. */
   parentReportSample: null as ImageAsset | null,

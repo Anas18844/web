@@ -20,7 +20,6 @@ const link =
   'after:bg-gold after:transition-transform after:duration-200 after:ease-out hover:after:scale-x-100'
 
 const PAGES = [
-  { href: '/platform', label: common.nav.platform },
   { href: '/knowledge', label: common.nav.knowledge },
   { href: '/about', label: common.nav.about },
   { href: '/parents', label: common.nav.parents },
