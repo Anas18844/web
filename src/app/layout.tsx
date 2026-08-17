@@ -7,6 +7,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { Reveal } from '@/components/Reveal'
 import { RouteAnalytics } from '@/components/RouteAnalytics'
 import { RouteFade } from '@/components/RouteFade'
+import { SiteChrome } from '@/components/SiteChrome'
 import { PageSpine } from '@/components/PageSpine'
 import { MobileDock } from '@/components/MobileDock'
 import { site } from '@/content/site'
@@ -116,19 +117,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script
           dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }}
         />
-        <a href="#main" className="skip-link">
-          تخطَّ إلى المحتوى
-        </a>
-        {/* The path — one trace down the reader's edge, filling as they
-            descend. Fixed, so it must sit outside <main>, where a page-level
-            transform could never become its containing block. */}
-        <PageSpine />
-        <SiteHeader />
+        {/*
+         * Everything inside SiteChrome is the marketing shell, and it is absent
+         * on /dashboard — a signed-in team member looking at student records
+         * does not need a "book now" bar following them down the page.
+         */}
+        <SiteChrome>
+          <a href="#main" className="skip-link">
+            تخطَّ إلى المحتوى
+          </a>
+          {/* The path — one trace down the reader's edge, filling as they
+              descend. Fixed, so it must sit outside <main>, where a page-level
+              transform could never become its containing block. */}
+          <PageSpine />
+          <SiteHeader />
+        </SiteChrome>
+
         <main id="main" className="flex-1">
           <RouteFade>{children}</RouteFade>
         </main>
-        <SiteFooter />
-        <MobileDock />
+
+        <SiteChrome>
+          <SiteFooter />
+          <MobileDock />
+        </SiteChrome>
+
         <Reveal />
         <RouteAnalytics />
         <Analytics />
