@@ -121,6 +121,9 @@ for (const account of accounts) {
       role: account.role,
       active: true,
       must_change_password: true,
+      // Null, not now(): this column means "when the owner last chose their
+      // own password", and an issued one was not chosen by them.
+      password_changed_at: null,
     },
     { onConflict: 'email' },
   )
