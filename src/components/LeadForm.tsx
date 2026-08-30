@@ -398,7 +398,7 @@ export function LeadForm({
       >
         <p className="text-xl font-extrabold text-gold">{common.form.successTitle}</p>
         <p className="mt-3 text-body text-ink-muted">
-          {common.form.successBody} {site.responsePromise}.
+          {common.form.successBody}
         </p>
 
         {/*

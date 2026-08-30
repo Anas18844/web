@@ -76,7 +76,9 @@ export const site = {
    * Non-numeric until the founder commits to a number — a published promise
    * must always be kept (Principle 10).
    */
-  responsePromise: 'وهنتواصل معاك على الواتساب في أقرب وقت',
+  /* `responsePromise` was removed in August 2026 along with the sentence it
+     completed. It promised a response time on the confirmation screen, which
+     is the one place a promise like that is read as a countdown. */
 } as const
 
 /**

@@ -460,7 +460,16 @@ export const common = {
     submit: 'ابعت',
     submitting: 'بنبعت…',
     successTitle: 'وصلنا طلبك ✓',
-    successBody: 'هنبعتلك رسالة تأكيد على الواتساب دلوقتي،',
+    /**
+     * Was: "هنبعتلك رسالة تأكيد على الواتساب دلوقتي، وهنتواصل معاك في أقرب وقت."
+     *
+     * That sentence made a promise about OUR timing, on a screen where we do
+     * not control it — and a student who is told a message is coming "now"
+     * starts counting the minutes. This hands the next move to them instead:
+     * the channel below carries the news, and this line says where to go with
+     * a question.
+     */
+    successBody: 'لو محتاج تعرف أي تفاصيل، ابعتلنا على الواتساب في أي وقت.',
     whatsappCta: 'أو كلّمنا على الواتساب دلوقتي',
 
     /**

@@ -28,7 +28,7 @@ export default function ThanksPage() {
       <span aria-hidden="true" className="trace-rule mx-auto mb-6 origin-center" />
       <h1 className="text-title font-extrabold text-gold">{common.form.successTitle}</h1>
       <p className="mx-auto mt-4 max-w-prose text-body text-ink-muted">
-        {common.form.successBody} {site.responsePromise}.
+        {common.form.successBody}
       </p>
 
       <div className="mx-auto mt-8 flex max-w-sm flex-col gap-3">

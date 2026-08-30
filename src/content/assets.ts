@@ -103,4 +103,29 @@ export const assets = {
 
   /** Weekly parent report sample — the strongest single asset for a parent. */
   parentReportSample: null as ImageAsset | null,
+
+  /**
+   * The WhatsApp channel's own picture, shown on the confirmation screen.
+   *
+   * It has to be the SAME image the channel itself uses. A student taps
+   * "تابع القناة" and lands in WhatsApp a second later; if the picture there
+   * does not match the one they just tapped, the moment reads as a wrong link
+   * rather than as arriving — and this is the one screen where a student has
+   * already trusted us with a phone number.
+   *
+   * Square, because WhatsApp crops channel pictures to a circle and anything
+   * else loses its edges. NULL until the file lands, and the card renders
+   * perfectly well without it.
+   *
+   * ✅ AVAILABLE — the same portrait the channel itself uses, resized to 512
+   * and flattened onto the brand navy (the source carried an alpha channel,
+   * and a transparent pixel behind a circular crop is the sort of thing that
+   * looks fine everywhere except the one browser that fills it white).
+   */
+  whatsappChannel: {
+    src: '/images/whatsapp-channel.png',
+    alt: 'قناة مستر أنس أحمد على واتساب',
+    width: 512,
+    height: 512,
+  } as ImageAsset | null,
 } as const
