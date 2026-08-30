@@ -17,6 +17,7 @@ import { EG_MOBILE, normalizePhone } from '@/lib/phone'
 import { nameError } from '@/lib/name'
 import { enqueue, flush, startOutbox } from '@/lib/outbox'
 import { WhatsAppButton } from '@/components/WhatsAppButton'
+import { WhatsAppChannel } from '@/components/WhatsAppChannel'
 import { cn } from '@/lib/utils'
 
 type FieldKey = 'name' | 'phone' | 'whatsapp' | 'grade' | 'attendance' | 'branch' | 'heardFrom'
@@ -399,7 +400,19 @@ export function LeadForm({
         <p className="mt-3 text-body text-ink-muted">
           {common.form.successBody} {site.responsePromise}.
         </p>
-        <WhatsAppButton context={pageContext} variant="secondary" className="mt-6">
+
+        {/*
+          The channel goes ABOVE the "talk to us" button, and that order is the
+          point. A student who has just booked has no question yet — they have
+          a wait. Following the channel is the thing to do with that wait, and
+          messaging us is the fallback for the minority who do have something
+          to ask.
+        */}
+        <div className="mt-6">
+          <WhatsAppChannel context={`${pageContext}_confirmed`} />
+        </div>
+
+        <WhatsAppButton context={pageContext} variant="secondary" className="mt-4">
           {common.form.whatsappCta}
         </WhatsAppButton>
       </div>
@@ -508,8 +521,19 @@ export function LeadForm({
                 <option value="" disabled>
                   {common.form.branchPlaceholder}
                 </option>
+                {/*
+                  A full branch stays visible and is not selectable, with no
+                  label explaining why. That is deliberate on both counts: the
+                  student learns we are in their area, and is not told the
+                  door is shut — the team decides what to say about a waiting
+                  list, not a dropdown.
+                */}
                 {BRANCHES.map((b) => (
-                  <option key={b.value} value={b.value}>
+                  <option
+                    key={b.value}
+                    value={b.value}
+                    disabled={'closed' in b && b.closed}
+                  >
                     {b.label}
                   </option>
                 ))}

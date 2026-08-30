@@ -117,6 +117,13 @@ export function LeadFields({
           so offering it here would only produce an error later. */}
       {attendance === 'center' && (
         <Row id="branch" label="الفرع">
+          {/*
+            Deliberately ignores the `closed` flag that disables full branches
+            on the public form. The team still has to be able to record a
+            student at a branch that is not taking sign-ups — someone already
+            enrolled, or a name held for the next place that opens. Locking
+            this select would make those students unrecordable.
+          */}
           <select id="branch" name="branch" defaultValue={v('branch')} className={field}>
             <option value="">اختار…</option>
             {BRANCHES.map((b) => (

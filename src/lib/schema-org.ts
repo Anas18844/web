@@ -71,6 +71,25 @@ export function organizationSchema() {
       'تعليم البرمجة والذكاء الاصطناعي لطلاب الصف الأول والثاني الثانوي — بشرح من مهندس ممارس، ونظام متابعة فيه امتحان تقييمي كل حصة ومشرف مخصص لكل طالب وتصحيح للواجب سؤالاً بسؤال.',
     founder: { '@id': PERSON_ID },
     areaServed: { '@type': 'Country', name: 'مصر' },
+    /**
+     * The mark, stated explicitly.
+     *
+     * A <link rel="icon"> tells a BROWSER what to put in the tab. It is not
+     * what tells Google which image belongs to this organisation — that comes
+     * from here, and its absence is why a search result can show a blank
+     * square next to a site whose favicon is working perfectly.
+     *
+     * `logo` must be a real, crawlable, absolute URL. `/icon.png` is the 192px
+     * square generated from the brand mark on the brand navy; a transparent or
+     * non-square file is the usual reason this silently does nothing.
+     */
+    logo: {
+      '@type': 'ImageObject',
+      url: `${site.url}/icon.png`,
+      width: 192,
+      height: 192,
+    },
+    image: `${site.url}/icon.png`,
     ...(sameAs().length ? { sameAs: sameAs() } : {}),
   }
 }

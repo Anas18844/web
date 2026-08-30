@@ -30,6 +30,20 @@ export const site = {
     /** International format, digits only — used to build wa.me links. */
     number: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '201039356737',
     display: '0103 935 6737',
+    /**
+     * The announcements CHANNEL — one-way, not a group.
+     *
+     * The distinction matters for what the site is allowed to say about it:
+     * a student who follows this does not join a room where other students can
+     * see them, and their number is not shown to anyone. Calling it a "group"
+     * would promise the opposite of what it does.
+     *
+     * Offered at the end of the form, where it is the natural next step rather
+     * than a second thing competing with the one action the page wants.
+     */
+    channel:
+      process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL ||
+      'https://whatsapp.com/channel/0029VbDIp68HQbS2zYldQ317',
   },
 
   email: process.env.NEXT_PUBLIC_EMAIL || 'eng.anas.ai.official@gmail.com',
@@ -98,11 +112,24 @@ export const ATTENDANCE = [
   { value: 'center', label: 'سنتر' },
 ] as const
 
-/** Centre branches — asked only when attendance is `center`. */
+/**
+ * Centre branches — asked only when attendance is `center`.
+ *
+ * `closed` marks a branch that has filled up. It stays in the list and is
+ * still shown, because the list is also the only place the site says where
+ * these centres ARE — removing a full branch would tell a student in حدائق
+ * حلوان that we are not in their area at all, which is both untrue and the
+ * more expensive mistake.
+ *
+ * The public form renders these as disabled options and says nothing about
+ * why. The DASHBOARD ignores the flag entirely: the team still has to be able
+ * to record a student at a full branch, whether that is someone already
+ * enrolled or a name being kept for when a place opens.
+ */
 export const BRANCHES = [
   { value: 'helwan', label: 'حلوان' },
-  { value: 'hadayek_helwan', label: 'حدائق حلوان' },
-  { value: 'may15', label: 'مدينة ١٥ مايو' },
+  { value: 'hadayek_helwan', label: 'حدائق حلوان', closed: true },
+  { value: 'may15', label: 'مدينة ١٥ مايو', closed: true },
   { value: 'other', label: 'مكان تاني' },
 ] as const
 

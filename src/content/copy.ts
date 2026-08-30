@@ -463,6 +463,18 @@ export const common = {
     successBody: 'هنبعتلك رسالة تأكيد على الواتساب دلوقتي،',
     whatsappCta: 'أو كلّمنا على الواتساب دلوقتي',
 
+    /**
+     * The channel comes FIRST on the confirmation screen, above the "talk to
+     * us" button. A student who has just booked does not have a question yet —
+     * they have a wait. This gives that wait somewhere to go, and it is the
+     * one moment on the site where a student is guaranteed to be paying
+     * attention.
+     */
+    channelTitle: 'تابع القناة عشان توصلك كل الأخبار',
+    channelBody:
+      'المواعيد والمجموعات وأي تحديث بينزل هناك الأول. قناة إعلانات — إنت بتتابع بس، ورقمك مش بيظهر لحد.',
+    channelCta: 'تابع القناة على واتساب',
+
     errorGeneric: 'حصلت مشكلة وإحنا بنبعت. جرّب تاني، أو كلّمنا على الواتساب.',
     errorNameEmpty: 'اكتب اسم الطالب من فضلك',
     errorNameArabic: 'اكتب الاسم بالعربي من فضلك',

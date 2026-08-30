@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Section } from '@/components/ui/Section'
 import { ButtonLink } from '@/components/ui/Button'
 import { WhatsAppButton } from '@/components/WhatsAppButton'
+import { WhatsAppChannel } from '@/components/WhatsAppChannel'
 import { common, home } from '@/content/copy'
 import { site } from '@/content/site'
 
@@ -31,7 +32,8 @@ export default function ThanksPage() {
       </p>
 
       <div className="mx-auto mt-8 flex max-w-sm flex-col gap-3">
-        <WhatsAppButton context="thanks" variant="whatsapp">
+        <WhatsAppChannel context="thanks" />
+        <WhatsAppButton context="thanks" variant="secondary">
           {home.capture.whatsappCta}
         </WhatsAppButton>
         <ButtonLink href="/" variant="secondary">

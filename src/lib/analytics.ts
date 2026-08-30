@@ -171,6 +171,14 @@ export const events = {
 
   // ── Everything else ───────────────────────────────────────────────────────
   whatsappClicked: (context: string) => emit('whatsapp_clicked', { context }),
+
+  /**
+   * Followed the announcements channel. Separate from `whatsapp_clicked`
+   * because it answers a question that one cannot: of the students who booked,
+   * how many put themselves somewhere we can reach them again without paying
+   * for the reach.
+   */
+  channelFollowed: (context: string) => emit('channel_followed', { context }),
   proofViewed: (proof: string) => emit('proof_viewed', { proof }),
 
   /** A Knowledge Center article was opened, and how far it was read. */
