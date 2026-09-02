@@ -9,6 +9,14 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 /**
+ * Marking calls an external model and may retry it, so this needs more than the
+ * platform default. The grader's own budget (25s) sits well inside this, which
+ * is the ordering that matters: the grader must give up and fall back to word
+ * matching BEFORE the platform gives up and returns a 504 with no result at all.
+ */
+export const maxDuration = 60
+
+/**
  * Marks a homework paper and records the result.
  *
  * ⚠️ ALL marking happens here, on the server, and that is the point.
