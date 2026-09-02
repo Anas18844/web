@@ -181,6 +181,23 @@ export const events = {
   channelFollowed: (context: string) => emit('channel_followed', { context }),
   proofViewed: (proof: string) => emit('proof_viewed', { proof }),
 
+  // ── Homework ──────────────────────────────────────────────────────────────
+  /** Opened a paper and started answering. The denominator for completion. */
+  homeworkStarted: (slug: string, grade: string) =>
+    emit('homework_started', { slug, grade }),
+
+  /**
+   * Submitted a paper. `recorded` says whether the student attached a phone so
+   * the score counts — the gap between started, submitted and recorded is the
+   * whole picture of whether the homework is reaching booked students or only
+   * being used by people who never book.
+   *
+   * The SCORE is deliberately not reported. A mark is about one identifiable
+   * student, and this event goes to Google, Meta and TikTok.
+   */
+  homeworkSubmitted: (slug: string, grade: string, recorded: boolean) =>
+    emit('homework_submitted', { slug, grade, recorded }),
+
   /** A Knowledge Center article was opened, and how far it was read. */
   articleOpened: (slug: string, category: string) =>
     emit('article_opened', { slug, category }),

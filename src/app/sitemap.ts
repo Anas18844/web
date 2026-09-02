@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next'
 import { site } from '@/content/site'
 import { byDate } from '@/content/knowledge'
+import { HOMEWORK } from '@/content/homework'
+import { SUMMARIES } from '@/content/summaries'
 
 /**
  * When the static pages last actually changed.
@@ -23,6 +25,30 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 1,
     },
+    {
+      url: `${site.url}/summary`,
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    ...SUMMARIES.map((s) => ({
+      url: `${site.url}/summary/${s.slug}`,
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    })),
+    {
+      url: `${site.url}/homework`,
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    ...HOMEWORK.map((hw) => ({
+      url: `${site.url}/homework/${hw.slug}`,
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    })),
     {
       url: `${site.url}/about`,
       lastModified: CONTENT_UPDATED,

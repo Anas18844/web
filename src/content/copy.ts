@@ -413,6 +413,8 @@ export const privacy = {
 export const common = {
   nav: {
     home: 'الرئيسية',
+    summary: 'الملخصات',
+    homework: 'الواجبات',
     knowledge: 'مركز المعرفة',
     about: 'مين مستر أنس',
     parents: 'لولي الأمر',
