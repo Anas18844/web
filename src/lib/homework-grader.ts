@@ -27,9 +27,11 @@ import 'server-only'
  * strictly worse than a paper marked by word-matching. So the budget is the
  * hard ceiling and every attempt is cut to whatever is left of it.
  */
-const TOTAL_BUDGET_MS = 25_000
+const TOTAL_BUDGET_MS = 45_000
 /** No single attempt may eat the whole budget and leave nothing for a retry. */
-const ATTEMPT_TIMEOUT_MS = 12_000
+// A full ten-essay prompt measured 14.8s without a schema, so a 12s cap
+// was aborting calls that were about to succeed.
+const ATTEMPT_TIMEOUT_MS = 22_000
 
 /**
  * Waits between attempts. Short, because a student is watching a spinner —
@@ -54,7 +56,17 @@ const RETRY_DELAYS_MS = [700, 1800]
 const MODELS: string[] = (
   process.env.GEMINI_MODELS ||
   process.env.GEMINI_MODEL ||
-  'gemini-flash-latest,gemini-2.5-flash,gemini-2.0-flash'
+  // Only what this account can actually SERVE, probed directly:
+  //   gemini-flash-latest    → 200
+  //   gemini-2.5-flash       → 404 "no longer available to serve"
+  //   gemini-2.5-flash-lite  → 404 "no longer available to serve"
+  //   gemini-pro-latest      → 429 quota exceeded
+  //
+  // Note that listing a model is NOT the same as being able to call it —
+  // /v1beta/models happily returns models that then 404 on generateContent.
+  // Every extra entry here costs a student a wasted attempt, so the list stays
+  // at what was verified.
+  'gemini-flash-latest'
 )
   .split(',')
   .map((m) => m.trim())
@@ -82,6 +94,20 @@ function isRetryable(error: unknown): boolean {
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+/**
+ * ⚠️ There was a check here that REFUSED keys beginning `AQ.`, on the theory
+ * that they were ephemeral Live-API tokens which can list models but not
+ * generate. That theory was wrong, and it was tested against the real key
+ * before shipping only by luck:
+ *
+ *   POST gemini-flash-latest:generateContent  →  200  (1.7s, then 5.1s)
+ *
+ * The key generates perfectly well. The production failures were capacity —
+ * 503 "high demand" and slow responses — which is what the retry loop below
+ * exists for. Judging a credential by the shape of its prefix would have
+ * broken a working deployment to fix a problem that was never there.
+ */
 
 /** A mark at or above this counts the essay as correct. */
 export const PASS_THRESHOLD = 60
@@ -167,6 +193,45 @@ function buildPrompt(items: EssayItem[]): string {
 ${lines}`
 }
 
+/**
+ * Pulls the JSON array out of a free-text reply.
+ *
+ * Without structured output the model returns prose that CONTAINS JSON, and it
+ * commonly wraps it in a ```json fence or adds a sentence before it. Parsing
+ * the whole string fails on both, so the fence is stripped and, failing that,
+ * the outermost [ … ] is sliced out.
+ *
+ * Returns null rather than throwing: the caller treats that as a failed
+ * attempt and either retries or falls back to word matching, which is the same
+ * path every other upstream problem takes.
+ */
+function extractJsonArray(text: string): { n: number; match: number; note?: string }[] | null {
+  const candidates = [
+    text,
+    // ```json … ```  or  ``` … ```
+    text.replace(/^[\s\S]*?```(?:json)?\s*/i, '').replace(/```[\s\S]*$/, ''),
+    // The outermost bracketed run, for a reply with commentary around it.
+    (() => {
+      const start = text.indexOf('[')
+      const end = text.lastIndexOf(']')
+      return start >= 0 && end > start ? text.slice(start, end + 1) : ''
+    })(),
+  ]
+
+  for (const candidate of candidates) {
+    const trimmed = candidate.trim()
+    if (!trimmed) continue
+    try {
+      const parsed = JSON.parse(trimmed)
+      if (Array.isArray(parsed)) return parsed
+    } catch {
+      /* try the next shape */
+    }
+  }
+
+  return null
+}
+
 async function callGemini(
   items: EssayItem[],
   budgetMs: number,
@@ -185,6 +250,24 @@ async function callGemini(
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-goog-api-key': key },
         signal: controller.signal,
+        /**
+         * ⚠️ NO `responseMimeType` and NO `responseSchema`, and that is load
+         * bearing rather than an oversight.
+         *
+         * This account cannot use structured output. Asking for it returns
+         * 503 "this model is currently experiencing high demand" — a capacity
+         * message for what is actually a capability limit, which is why this
+         * looked for so long like Google being busy. Probed directly:
+         *
+         *   tiny prompt, no schema        → 200
+         *   tiny prompt + json mime type  → 503
+         *   tiny prompt + responseSchema  → 503
+         *   BIG prompt,  no schema        → 200
+         *   BIG prompt + responseSchema   → 503
+         *
+         * Prompt size is irrelevant; the schema is the whole difference. So the
+         * JSON is requested in the prompt and parsed out of the reply instead.
+         */
         body: JSON.stringify({
           contents: [{ parts: [{ text: buildPrompt(items) }] }],
           generationConfig: {
@@ -192,19 +275,6 @@ async function callGemini(
             // student comparing with a friend must not find the marker
             // disagreed with itself.
             temperature: 0,
-            responseMimeType: 'application/json',
-            responseSchema: {
-              type: 'ARRAY',
-              items: {
-                type: 'OBJECT',
-                properties: {
-                  n: { type: 'INTEGER' },
-                  match: { type: 'INTEGER' },
-                  note: { type: 'STRING' },
-                },
-                required: ['n', 'match'],
-              },
-            },
           },
         }),
       },
@@ -214,8 +284,10 @@ async function callGemini(
 
     const data = await res.json()
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text
-    const parsed = JSON.parse(text)
-    if (!Array.isArray(parsed)) throw new Error('unexpected response shape')
+    if (typeof text !== 'string') throw new Error('no text in response')
+
+    const parsed = extractJsonArray(text)
+    if (!parsed) throw new Error(`could not parse JSON from reply: ${text.slice(0, 120)}`)
     return parsed
   } finally {
     clearTimeout(timer)

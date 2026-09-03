@@ -24,26 +24,25 @@ export const maxDuration = 60
  */
 
 /**
- * The key's FAMILY, not the key.
+ * The key's shape, for the record — NOT a verdict on it.
  *
- * This distinction is the whole reason the endpoint exists. Google AI Studio
- * keys start `AIza`. A value starting `AQ.` is an ephemeral token issued for
- * the Live API — it authenticates well enough to list models and is not valid
- * for `generateContent`, which is exactly the "GET works, POST does not"
- * symptom recorded in the original homework README.
+ * An earlier version of this function declared an `AQ.`-prefixed key invalid
+ * and told the reader to go and make a new one. That was wrong: the key was
+ * probed directly and returns 200 from generateContent. The prefix says
+ * nothing useful about whether a key works, and a diagnostic that confidently
+ * misdiagnoses is worse than one that says nothing — it sends someone to
+ * re-issue a credential that was never the problem.
+ *
+ * The probes below answer the question. This just records what was configured.
  */
 function describeKey(key: string | undefined) {
-  if (!key) return { present: false, family: null, length: 0 }
-
-  const family = key.startsWith('AIza')
-    ? 'AIza… — a standard AI Studio API key'
-    : key.startsWith('AQ.')
-      ? '⚠️ AQ.… — an EPHEMERAL Live-API token, not an API key. It can list models but cannot generate. Create a normal key in Google AI Studio.'
-      : key.startsWith('ya29.')
-        ? '⚠️ ya29.… — an OAuth access token, not an API key.'
-        : 'unrecognised prefix'
-
-  return { present: true, family, length: key.length }
+  if (!key) return { present: false, prefix: null, length: 0 }
+  return {
+    present: true,
+    prefix: `${key.slice(0, 4)}…`,
+    length: key.length,
+    note: 'The prefix is informational. Only the probes below say whether it works.',
+  }
 }
 
 export async function GET(request: Request) {
@@ -51,7 +50,7 @@ export async function GET(request: Request) {
   const models = (
     process.env.GEMINI_MODELS ||
     process.env.GEMINI_MODEL ||
-    'gemini-flash-latest,gemini-2.5-flash,gemini-2.0-flash'
+    'gemini-flash-latest'
   )
     .split(',')
     .map((m) => m.trim())
@@ -89,8 +88,13 @@ export async function GET(request: Request) {
       status: res.status,
       ms: Date.now() - listStarted,
       modelCount: names.length,
-      // Only whether the models we intend to call are actually available.
-      configuredModelsAvailable: models.map((m) => ({ model: m, available: names.includes(m) })),
+      /**
+       * Listed is NOT the same as callable. This account lists
+       * `gemini-2.5-flash` and then returns 404 "no longer available to serve"
+       * when it is actually called, so this field is deliberately named for
+       * what it measures rather than for what a reader would like it to mean.
+       */
+      configuredModelsListed: models.map((m) => ({ model: m, listed: names.includes(m) })),
       error: res.ok ? null : String(body?.error?.message ?? '').slice(0, 200),
     }
   } catch (error) {
