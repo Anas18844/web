@@ -22,6 +22,7 @@ const link =
 const PAGES = [
   { href: '/summary', label: common.nav.summary },
   { href: '/homework', label: common.nav.homework },
+  { href: '/exam', label: common.nav.exam },
   { href: '/knowledge', label: common.nav.knowledge },
   { href: '/about', label: common.nav.about },
   { href: '/parents', label: common.nav.parents },

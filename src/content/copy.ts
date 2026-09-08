@@ -415,6 +415,7 @@ export const common = {
     home: 'الرئيسية',
     summary: 'الملخصات',
     homework: 'الواجبات',
+    exam: 'الامتحانات',
     knowledge: 'مركز المعرفة',
     about: 'مين مستر أنس',
     parents: 'لولي الأمر',

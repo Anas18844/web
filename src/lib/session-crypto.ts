@@ -101,6 +101,50 @@ export function verifyToken(token: string, secret: string): SessionClaims | null
   }
 }
 
+// ── Generic signed payloads ──────────────────────────────────────────────────
+
+/**
+ * Signs an arbitrary object with an expiry.
+ *
+ * Used for the exam pass: proof, issued by the server, that a student's phone
+ * cleared the homework gate. Without it `/api/exam/submit` would have to trust
+ * whatever phone the browser claimed — and a student could skip the homework
+ * entirely by posting straight to the marking endpoint.
+ *
+ * Same construction as the session token above and for the same reason: the
+ * claims travel INSIDE the signature, so editing them invalidates the pass
+ * rather than upgrading it.
+ */
+export function signPayload<T extends Record<string, unknown>>(
+  payload: T,
+  secret: string,
+  ttlMs: number,
+): string {
+  const body = Buffer.from(JSON.stringify({ ...payload, exp: Date.now() + ttlMs })).toString(
+    'base64url',
+  )
+  return `${body}.${sign(body, secret)}`
+}
+
+export function verifyPayload<T>(token: string, secret: string): (T & { exp: number }) | null {
+  const [body, signature] = token.split('.')
+  if (!body || !signature) return null
+
+  const expected = sign(body, secret)
+  // Length first: timingSafeEqual THROWS on a mismatch, and an exception here
+  // would be a 500 on every request carrying a malformed token.
+  if (expected.length !== signature.length) return null
+  if (!timingSafeEqual(Buffer.from(expected), Buffer.from(signature))) return null
+
+  try {
+    const data = JSON.parse(Buffer.from(body, 'base64url').toString())
+    if (typeof data.exp !== 'number' || data.exp < Date.now()) return null
+    return data
+  } catch {
+    return null
+  }
+}
+
 /** Derives the signing secret from whatever the deployment actually has. */
 export function deriveSecret(explicit: string | undefined, fallbackKey: string | null): string {
   const trimmed = explicit?.trim()

@@ -53,6 +53,37 @@ const RETRY_DELAYS_MS = [700, 1800]
  * Override with GEMINI_MODELS as a comma-separated list, or GEMINI_MODEL for a
  * single one.
  */
+/**
+ * Every key available, tried in order.
+ *
+ * The free tier's ceiling is per key, and it was hit during testing after a
+ * handful of papers — a class submitting together would spend a whole session
+ * on word matching. A second key doubles the headroom for the cost of one
+ * environment variable, and the rotation is what turns two keys into twice the
+ * quota rather than one key and a spare nobody remembers to swap in.
+ *
+ * `GEMINI_API_KEYS` takes a comma-separated list; `GEMINI_API_KEY` still works
+ * for a single one, so an existing deployment keeps running untouched.
+ */
+const KEYS: string[] = (process.env.GEMINI_API_KEYS || process.env.GEMINI_API_KEY || '')
+  .split(',')
+  .map((k) => k.trim())
+  .filter(Boolean)
+
+/**
+ * Is this a problem with the KEY rather than with the request?
+ *
+ * Quota (429) is per key. So is rejection (401/403). Both mean "this key is
+ * finished, try the next one" — and neither says anything about the key after
+ * it. An earlier version treated 401 as fatal and abandoned the whole chain,
+ * which made a dead first key disable a perfectly good second one.
+ */
+function isKeyProblem(error: unknown): boolean {
+  return /HTTP (401|403|429)|quota|RESOURCE_EXHAUSTED|API key not valid|API_KEY_INVALID/i.test(
+    error instanceof Error ? error.message : String(error),
+  )
+}
+
 const MODELS: string[] = (
   process.env.GEMINI_MODELS ||
   process.env.GEMINI_MODEL ||
@@ -216,6 +247,25 @@ function extractJsonArray(text: string): { n: number; match: number; note?: stri
       const end = text.lastIndexOf(']')
       return start >= 0 && end > start ? text.slice(start, end + 1) : ''
     })(),
+    /**
+     * A TRUNCATED reply, repaired.
+     *
+     * The model occasionally stops mid-array, leaving `[{...},{...},{"n":3,"ma`
+     * with no closing bracket. Every candidate above fails on that, and the
+     * whole paper drops to word matching over one cut-off object — when nine
+     * of the ten marks were sitting there complete.
+     *
+     * So: cut back to the last complete object and close the array. Any essay
+     * the reply never reached falls back to word matching individually, which
+     * is the correct outcome for those and only those.
+     */
+    (() => {
+      const start = text.indexOf('[')
+      if (start < 0) return ''
+      const lastComplete = text.lastIndexOf('}')
+      if (lastComplete <= start) return ''
+      return `${text.slice(start, lastComplete + 1)}]`
+    })(),
   ]
 
   for (const candidate of candidates) {
@@ -236,10 +286,8 @@ async function callGemini(
   items: EssayItem[],
   budgetMs: number,
   model: string,
+  key: string,
 ): Promise<{ n: number; match: number; note?: string }[]> {
-  const key = process.env.GEMINI_API_KEY?.trim()
-  if (!key) throw new Error('GEMINI_API_KEY is not set')
-
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), Math.max(1_000, budgetMs))
 
@@ -275,6 +323,10 @@ async function callGemini(
             // student comparing with a friend must not find the marker
             // disagreed with itself.
             temperature: 0,
+            // Ten marks with a note each needs room. The default cut replies
+            // off mid-array; the repair path below survives that, but not
+            // needing it is better.
+            maxOutputTokens: 2048,
           },
         }),
       },
@@ -318,6 +370,17 @@ export async function gradeEssays(
    * call cannot leave the retry with no time, and the whole thing cannot
    * outlive the serverless function around it.
    */
+  if (KEYS.length === 0) {
+    return {
+      source: 'local',
+      error: 'GEMINI_API_KEY is not set',
+      results: items.map((it) => {
+        const match = localMatch(it.student, it.model)
+        return { n: it.n, match, note: 'تصحيح تلقائي محلي', correct: match >= PASS_THRESHOLD }
+      }),
+    }
+  }
+
   const startedAt = Date.now()
   const left = () => TOTAL_BUDGET_MS - (Date.now() - startedAt)
 
@@ -325,30 +388,40 @@ export async function gradeEssays(
   let raw: { n: number; match: number; note?: string }[] | null = null
   let usedModel: string | null = null
 
-  outer: for (const model of MODELS) {
-    for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt++) {
-      if (left() < 1_500) break outer
+  outer: for (const key of KEYS) {
+    for (const model of MODELS) {
+      for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt++) {
+        if (left() < 1_500) break outer
 
-      try {
-        raw = await callGemini(items, Math.min(ATTEMPT_TIMEOUT_MS, left()), model)
-        usedModel = model
-        lastError = null
-        break outer
-      } catch (error) {
-        lastError = error
+        try {
+          raw = await callGemini(items, Math.min(ATTEMPT_TIMEOUT_MS, left()), model, key)
+          usedModel = model
+          lastError = null
+          break outer
+        } catch (error) {
+          lastError = error
 
-        // Not a wobble — a wrong key, a malformed request. The next model
-        // would fail the same way, so stop the whole chain rather than
-        // spending the student's wait on it three more times.
-        if (!isRetryable(error) && !/HTTP 404/.test(String(error))) break outer
+          // The KEY is the problem — exhausted or rejected. Retrying it, or
+          // trying another model with it, changes nothing. Move to the next
+          // key rather than spending the student's wait proving it again.
+          if (isKeyProblem(error)) break
 
-        // Out of retries for this model; let the chain try the next one.
-        if (attempt === RETRY_DELAYS_MS.length) break
+          // Not a wobble — a malformed request, a rejected key. The next model
+          // fails the same way, so stop rather than spending the student's
+          // wait on it three more times.
+          if (!isRetryable(error) && !/HTTP 404/.test(String(error))) break outer
 
-        const wait = RETRY_DELAYS_MS[attempt]
-        if (left() < wait + 1_500) break outer
-        await sleep(wait)
+          // Out of retries for this model; let the chain try the next one.
+          if (attempt === RETRY_DELAYS_MS.length) break
+
+          const wait = RETRY_DELAYS_MS[attempt]
+          if (left() < wait + 1_500) break outer
+          await sleep(wait)
+        }
       }
+
+      // A key failure ends that key's turn entirely, not just this model's.
+      if (lastError && isKeyProblem(lastError)) break
     }
   }
 

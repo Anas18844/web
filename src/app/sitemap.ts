@@ -3,6 +3,7 @@ import { site } from '@/content/site'
 import { byDate } from '@/content/knowledge'
 import { HOMEWORK } from '@/content/homework'
 import { SUMMARIES } from '@/content/summaries'
+import { EXAMS } from '@/content/exams'
 
 /**
  * When the static pages last actually changed.
@@ -83,6 +84,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     })),
 
+    {
+      url: `${site.url}/exam`,
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    ...EXAMS.map((e) => ({
+      url: `${site.url}/exam/${e.slug}`,
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    })),
     {
       url: `${site.url}/links`,
       lastModified: CONTENT_UPDATED,

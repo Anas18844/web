@@ -181,6 +181,18 @@ export const events = {
   channelFollowed: (context: string) => emit('channel_followed', { context }),
   proofViewed: (proof: string) => emit('proof_viewed', { proof }),
 
+  // ── Exams ─────────────────────────────────────────────────────────────────
+  /** Cleared the homework gate and started the paper. */
+  examStarted: (exam: string) => emit('exam_started', { exam }),
+  /**
+   * Turned away at the gate. `reason` is the one number that says whether the
+   * requirement is teaching students to do the homework or just locking them
+   * out — a `no_homework` spike means the rule is working; an `unavailable`
+   * spike means the database is failing closed and nobody can sit anything.
+   */
+  examBlocked: (exam: string, reason: string) => emit('exam_blocked', { exam, reason }),
+  examSubmitted: (exam: string) => emit('exam_submitted', { exam }),
+
   // ── Homework ──────────────────────────────────────────────────────────────
   /** Opened a paper and started answering. The denominator for completion. */
   homeworkStarted: (slug: string, grade: string) =>
