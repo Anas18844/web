@@ -120,15 +120,22 @@ export default async function DashboardPage({
         </Panel>
       </section>
 
-      {isAdmin && (
-        <p className="mt-4 text-xs text-ink-faint">
-          فيه رسوم بيانية أكتر في{' '}
-          <Link href="/dashboard/analytics" className="font-bold text-gold hover:underline">
-            صفحة التحليلات
+      <nav className="mt-4 flex flex-wrap items-center gap-4 text-xs">
+        <Link
+          href="/dashboard/register"
+          className="font-bold text-gold transition-colors duration-200 hover:text-ink"
+        >
+          كشف الحضور ←
+        </Link>
+        {isAdmin && (
+          <Link
+            href="/dashboard/analytics"
+            className="font-bold text-ink-faint transition-colors duration-200 hover:text-gold"
+          >
+            التحليلات
           </Link>
-          .
-        </p>
-      )}
+        )}
+      </nav>
 
       {/* ── The list ─────────────────────────────────────────────────────── */}
       <section className="mt-6">

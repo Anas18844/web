@@ -52,6 +52,13 @@ export function Shell({
             </div>
 
             <Link
+              href="/dashboard/register"
+              className="rounded border border-navy-line px-3 py-2 text-xs font-bold text-ink-muted transition-colors duration-200 hover:border-gold/50 hover:text-gold"
+            >
+              الحضور
+            </Link>
+
+            <Link
               href="/dashboard/password"
               className="rounded border border-navy-line px-3 py-2 text-xs font-bold text-ink-muted transition-colors duration-200 hover:border-gold/50 hover:text-gold"
             >
