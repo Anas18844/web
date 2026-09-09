@@ -46,7 +46,20 @@ function describeKey(key: string | undefined) {
 }
 
 export async function GET(request: Request) {
-  const key = process.env.GEMINI_API_KEY?.trim()
+  /**
+   * Both names, in the SAME order the grader reads them.
+   *
+   * This checked only GEMINI_API_KEY while the grader had already moved to the
+   * plural GEMINI_API_KEYS, so a correctly configured deployment reported
+   * "key present: false" — a health check that fails while the thing it
+   * describes works. It cost a real investigation on a live day; a diagnostic
+   * that lies is worse than no diagnostic, because it is believed.
+   */
+  const all = (process.env.GEMINI_API_KEYS || process.env.GEMINI_API_KEY || '')
+    .split(',')
+    .map((k) => k.trim())
+    .filter(Boolean)
+  const key = all[0]
   const models = (
     process.env.GEMINI_MODELS ||
     process.env.GEMINI_MODEL ||
@@ -58,13 +71,22 @@ export async function GET(request: Request) {
 
   const report: Record<string, unknown> = {
     key: describeKey(key),
+    /**
+     * How many keys this deployment holds, which is its real ceiling: the free
+     * tier meters 20 requests a day per (project, model), so one key across the
+     * five-model chain is 100 papers a day and three keys is 300.
+     */
+    keyCount: all.length,
     modelsConfigured: models,
     time: new Date().toISOString(),
   }
 
   if (!key) {
     return NextResponse.json(
-      { ...report, verdict: 'GEMINI_API_KEY is not set on this deployment.' },
+      {
+        ...report,
+        verdict: 'Neither GEMINI_API_KEYS nor GEMINI_API_KEY is set on this deployment.',
+      },
       { status: 503 },
     )
   }
