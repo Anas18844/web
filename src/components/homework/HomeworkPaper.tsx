@@ -57,8 +57,17 @@ export function HomeworkPaper({
   }, [graded])
 
   const essayVerdict = useMemo(() => {
-    if (!graded) return new Map<number, { correct: boolean; model: string; match: number }>()
-    return new Map(graded.essay.map((e) => [e.id, { correct: e.correct, model: e.model, match: e.match }]))
+    if (!graded)
+      return new Map<
+        number,
+        { correct: boolean; model: string; match: number; earned: number; marks: number }
+      >()
+    return new Map(
+      graded.essay.map((e) => [
+        e.id,
+        { correct: e.correct, model: e.model, match: e.match, earned: e.earned, marks: e.marks },
+      ]),
+    )
   }, [graded])
 
   async function submit(identity: { name?: string; phone?: string }) {
@@ -241,7 +250,7 @@ export function HomeworkPaper({
         <SectionHead
           badge="القسم الثاني"
           title="الأسئلة المقالية"
-          marks={`${ar(homework.essay.length * 2)} درجة`}
+          marks={`${ar(homework.essay.reduce((t, q) => t + q.marks, 0))} درجة`}
           className="mt-12"
         />
 
@@ -269,19 +278,50 @@ export function HomeworkPaper({
                     {ar(index + 1)}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-bold leading-relaxed text-ink">{q.q}</p>
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="font-bold leading-relaxed text-ink">{q.q}</p>
+                      {/* Questions are no longer worth the same. A student who
+                          cannot see that this one is worth six needs to guess
+                          how much to write, and will guess from its length. */}
+                      <span className="mt-0.5 shrink-0 rounded border border-navy-line px-2 py-0.5 font-mono text-xs font-bold text-ink-faint">
+                        {ar(q.marks)}
+                      </span>
+                    </div>
 
-                    <input
-                      type="text"
-                      value={essay[q.id] || ''}
-                      disabled={reviewing}
-                      onChange={(e) => setEssay((p) => ({ ...p, [q.id]: e.target.value }))}
-                      placeholder="اكتب إجابتك…"
-                      className="mt-4 w-full min-h-[3rem] rounded border border-navy-line bg-navy px-4 py-3 text-base text-ink placeholder:text-ink-faint/70 transition-colors duration-200 focus:border-gold focus:outline-none disabled:opacity-70"
-                    />
+                    {/* A one-line box is an instruction. It tells a student the
+                        answer is a phrase — right for "ما المصطلح…؟", and wrong
+                        for a six-mark analysis that wants several sentences. */}
+                    {q.marks > 2 ? (
+                      <textarea
+                        rows={4}
+                        value={essay[q.id] || ''}
+                        disabled={reviewing}
+                        onChange={(e) => setEssay((p) => ({ ...p, [q.id]: e.target.value }))}
+                        placeholder="اكتب إجابتك… السؤال ده محتاج أكتر من جملة"
+                        className="mt-4 w-full resize-y rounded border border-navy-line bg-navy px-4 py-3 text-base leading-relaxed text-ink placeholder:text-ink-faint/70 transition-colors duration-200 focus:border-gold focus:outline-none disabled:opacity-70"
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        value={essay[q.id] || ''}
+                        disabled={reviewing}
+                        onChange={(e) => setEssay((p) => ({ ...p, [q.id]: e.target.value }))}
+                        placeholder="اكتب إجابتك…"
+                        className="mt-4 w-full min-h-[3rem] rounded border border-navy-line bg-navy px-4 py-3 text-base text-ink placeholder:text-ink-faint/70 transition-colors duration-200 focus:border-gold focus:outline-none disabled:opacity-70"
+                      />
+                    )}
 
                     {reviewing && verdict && !verdict.correct && (
                       <p className="mt-3 text-sm text-gold">
+                        {/* With partial credit, "not correct" covers two very
+                            different results. A student who earned half must
+                            be told so here, or they will read the red border
+                            as a zero and come asking why. */}
+                        {verdict.earned > 0 && (
+                          <b className="text-emerald-300">
+                            خدت {ar(verdict.earned)} من {ar(verdict.marks)} —{' '}
+                          </b>
+                        )}
                         الإجابة النموذجية: {verdict.model}
                         <span className="text-ink-faint"> · تطابق {ar(verdict.match)}٪</span>
                       </p>

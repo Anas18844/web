@@ -51,6 +51,8 @@ export function LeadForm({
   const [step, setStep] = useState<1 | 2 | 'done'>(1)
   const [sending, setSending] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
+  /** Their number is already on the system — shown instead of the form. */
+  const [already, setAlready] = useState(false)
 
   /** The id of the row step one saved. Null if step one could not reach it. */
   const leadId = useRef<string | null>(null)
@@ -209,6 +211,21 @@ export function LeadForm({
     setErrors({})
     setSending(true)
 
+    /**
+     * The one outcome that must NOT continue to step two.
+     *
+     * Everything else here is built to carry on regardless — a failed save
+     * still advances, because the full lead goes out at the end of step two
+     * and a server problem must never cost us a student. "Already registered"
+     * is the opposite case: continuing would walk someone through four more
+     * questions to produce a row the database will refuse.
+     *
+     * It is a flag rather than an early `return` because `finally` runs on the
+     * way out of a return too — the advance below would still fire, and the
+     * student would land on step two with a message they had no way to read.
+     */
+    let alreadyRegistered = false
+
     try {
       const res = await sendLead('POST', {
         name,
@@ -221,31 +238,40 @@ export function LeadForm({
         elapsed: Date.now() - mountedAt.current,
       })
 
-      const json = res.ok ? ((await res.json()) as { ok?: boolean; id?: string }) : null
-      if (json?.ok) {
-        leadId.current = json.id ?? null
-        events.leadStarted(intent, grade)
+      if (res.status === 409) {
+        alreadyRegistered = true
+        setAlready(true)
+        events.leadAlreadyRegistered(grade)
       } else {
-        // The early save did not land. Not the student's problem: the full
-        // lead goes out at the end of step two instead. Tracked, because a
-        // silent fallback with no signal is how a broken server stays broken.
-        leadId.current = null
-        events.leadStep1Deferred(intent, grade)
+        const json = res.ok ? ((await res.json()) as { ok?: boolean; id?: string }) : null
+        if (json?.ok) {
+          leadId.current = json.id ?? null
+          events.leadStarted(intent, grade)
+        } else {
+          // The early save did not land. Not the student's problem: the full
+          // lead goes out at the end of step two instead. Tracked, because a
+          // silent fallback with no signal is how a broken server stays broken.
+          leadId.current = null
+          events.leadStep1Deferred(intent, grade)
+        }
       }
     } catch {
       leadId.current = null
       events.leadStep1Deferred(intent, grade)
     } finally {
-      captured.current = { name, grade, phone: normalizedPhone }
-      // The number carries over by default — most students use one line.
-      setWhatsapp(normalizedPhone)
-      setStep(2)
       setSending(false)
-      // Fired here rather than beside `leadStarted`, because reaching step two
-      // is what the student did and saving step one is what the server did.
-      // They come apart precisely when something is broken, which is the only
-      // time either number is interesting.
-      events.leadStep2Reached(intent, grade)
+
+      if (!alreadyRegistered) {
+        captured.current = { name, grade, phone: normalizedPhone }
+        // The number carries over by default — most students use one line.
+        setWhatsapp(normalizedPhone)
+        setStep(2)
+        // Fired here rather than beside `leadStarted`, because reaching step
+        // two is what the student did and saving step one is what the server
+        // did. They come apart precisely when something is broken, which is
+        // the only time either number is interesting.
+        events.leadStep2Reached(intent, grade)
+      }
     }
   }
 
@@ -386,6 +412,41 @@ export function LeadForm({
   }
 
   // ── Thanks ─────────────────────────────────────────────────────────────────
+  /**
+   * Already registered.
+   *
+   * Deliberately NOT styled as an error. This is the same calm gold panel the
+   * form uses to confirm a successful submission, because from the student's
+   * side the outcome is the same one: they are on the list and there is
+   * nothing more for them to do. A red box here would tell a registered
+   * student they had failed at something.
+   *
+   * It replaces the form rather than sitting above it. Leaving the fields
+   * underneath would invite the obvious next move — change one digit and try
+   * again — which is how a real student ends up entering a wrong number to get
+   * past a message that was telling them they were fine.
+   */
+  if (already) {
+    return (
+      <div
+        className={cn(
+          'animate-fade-up rounded border border-gold/40 bg-navy-soft/60 p-6 sm:p-8',
+          className,
+        )}
+        role="status"
+        aria-live="polite"
+      >
+        <p className="text-xl font-extrabold text-gold">{common.form.alreadyTitle}</p>
+        <p className="mt-3 text-sm leading-relaxed text-ink-muted">
+          {common.form.alreadyBody}
+        </p>
+        <WhatsAppButton context={`${pageContext}:already-registered`} variant="whatsapp" className="mt-5">
+          {common.form.alreadyCta}
+        </WhatsAppButton>
+      </div>
+    )
+  }
+
   if (step === 'done') {
     return (
       <div

@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { audit, changePassword, requireAdmin, requireUser, signIn, signOut } from '@/lib/auth'
 import { createLead, deleteLead, getLead, updateLead } from '@/lib/leads-repo'
 import { EG_MOBILE, normalizePhone } from '@/lib/phone'
+import { AlreadyRegisteredError, isDuplicateRow } from '@/lib/duplicate-lead'
 
 /**
  * Every write the dashboard can perform.
@@ -146,8 +147,21 @@ export async function createLeadAction(
     revalidatePath('/dashboard')
     return { ok: true, message: 'الطالب اتسجّل' }
   } catch (error) {
+    /**
+     * Already on the system. Naming the student and where they came from is
+     * the whole value of this message: "الرقم ده متسجّل قبل كده" leaves the
+     * team member guessing whether they mistyped, while a name lets them go
+     * and look.
+     */
+    if (error instanceof AlreadyRegisteredError) {
+      const who = error.existing.name ? ` باسم «${error.existing.name}»` : ''
+      const how = error.existing.source === 'manual' ? 'حد من الفريق ضافه' : 'اتسجّل من الموقع'
+      return { error: `الرقم ده متسجّل قبل كده${who} — ${how}. دوّر عليه في القائمة بدل ما تضيفه تاني.` }
+    }
     const message = error instanceof Error ? error.message : String(error)
-    if (/duplicate|unique/i.test(message)) return { error: 'الرقم ده متسجّل قبل كده' }
+    if (isDuplicateRow(error) || /duplicate|unique/i.test(message)) {
+      return { error: 'الرقم ده متسجّل قبل كده. دوّر عليه في القائمة.' }
+    }
     return { error: `ماتسجّلش: ${message}` }
   }
 }

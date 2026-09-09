@@ -487,6 +487,19 @@ export const common = {
       'المواعيد والمجموعات وأي تحديث بينزل هناك الأول. قناة إعلانات — إنت بتتابع بس، ورقمك مش بيظهر لحد.',
     channelCta: 'تابع القناة على واتساب',
 
+    /**
+     * Not an error, and it must not read like one.
+     *
+     * A student who sees this did nothing wrong — they are already registered.
+     * The wording leads with the reassurance rather than the refusal, because
+     * the first thing they need to know is that they are covered, and the
+     * second is that there is nothing left for them to do.
+     */
+    alreadyTitle: 'رقمك مسجّل عندنا بالفعل ✓',
+    alreadyBody:
+      'إنت معانا خلاص وماتحتاجش تسجّل تاني. غالبًا حد من الفريق سجّلك بعد مكالمة أو رسالة واتساب، أو تكون سجّلت بنفسك قبل كده.',
+    alreadyCta: 'لو ده مش إنت، أو محتاج تعدّل بياناتك — كلّمنا على واتساب',
+
     errorGeneric: 'حصلت مشكلة وإحنا بنبعت. جرّب تاني، أو كلّمنا على الواتساب.',
     errorNameEmpty: 'اكتب اسم الطالب من فضلك',
     errorNameArabic: 'اكتب الاسم بالعربي من فضلك',

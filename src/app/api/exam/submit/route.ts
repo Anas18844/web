@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { findExam, totalMarks } from '@/content/exams'
-import { gradeEssays, localMatch, PASS_THRESHOLD } from '@/lib/homework-grader'
+import { gradeEssays, PASS_THRESHOLD, scoreEssay } from '@/lib/homework-grader'
 import { getSupabaseAdmin, resolveConfig } from '@/lib/supabase'
 import { deriveSecret, verifyPayload } from '@/lib/session-crypto'
 import type { ExamPass } from '../start/route'
@@ -34,16 +34,25 @@ const schema = z.object({
 })
 
 /**
- * A gap is right if it carries the model answer's meaning.
+ * Gaps are marked by the MODEL, alongside the written answers.
  *
- * Reuses the homework's Arabic normalisation and word matching rather than
- * comparing strings: a student who writes «الحواسب الشخصيه» without the hamza,
- * or «الحاسبات الشخصية», has answered correctly and would fail an equality
- * check. The threshold is the same one essays use, so "correct" means the same
- * thing across the paper.
+ * They used to be word-matched locally, and it was too harsh to ship: a student
+ * who wrote «الحاسب الشخصي» for «الحواسب الشخصية» — the singular of the right
+ * answer — was marked wrong and lost two marks. So was «الهاتف الذكي» for
+ * «الهواتف الذكية», and «الكمبيوتر الشخصي». Arabic broken plurals do not share
+ * a prefix with their singular, so no amount of stem matching rescues that;
+ * only something that reads meaning can.
+ *
+ * They ride in the SAME single call as the essays — one request marks the whole
+ * paper — and are told apart by an id offset. Local matching stays as the
+ * fallback for when the model is unreachable, where it is still much better
+ * than nothing.
  */
-function blankIsCorrect(student: string, model: string): boolean {
-  return localMatch(student, model) >= PASS_THRESHOLD
+const BLANK_ID_OFFSET = 1000
+
+/** The instruction a gap needs and an essay does not. */
+function blankPrompt(index: number): string {
+  return `الفراغ رقم ${index + 1} في فقرة «أكمل ما يلي» — المطلوب مصطلح واحد. المفرد والجمع سواء، وأي مرادف صحيح يُقبل.`
 }
 
 export async function POST(request: Request) {
@@ -98,27 +107,37 @@ export async function POST(request: Request) {
   })
   const tfScore = tfDetail.filter((d) => d.correct).length
 
-  // ── Gaps ──────────────────────────────────────────────────────────────────
+  // ── Gaps and written answers, marked together in one call ────────────────
+  const graded = await gradeEssays([
+    ...exam.blanks.answers.map((model, i) => ({
+      n: BLANK_ID_OFFSET + i,
+      q: blankPrompt(i),
+      model,
+      student: (blanks[String(i)] || '').trim(),
+    })),
+    ...exam.essay.map((q) => ({
+      n: q.id,
+      q: q.q,
+      model: q.model,
+      rubric: q.rubric,
+      student: (essay[String(q.id)] || '').trim(),
+    })),
+  ])
+
   const blanksDetail = exam.blanks.answers.map((model, i) => {
     const student = (blanks[String(i)] || '').trim()
+    const r = graded.results.find((x) => x.n === BLANK_ID_OFFSET + i)
     return {
       id: i,
       type: 'blank' as const,
       answer: model,
-      correct: Boolean(student) && blankIsCorrect(student, model),
+      match: r?.match ?? 0,
+      // A gap is all-or-nothing: the printed key says two marks per gap with no
+      // partial credit, and half a term is not a thing.
+      correct: Boolean(student) && (r?.match ?? 0) >= PASS_THRESHOLD,
     }
   })
   const blanksScore = blanksDetail.filter((d) => d.correct).length * exam.blanks.marksPerBlank
-
-  // ── Written answers, marked on meaning ────────────────────────────────────
-  const graded = await gradeEssays(
-    exam.essay.map((q) => ({
-      n: q.id,
-      q: q.q,
-      model: q.model,
-      student: (essay[String(q.id)] || '').trim(),
-    })),
-  )
 
   const essayDetail = exam.essay.map((q) => {
     const r = graded.results.find((x) => x.n === q.id)
@@ -129,7 +148,7 @@ export async function POST(request: Request) {
      * would be harsher than the paper it came from.
      */
     const match = r?.match ?? 0
-    const earned = match >= PASS_THRESHOLD ? q.marks : match >= 35 ? Math.floor(q.marks / 2) : 0
+    const earned = scoreEssay(q.marks, match)
     return {
       id: q.id,
       type: 'essay' as const,
@@ -173,7 +192,7 @@ export async function POST(request: Request) {
         detail: [
           ...mcqDetail.map(({ id, type, correct }) => ({ id, type, correct })),
           ...tfDetail.map(({ id, type, correct }) => ({ id, type, correct })),
-          ...blanksDetail.map(({ id, type, correct }) => ({ id, type, correct })),
+          ...blanksDetail.map(({ id, type, match, correct }) => ({ id, type, match, correct })),
           ...essayDetail.map(({ id, type, match, earned, marks: m }) => ({
             id,
             type,

@@ -148,6 +148,13 @@ export const events = {
    * a server is refusing step-one payloads (stale deploy, dead DB) even though
    * students are still getting through, which is the failure that hides.
    */
+  /**
+   * A student stopped because their number is already registered. Worth its own
+   * event: a rise here is not a form problem but a sign that the team is adding
+   * students by hand who then come and register themselves.
+   */
+  leadAlreadyRegistered: (grade: string) => emit('lead_already_registered', { grade }),
+
   leadStep1Deferred: (intent: string, grade: string) =>
     emit('lead_step1_deferred', { intent, grade }),
 

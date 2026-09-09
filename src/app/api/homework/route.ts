@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { findHomework, ESSAY_MARK, totalMarks } from '@/content/homework'
-import { gradeEssays } from '@/lib/homework-grader'
+import { findHomework, essayMarks, essayTotal, totalMarks } from '@/content/homework'
+import { gradeEssays, scoreEssay } from '@/lib/homework-grader'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { EG_MOBILE, normalizePhone } from '@/lib/phone'
 
@@ -40,7 +40,19 @@ const submissionSchema = z.object({
   name: z.string().trim().max(120).optional(),
   phone: z.string().trim().max(30).optional(),
   mcq: z.record(z.string(), z.number().int().min(0).max(20)),
-  essay: z.record(z.string(), z.string().max(400)),
+  /**
+   * 1500, and 400 was a live bug for exactly one lecture.
+   *
+   * The cap was written when every essay answer was a term — «قانون مور»,
+   * «البريد الإلكتروني» — so 400 characters was generous. Lecture 2 ends with a
+   * six-mark analysis whose own MODEL ANSWER is 415 characters, while the paper
+   * invites 120 words, which in Arabic runs past 800. A student who answered it
+   * properly would have had the WHOLE submission rejected as BAD_INPUT and lost
+   * the other forty-nine marks with it.
+   *
+   * Matches the exam's cap, so the same answer is acceptable on both pages.
+   */
+  essay: z.record(z.string(), z.string().max(1500)),
 })
 
 export async function POST(request: Request) {
@@ -82,23 +94,43 @@ export async function POST(request: Request) {
       n: q.id,
       q: q.q,
       model: q.model,
+      rubric: q.rubric,
       student: (essay[String(q.id)] || '').trim(),
     })),
   )
 
   const essayDetail = hw.essay.map((q) => {
     const r = graded.results.find((x) => x.n === q.id)
+    const worth = essayMarks(q)
+    const match = r?.match ?? 0
+    /**
+     * Partial credit, in proportion to what the question is worth.
+     *
+     * This used to be all-or-nothing at a flat two marks, which was survivable
+     * while every question was a one-line definition. Lecture 2 ends with a
+     * six-mark analysis of how AI, ML, DL and GenAI nest inside each other, and
+     * scoring that zero for a student who got three of the four relationships
+     * right would be the harshest mark on the site — a quarter of the paper
+     * lost on one question, on a rule written when no question was worth more
+     * than a twenty-fifth of it.
+     *
+     * The thresholds are the exam's, so a student cannot score differently on
+     * the same answer depending on which page they typed it into.
+     */
+    const earned = scoreEssay(worth, match)
     return {
       id: q.id,
       type: 'essay' as const,
       axis: q.axis,
       model: q.model,
-      match: r?.match ?? 0,
+      match,
       note: r?.note ?? '',
-      correct: Boolean(r?.correct),
+      marks: worth,
+      earned,
+      correct: earned === worth,
     }
   })
-  const essayScore = essayDetail.filter((d) => d.correct).length * ESSAY_MARK
+  const essayScore = essayDetail.reduce((t, d) => t + d.earned, 0)
 
   const total = mcqScore + essayScore
   const marks = totalMarks(hw)
@@ -138,7 +170,7 @@ export async function POST(request: Request) {
           mcq_score: mcqScore,
           mcq_total: hw.mcq.length,
           essay_score: essayScore,
-          essay_total: hw.essay.length * ESSAY_MARK,
+          essay_total: essayTotal(hw),
           total_score: total,
           total_marks: marks,
           passed,
@@ -165,7 +197,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     ok: true,
-    score: { mcq: mcqScore, mcqTotal: hw.mcq.length, essay: essayScore, essayTotal: hw.essay.length * ESSAY_MARK, total, marks, passed },
+    score: { mcq: mcqScore, mcqTotal: hw.mcq.length, essay: essayScore, essayTotal: essayTotal(hw), total, marks, passed },
     // Returned only NOW, after the student has committed to their answers.
     mcq: mcqDetail.map(({ id, chosen, answer, correct, axis, level }) => ({ id, chosen, answer, correct, axis, level })),
     essay: essayDetail,

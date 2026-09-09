@@ -65,21 +65,54 @@ const RETRY_DELAYS_MS = [700, 1800]
  * `GEMINI_API_KEYS` takes a comma-separated list; `GEMINI_API_KEY` still works
  * for a single one, so an existing deployment keeps running untouched.
  */
+/**
+ * ⚠️ NO KEYS IN THIS FILE — and that is a condition that changed, not caution.
+ *
+ * They were hardcoded here for a while, deliberately: the project was not in
+ * version control, the keys are free-tier, this module is `server-only` so no
+ * browser ever sees them, and the Vercel round trip cost more than they were
+ * worth. The comment that did it named its own breaking condition in as many
+ * words — the one thing that breaks this is a public git repository.
+ *
+ * That repository now exists, and it is public. Google scans GitHub for keys
+ * and revokes what it finds, so a key committed here would be dead within hours
+ * and every student in the meantime would silently drop to word matching. The
+ * keys went to GEMINI_API_KEYS on Vercel before the first push carrying them.
+ *
+ * `GEMINI_API_KEYS` takes a comma-separated list; `GEMINI_API_KEY` still works
+ * for a single one. Three keys from three Google accounts against the
+ * five-model chain below is 3 × 5 × 20 = 300 papers a day; one key is 100.
+ */
 const KEYS: string[] = (process.env.GEMINI_API_KEYS || process.env.GEMINI_API_KEY || '')
   .split(',')
   .map((k) => k.trim())
   .filter(Boolean)
 
 /**
- * Is this a problem with the KEY rather than with the request?
+ * Is this KEY finished — as opposed to this model being finished?
  *
- * Quota (429) is per key. So is rejection (401/403). Both mean "this key is
- * finished, try the next one" — and neither says anything about the key after
- * it. An earlier version treated 401 as fatal and abandoned the whole chain,
- * which made a dead first key disable a perfectly good second one.
+ * These two look alike and are not. Google's free tier meters
+ * `GenerateRequestsPerDayPerProjectPerModel` — twenty requests a day, counted
+ * SEPARATELY FOR EVERY MODEL. So a 429 on gemini-flash-latest says nothing at
+ * all about the next model on the same key, and this was probed directly on one
+ * key in one second: flash-latest 429, while flash-lite-latest, 3.1-flash-lite,
+ * 3.5-flash-lite and 3.6-flash all answered 200.
+ *
+ * An earlier version of this function counted 429 as a dead key and jumped to
+ * the next one, which threw away four fifths of the free allowance and dropped
+ * students onto local word-matching while capacity sat unused. Only a REJECTED
+ * key — 401, 403, malformed — is dead, and only that skips the rest of its
+ * models.
  */
-function isKeyProblem(error: unknown): boolean {
-  return /HTTP (401|403|429)|quota|RESOURCE_EXHAUSTED|API key not valid|API_KEY_INVALID/i.test(
+function isKeyDead(error: unknown): boolean {
+  return /HTTP (401|403)|API key not valid|API_KEY_INVALID|PERMISSION_DENIED/i.test(
+    error instanceof Error ? error.message : String(error),
+  )
+}
+
+/** Out of allowance for THIS model today. The next model has its own. */
+function isQuota(error: unknown): boolean {
+  return /HTTP 429|quota|RESOURCE_EXHAUSTED/i.test(
     error instanceof Error ? error.message : String(error),
   )
 }
@@ -87,17 +120,38 @@ function isKeyProblem(error: unknown): boolean {
 const MODELS: string[] = (
   process.env.GEMINI_MODELS ||
   process.env.GEMINI_MODEL ||
-  // Only what this account can actually SERVE, probed directly:
-  //   gemini-flash-latest    → 200
-  //   gemini-2.5-flash       → 404 "no longer available to serve"
-  //   gemini-2.5-flash-lite  → 404 "no longer available to serve"
-  //   gemini-pro-latest      → 429 quota exceeded
-  //
-  // Note that listing a model is NOT the same as being able to call it —
-  // /v1beta/models happily returns models that then 404 on generateContent.
-  // Every extra entry here costs a student a wasted attempt, so the list stays
-  // at what was verified.
-  'gemini-flash-latest'
+  /**
+   * The fallback chain, and every entry earned its place twice.
+   *
+   * First it had to SERVE — listing a model is not the same as being able to
+   * call it; /v1beta/models cheerfully returns names that then 404 on
+   * generateContent (gemini-2.5-flash and gemini-2.5-pro do exactly that).
+   *
+   * Then it had to MARK. Each was run against the cases that were failing in
+   * production — «الحاسب الشخصي» for «الحواسب الشخصية», «الموبايلات الذكية» for
+   * «الهواتف الذكية», a half-complete comparison, and a confident wrong answer.
+   * All five score the gaps 100/100 and the wrong answer 0, and score the half
+   * answer near 50 so it earns half its marks.
+   *
+   * Three models that answered 200 are deliberately NOT here: gemini-3.5-flash
+   * and gemini-3-flash-preview scored the half answer 60 and 70, which would
+   * hand full marks to a half-right student, and gemini-3.5-transcribe and
+   * gemini-robotics-er-2-preview are not built for this at all.
+   *
+   * Ordered by MEASURED reliability, because position in this list is a
+   * student's waiting time. gemini-flash-latest led it until this was actually
+   * measured against real marking prompts rather than a one-word hello:
+   *
+   *   gemini-flash-latest        1/6 served   503×3, 429×1, reset×1   4550ms
+   *   gemini-flash-lite-latest   6/6 served   200×6                   1358ms
+   *
+   * Leading with the first meant every student paid for failed attempts before
+   * reaching a model that worked — and worse, the retries burned that model's
+   * twenty-a-day allowance on failures, which is what the 429 above is. It is
+   * kept, last, because a spent chain is still better off having one more
+   * bucket to try than falling to word-matching.
+   */
+  'gemini-flash-lite-latest,gemini-3.1-flash-lite,gemini-3.6-flash,gemini-3.5-flash-lite,gemini-flash-latest'
 )
   .split(',')
   .map((m) => m.trim())
@@ -143,7 +197,51 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 /** A mark at or above this counts the essay as correct. */
 export const PASS_THRESHOLD = 60
 
-export type EssayItem = { n: number; q: string; model: string; student: string }
+/**
+ * Marks for one essay answer, shared by the homework and the exam so the same
+ * answer cannot score differently depending on which page it was typed into.
+ *
+ * Two regimes, because one does not fit both:
+ *
+ *   1-2 marks — bands. You cannot award 0.6 of a mark on a definition, so it is
+ *   right, half right, or wrong.
+ *
+ *   3+ marks — PROPORTIONAL. The match percentage already carries the detail
+ *   and bucketing throws it away. Lecture 2 q6 is worth six and its rubric
+ *   reads «درجة لكل مفهوم (4) · الأمثلة (1) · التحفّظ (1)». An answer with the
+ *   four concepts and neither the examples nor the caveat matched 67 and was
+ *   taking all six marks — paid in full for the two it did not earn. At 67% of
+ *   six it now scores 4, which is exactly what that rubric says it is worth.
+ */
+export function scoreEssay(marks: number, match: number): number {
+  if (match < 35) return 0
+  // Two marks is already two things to say — «عرّف الشبكة العصبية، وما الذي
+  // يتغيّر فيها أثناء التدريب؟» is one question with two halves. Scored in
+  // bands, an answer giving only the definition matched 66 and took both marks.
+  // Proportionally it takes one, which is what half an answer is worth.
+  //
+  // ONE mark stays banded: proportional rounding would hand a full mark to a
+  // 50% match, and there is no half of a single mark to award.
+  if (marks >= 2) return Math.max(1, Math.round((marks * match) / 100))
+  return match >= PASS_THRESHOLD ? marks : Math.floor(marks / 2)
+}
+
+export type EssayItem = {
+  n: number
+  q: string
+  model: string
+  student: string
+  /**
+   * How the marks divide, when the teacher wrote one.
+   *
+   * Lecture 2 ends with a six-mark analysis that asks for four relationships
+   * AND an example of each. Marked without this, an answer giving the four
+   * relationships and none of the examples scored 60 and took all six marks —
+   * the marker had no way to know what the six were for. The rubric was in the
+   * content file the whole time and simply was not being passed.
+   */
+  rubric?: string
+}
 export type EssayResult = { n: number; match: number; note: string; correct: boolean }
 
 // ── Local fallback ───────────────────────────────────────────────────────────
@@ -201,7 +299,11 @@ function buildPrompt(items: EssayItem[]): string {
   const lines = items
     .map(
       (it) =>
-        `${it.n}) السؤال: ${it.q}\n   الإجابة النموذجية: ${it.model}\n   إجابة الطالب: ${it.student || '(لم يجب)'}`,
+        `${it.n}) السؤال: ${it.q}\n   الإجابة النموذجية: ${it.model}` +
+        // Only when the teacher wrote one. A six-mark question marked without
+        // its rubric is marked by a model guessing what the six are FOR.
+        (it.rubric ? `\n   توزيع الدرجة: ${it.rubric}` : '') +
+        `\n   إجابة الطالب: ${it.student || '(لم يجب)'}`,
     )
     .join('\n\n')
 
@@ -212,9 +314,12 @@ function buildPrompt(items: EssayItem[]): string {
 قواعد التصحيح:
 - الحكم على المعنى لا على الحروف. لو الطالب كتب المصطلح صحيحًا بصياغة مختلفة أو بمرادف، تُحسب صحيحة.
 - تجاهل الأخطاء الإملائية البسيطة والتشكيل و«ال» التعريف.
+- الكلمة المعرَّبة تساوي مقابلها العربي تمامًا: «كمبيوتر» = «حاسب» = «حاسوب»، و«موبايل» = «تليفون» = «هاتف». والمفرد يساوي الجمع: «الحاسب الشخصي» = «الحواسب الشخصية».
 - الإجابة الأطول من النموذجية لا تُخصَّم ما دامت تحتوي المعنى الصحيح.
 - الإجابة الفارغة أو الخارجة عن الموضوع = 0.
 - الإجابة التي تذكر مصطلحًا مختلفًا تمامًا = 0 حتى لو كانت جملة سليمة.
+- لو مكتوب «توزيع الدرجة» فاتبعه حرفيًا، وكل شقّ مطلوب لم يذكره الطالب يخصم نصيبه من النسبة — حتى لو كان الباقي صحيحًا تمامًا.
+- لو الإجابة النموذجية فيها أكثر من عنصر مطلوب، قدّر النسبة بعدد العناصر التي ذكرها الطالب فعلًا: ذكر كل العناصر = 100، وذكر نصفها = 50 تقريبًا وليس 70، وذكر عنصر واحد من ثلاثة = 33.
 
 أعد النتيجة JSON فقط بالشكل التالي، بنفس عدد العناصر وبنفس الترتيب:
 [{"n":1,"match":85,"note":"سبب مختصر بالعربية لا يتجاوز 8 كلمات"}]
@@ -404,7 +509,14 @@ export async function gradeEssays(
           // The KEY is the problem — exhausted or rejected. Retrying it, or
           // trying another model with it, changes nothing. Move to the next
           // key rather than spending the student's wait proving it again.
-          if (isKeyProblem(error)) break
+          // This key is REJECTED — no model on it will work. Give up on it.
+          if (isKeyDead(error)) break
+
+          // This MODEL is out of allowance for today. The next model has its
+          // own separate daily bucket, so move along the chain rather than
+          // burning the next key — or dropping the student onto local matching
+          // while four working models sit unused.
+          if (isQuota(error)) break
 
           // Not a wobble — a malformed request, a rejected key. The next model
           // fails the same way, so stop rather than spending the student's
@@ -420,8 +532,9 @@ export async function gradeEssays(
         }
       }
 
-      // A key failure ends that key's turn entirely, not just this model's.
-      if (lastError && isKeyProblem(lastError)) break
+      // Only a dead key ends that key's turn. A model that is merely out of
+      // quota ends nothing but its own iteration.
+      if (lastError && isKeyDead(lastError)) break
     }
   }
 

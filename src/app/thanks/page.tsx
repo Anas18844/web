@@ -22,13 +22,30 @@ export const metadata: Metadata = {
  * Static, so it renders even if everything else on the site is having a bad
  * day, and noindex because it is a destination, not a page.
  */
-export default function ThanksPage() {
+/**
+ * Reached two ways, and they are not the same news.
+ *
+ * Normally this is the confirmation after a successful registration. But the
+ * no-JavaScript form post has nowhere to put a message except the URL, so it
+ * sends an already-registered student here with `?already=1`. Telling that
+ * student "we got your registration" would be a small lie with a real cost:
+ * they would have no idea a duplicate was refused, and no reason to check.
+ */
+export default async function ThanksPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
+  const already = (await searchParams).already === '1'
+
   return (
     <Section tone="deep" space="lg" width="prose" className="wash-top text-center">
       <span aria-hidden="true" className="trace-rule mx-auto mb-6 origin-center" />
-      <h1 className="text-title font-extrabold text-gold">{common.form.successTitle}</h1>
+      <h1 className="text-title font-extrabold text-gold">
+        {already ? common.form.alreadyTitle : common.form.successTitle}
+      </h1>
       <p className="mx-auto mt-4 max-w-prose text-body text-ink-muted">
-        {common.form.successBody}
+        {already ? common.form.alreadyBody : common.form.successBody}
       </p>
 
       <div className="mx-auto mt-8 flex max-w-sm flex-col gap-3">

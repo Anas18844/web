@@ -1,6 +1,7 @@
 import 'server-only'
 
 import { getSupabaseAdmin } from '@/lib/supabase'
+import { AlreadyRegisteredError } from '@/lib/duplicate-lead'
 import type { Role, SessionUser } from '@/lib/auth'
 
 /**
@@ -257,7 +258,31 @@ export type LeadInput = {
  * business is trying to measure.
  */
 export async function createLead(actor: SessionUser, input: LeadInput) {
-  const { data, error } = await getSupabaseAdmin()
+  const supabase = getSupabaseAdmin()
+
+  /**
+   * Is this student already on the system?
+   *
+   * The unique index would refuse the insert anyway, but "duplicate key value
+   * violates unique constraint" is not something a team member can act on.
+   * Asking first lets the answer name the student, which turns a dead end into
+   * the next step: they can look the person up instead of trying again.
+   *
+   * Reading a name back for a number is not a widening of what this role may
+   * see. They typed the number; they already have the identifying fact, and
+   * without the name they cannot tell "already registered" from "typo".
+   */
+  const { data: prior } = await supabase
+    .from('leads')
+    .select('name, source, created_at')
+    .eq('phone', input.phone)
+    .maybeSingle()
+
+  if (prior) {
+    throw new AlreadyRegisteredError({ name: prior.name, source: prior.source })
+  }
+
+  const { data, error } = await supabase
     .from('leads')
     .insert({
       name: input.name,

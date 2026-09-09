@@ -6,12 +6,13 @@ import {
   type LeadStep1Input,
 } from '@/lib/validation'
 import { getSupabaseAdmin } from '@/lib/supabase'
+import {
+  AlreadyRegisteredError,
+  isAlreadyRegistered,
+} from '@/lib/duplicate-lead'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
-
-/** Same phone submitting twice inside this window = one lead, not two. */
-const DEDUPE_WINDOW_MINUTES = 10
 
 /**
  * How long a step-one row stays open for completion. Long enough for a student
@@ -66,6 +67,11 @@ export async function POST(request: Request) {
         await saveEarly(parsed.data)
       }
     } catch (error) {
+      if (isAlreadyRegistered(error)) {
+        // A student with no JavaScript deserves the same sentence as everyone
+        // else, and the only channel back to them here is the URL.
+        return NextResponse.redirect(new URL('/thanks?already=1', request.url), 303)
+      }
       console.error('[lead] no-js submission failed', error)
     }
     // Always the same destination: the student's part is done either way, and
@@ -116,6 +122,18 @@ export async function POST(request: Request) {
     const id = await saveEarly(lead, suspiciouslyFast)
     return NextResponse.json({ ok: true, id })
   } catch (error) {
+    /**
+     * Not a failure — an answer. 409 rather than 400 because nothing the
+     * student typed is wrong; the number is simply already ours. The client
+     * needs to tell this apart from a server problem, because the two call for
+     * opposite behaviour: this one must STOP the form, and a server problem
+     * must let it carry on to step two.
+     */
+    // Covers both the check and the index that backs it up: the second exists
+    // for the race the first cannot see, and the student gets one answer.
+    if (isAlreadyRegistered(error)) {
+      return NextResponse.json({ ok: false, error: 'already_registered' }, { status: 409 })
+    }
     console.error('[lead] step 1 insert failed', error)
     return NextResponse.json({ ok: false }, { status: 500 })
   }
@@ -132,17 +150,38 @@ async function saveEarly(
 ): Promise<string> {
   const supabase = getSupabaseAdmin()
 
-  // Idempotency: a double-tap or a refresh continues the SAME row rather
-  // than opening a second one the team would have to merge by hand.
-  const since = new Date(Date.now() - DEDUPE_WINDOW_MINUTES * 60_000).toISOString()
-  const { data: existing } = await supabase
+  /**
+   * Has this number registered before — EVER, not in the last ten minutes.
+   *
+   * The window used to be the whole rule, which meant the same student became
+   * two students eleven minutes apart, and the team found out by ringing one
+   * person twice. A phone number is the identity here, so the lookup has no
+   * time bound.
+   *
+   * What the row is decides what happens next, and the two cases are opposites:
+   *
+   *   complete → they are already a student. Refuse, and say why.
+   *   partial  → they started and did not finish. RESUME the same row.
+   *
+   * Treating a partial row as "already registered" would be the cruellest
+   * possible reading of this rule: a student whose phone died during step two
+   * would be locked out of registering at all, by a half-filled row they never
+   * got to submit.
+   */
+  const { data: history } = await supabase
     .from('leads')
-    .select('id')
+    .select('id, name, stage, source')
     .eq('phone', lead.phone)
-    .gte('created_at', since)
+    .order('created_at', { ascending: false })
     .limit(1)
 
-  if (existing && existing.length > 0) return existing[0].id
+  const prior = history?.[0]
+  if (prior) {
+    if (prior.stage === 'complete') {
+      throw new AlreadyRegisteredError({ name: prior.name, source: prior.source })
+    }
+    return prior.id as string
+  }
 
   const { data, error } = await supabase
     .from('leads')
@@ -290,39 +329,41 @@ async function recover(body: unknown) {
 
   try {
     const supabase = getSupabaseAdmin()
-    const since = new Date(Date.now() - COMPLETION_WINDOW_MINUTES * 60_000).toISOString()
 
-    // Already finished within the window: a re-send, not a recovery. Writing
-    // anything here would either duplicate the student or overwrite answers
-    // that are already correct.
-    const { data: finished } = await supabase
+    /**
+     * One lookup, no time bound, and that last part is the fix.
+     *
+     * This used to ask two windowed questions — "finished recently?" then
+     * "open recently?" — and insert when both missed. Since 009 that insert is
+     * a unique-violation waiting to happen: a student who began step one last
+     * week has a `partial` row older than any window, so both questions miss,
+     * the insert fires, and the index rejects it. The student would watch a
+     * completed form turn into a server error with their answers inside it.
+     *
+     * The phone is the identity, so the question is simply: is there a row?
+     */
+    const { data: history } = await supabase
       .from('leads')
-      .select('id')
+      .select('id, stage')
       .eq('phone', lead.phone)
-      .eq('stage', 'complete')
-      .gte('created_at', since)
-      .limit(1)
-
-    if (finished && finished.length > 0) {
-      return NextResponse.json({ ok: true, recovered: 'already' })
-    }
-
-    // Prefer completing the row step one already made, so recovery does not
-    // leave the team two records for one student.
-    const { data: open } = await supabase
-      .from('leads')
-      .select('id')
-      .eq('phone', lead.phone)
-      .eq('stage', 'partial')
-      .gte('created_at', since)
       .order('created_at', { ascending: false })
       .limit(1)
 
-    if (open && open.length > 0) {
-      const { error } = await supabase.from('leads').update(fields).eq('id', open[0].id)
+    const prior = history?.[0]
+
+    if (prior?.stage === 'complete') {
+      // Already a student. A re-send, not a recovery — and rewriting the row
+      // would overwrite answers that are already correct.
+      return NextResponse.json({ ok: true, recovered: 'already' })
+    }
+
+    if (prior) {
+      // An open row of ANY age. Completing it is what recovery is for, and it
+      // keeps the team from holding two records for one student.
+      const { error } = await supabase.from('leads').update(fields).eq('id', prior.id)
       if (error) throw error
-      console.warn('[lead] recovered by completing the open row', open[0].id)
-      void notifyAutomation({ id: open[0].id, stage: 'complete', recovered: true, ...lead })
+      console.warn('[lead] recovered by completing the open row', prior.id)
+      void notifyAutomation({ id: prior.id, stage: 'complete', recovered: true, ...lead })
       return NextResponse.json({ ok: true, recovered: 'updated' })
     }
 
@@ -332,6 +373,11 @@ async function recover(body: unknown) {
     void notifyAutomation({ id: data.id, stage: 'complete', recovered: true, ...lead })
     return NextResponse.json({ ok: true, recovered: 'inserted' })
   } catch (error) {
+    // Lost a race to another request for the same number. The student is
+    // registered — by the request that won — so this is a success for them.
+    if (isAlreadyRegistered(error)) {
+      return NextResponse.json({ ok: true, recovered: 'already' })
+    }
     console.error('[lead] recovery failed', error)
     return NextResponse.json({ ok: false }, { status: 500 })
   }

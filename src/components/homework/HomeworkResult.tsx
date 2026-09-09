@@ -15,7 +15,17 @@ export type GradedResult = {
     passed: boolean
   }
   mcq: { id: number; chosen: number | null; answer: number; correct: boolean; axis: string; level: string }[]
-  essay: { id: number; axis: string; model: string; match: number; note: string; correct: boolean }[]
+  essay: {
+    id: number
+    axis: string
+    model: string
+    match: number
+    note: string
+    /** What the question was worth, and what the student actually got. */
+    marks: number
+    earned: number
+    correct: boolean
+  }[]
   grader: { source: 'gemini' | 'local'; error: string | null }
   recorded: { requested: boolean; saved: boolean; matchedStudent: boolean }
 }
