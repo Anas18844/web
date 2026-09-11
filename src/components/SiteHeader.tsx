@@ -5,11 +5,15 @@ import { HeaderNav, type NavItem } from '@/components/HeaderNav'
 import { common } from '@/content/copy'
 import { site } from '@/content/site'
 
+/**
+ * The two grade tabs sit first, because a student's first question is "which
+ * of this is mine?" and everything after it is either for a visitor who has not
+ * enrolled yet or for a parent.
+ */
 const NAV: NavItem[] = [
   { href: '/', label: common.nav.home },
-  { href: '/summary', label: common.nav.summary },
-  { href: '/homework', label: common.nav.homework },
-  { href: '/exam', label: common.nav.exam },
+  { href: '/lessons/first-sec', label: common.nav.firstSec },
+  { href: '/lessons/second-bacc', label: common.nav.secondBacc },
   { href: '/knowledge', label: common.nav.knowledge },
   { href: '/about', label: common.nav.about },
   { href: '/parents', label: common.nav.parents },

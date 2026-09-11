@@ -19,7 +19,17 @@ const link =
   'after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-right after:scale-x-0 ' +
   'after:bg-gold after:transition-transform after:duration-200 after:ease-out hover:after:scale-x-100'
 
+/**
+ * The footer carries BOTH shapes, and that is deliberate rather than untidy.
+ *
+ * The grade tabs are what a student wants, so they lead. The three old index
+ * pages stay listed below them because they are real pages that are linked to
+ * from WhatsApp and indexed by Google — dropping them from the only remaining
+ * place that points at them is how a page quietly becomes unreachable.
+ */
 const PAGES = [
+  { href: '/lessons/first-sec', label: common.nav.firstSec },
+  { href: '/lessons/second-bacc', label: common.nav.secondBacc },
   { href: '/summary', label: common.nav.summary },
   { href: '/homework', label: common.nav.homework },
   { href: '/exam', label: common.nav.exam },

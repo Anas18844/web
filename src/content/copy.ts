@@ -411,15 +411,30 @@ export const privacy = {
 } as const
 
 export const common = {
+  /**
+   * Two grade tabs replaced three content tabs — الملخصات, الواجبات, الامتحانات.
+   *
+   * Those were organised by ARTEFACT, which is how the content was built and
+   * not how it is used: following one lesson through meant visiting three tabs
+   * and knowing which item on each belonged together. The grade tabs are
+   * organised by who the student is, and the lesson page holds the four pieces.
+   *
+   * The three old index pages still work — links have been shared — but nothing
+   * in the navigation points at them any more.
+   */
   nav: {
     home: 'الرئيسية',
-    summary: 'الملخصات',
-    homework: 'الواجبات',
-    exam: 'الامتحانات',
+    firstSec: 'أولى ثانوي',
+    secondBacc: 'تانية بكالوريا',
     knowledge: 'مركز المعرفة',
     about: 'مين مستر أنس',
     parents: 'لولي الأمر',
     start: 'سجّل معانا',
+
+    /** Kept for the old index pages, which are still reachable by link. */
+    summary: 'الملخصات',
+    homework: 'الواجبات',
+    exam: 'الامتحانات',
   },
   form: {
     /**

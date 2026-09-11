@@ -4,6 +4,7 @@ import { byDate } from '@/content/knowledge'
 import { HOMEWORK } from '@/content/homework'
 import { SUMMARIES } from '@/content/summaries'
 import { EXAMS } from '@/content/exams'
+import { GRADE_SLUG, LESSONS, gradesWithLessons } from '@/content/lessons'
 
 /**
  * When the static pages last actually changed.
@@ -16,7 +17,7 @@ import { EXAMS } from '@/content/exams'
  * Bump this by hand when a page's content genuinely changes. Being a little
  * stale here is harmless; being wrong every deploy is not.
  */
-const CONTENT_UPDATED = new Date('2026-08-17')
+const CONTENT_UPDATED = new Date('2026-09-11')
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -26,6 +27,28 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 1,
     },
+
+    /**
+     * The lesson pages, which are now the way into the content.
+     *
+     * Priority above the old index pages on purpose: these are what the
+     * navigation points at and what a student is sent in WhatsApp, so they are
+     * the ones worth ranking. The old /summary and /homework URLs stay in the
+     * sitemap because they still resolve and are already indexed — removing
+     * them would strand whatever ranking they have rather than transfer it.
+     */
+    ...gradesWithLessons().map((g) => ({
+      url: `${site.url}/lessons/${GRADE_SLUG[g]}`,
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    })),
+    ...LESSONS.map((l) => ({
+      url: `${site.url}/lessons/${GRADE_SLUG[l.grade]}/${l.slug}`,
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    })),
     {
       url: `${site.url}/summary`,
       lastModified: CONTENT_UPDATED,
