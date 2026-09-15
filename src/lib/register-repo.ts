@@ -2,18 +2,22 @@ import 'server-only'
 
 import { getSupabaseAdmin } from '@/lib/supabase'
 import type { SessionUser } from '@/lib/auth'
+import type { WeekPlan } from '@/lib/weeks'
 
 /**
  * The register — one screen's worth of data, assembled in one place.
  *
  * The teacher opens this before a lesson and needs four things per student at a
- * glance: who they are, are they here, did they do the homework and what did
- * they get, and what did they score on the exam. Those live in four tables, so
- * this file does the joining rather than making the page do it.
+ * glance: who they are, are they here, did they do THIS WEEK'S homework and what
+ * did they get, and what did they score on THIS WEEK'S paper. Those live in four
+ * tables, so this file does the joining rather than making the page do it.
+ *
+ * Every question is asked OF A WEEK (see lib/weeks.ts). An earlier version
+ * showed "their most recent homework, whatever it was for", and in week 3 that
+ * made a student who did week 1's homework and skipped week 2's look exactly
+ * like one who did both — on the screen used to decide who is falling behind.
  *
  * Everything is fetched in ONE round trip per table and stitched in memory.
- * Twenty students is not a scale problem, and a query per student would make
- * the page slower than the paper register it replaces.
  */
 
 export type AttendanceStatus = 'present' | 'absent' | 'late' | 'excused'
@@ -27,146 +31,223 @@ export type RegisterRow = {
   attendance: string | null
   branch: string | null
 
-  /** Today's mark, if one has been made. */
+  /** This week's mark, if one has been made. */
   status: AttendanceStatus | null
   note: string | null
 
-  /** Their most recent homework, whatever it was for. */
-  homework: {
-    slug: string
-    score: number
-    marks: number
-    passed: boolean
-    at: string
-  } | null
+  /**
+   * The homework checked this week, or null if they did not submit it.
+   *
+   * Best score across attempts, because the homework page lets a student try
+   * again and the teacher's question is "did they get there". `attempts` is
+   * shown beside it so a 50/50 on the fifth try does not read the same as a
+   * 50/50 on the first.
+   */
+  homework: { score: number; marks: number; passed: boolean; attempts: number; at: string } | null
 
-  /** Their most recent exam mark, entered by hand or earned online. */
-  exam: {
-    slug: string
-    score: number
-    marks: number
-    passed: boolean
-    source: string
-    at: string
-  } | null
+  /** This week's paper. A mark typed in by hand wins over an online attempt. */
+  exam: { score: number; marks: number; passed: boolean; source: string; at: string } | null
+}
+
+/**
+ * A homework submission whose phone number matches no student.
+ *
+ * Without this list the register quietly says "ماحلّش" about a student who DID
+ * the homework and typed a different number — a sibling's phone, a typo, their
+ * own second line. On a screen that decides who is behind, that is the one
+ * wrong answer worth designing against.
+ */
+export type UnmatchedSubmission = {
+  name: string | null
+  /** Admin only, same as everywhere else. */
+  phone: string | null
+  score: number
+  marks: number
+  attempts: number
+  at: string
 }
 
 export type RegisterFilters = {
-  grade?: string
+  /** Required: a week's homework and paper belong to one grade. */
+  grade: string
   attendance?: string
   branch?: string
 }
 
-/**
- * Builds the register for a date.
- *
- * The student list comes from `leads` — everyone who ever booked — rather than
- * from who happens to have an attendance row, because the whole point of the
- * screen is to mark the ones who are NOT there yet.
- */
 export type Register = {
   rows: RegisterRow[]
   /**
-   * Set when the attendance table could not be read.
-   *
-   * Without it the page renders every student as "not yet marked" — which is
-   * indistinguishable from a class where nobody has been ticked, and a teacher
-   * would only discover the truth when the first tap failed. The same costume a
-   * missing table wore on the login screen earlier in this project, and the
-   * same fix: say so.
+   * Set when the attendance table could not be read, so a missing table does
+   * not render as a class where nobody has been ticked yet.
    */
   attendanceError: string | null
+  unmatched: UnmatchedSubmission[]
+}
+
+type LeadRow = {
+  id: string
+  name: string
+  phone?: string
+  grade: string | null
+  attendance: string | null
+  branch: string | null
+}
+
+type HomeworkRow = {
+  lead_id: string | null
+  student_name: string | null
+  phone?: string | null
+  total_score: number
+  total_marks: number
+  passed: boolean
+  created_at: string
+}
+
+type ExamRow = {
+  lead_id: string
+  total_score: number
+  total_marks: number
+  passed: boolean
+  source: string | null
+  created_at: string
 }
 
 export async function getRegister(
   role: 'admin' | 'team',
-  date: string,
-  filters: RegisterFilters = {},
+  plan: WeekPlan,
+  filters: RegisterFilters,
 ): Promise<Register> {
   const supabase = getSupabaseAdmin()
 
   // Phone follows the same rule as everywhere else: a team session never
   // receives one, and the column is not even requested.
-  const columns =
+  const leadColumns =
     role === 'admin'
       ? 'id, name, phone, grade, attendance, branch'
       : 'id, name, grade, attendance, branch'
 
-  let query = supabase.from('leads').select(columns).order('name', { ascending: true })
-  if (filters.grade) query = query.eq('grade', filters.grade)
+  let query = supabase
+    .from('leads')
+    .select(leadColumns)
+    .eq('grade', filters.grade)
+    .order('name', { ascending: true })
   if (filters.attendance) query = query.eq('attendance', filters.attendance)
   if (filters.branch) query = query.eq('branch', filters.branch)
 
-  const { data: leads, error } = await query
+  const { data: leadData, error } = await query
   if (error) throw new Error(error.message)
 
-  const rows = (leads ?? []) as unknown as {
-    id: string
-    name: string
-    phone?: string
-    grade: string | null
-    attendance: string | null
-    branch: string | null
-  }[]
+  const leads = (leadData ?? []) as unknown as LeadRow[]
+  const ids = leads.map((l) => l.id)
 
-  if (rows.length === 0) return { rows: [], attendanceError: null }
-
-  const ids = rows.map((r) => r.id)
+  const homeworkColumns =
+    role === 'admin'
+      ? 'lead_id, student_name, phone, total_score, total_marks, passed, created_at'
+      : 'lead_id, student_name, total_score, total_marks, passed, created_at'
 
   const [marks, homework, exams] = await Promise.all([
-    supabase
-      .from('attendance')
-      .select('lead_id, status, note')
-      .eq('session_date', date)
-      .in('lead_id', ids),
-    supabase
-      .from('homework_submissions')
-      .select('lead_id, homework_slug, total_score, total_marks, passed, created_at')
-      .in('lead_id', ids)
-      .order('created_at', { ascending: false }),
-    supabase
-      .from('exam_submissions')
-      .select('lead_id, exam_slug, total_score, total_marks, passed, source, created_at')
-      .in('lead_id', ids)
-      .order('created_at', { ascending: false }),
+    (async () => {
+      if (ids.length === 0) return { data: [] as { lead_id: string; status: string; note: string | null }[], error: null }
+      const r = await supabase
+        .from('attendance')
+        .select('lead_id, status, note')
+        .eq('session_date', plan.date)
+        .in('lead_id', ids)
+      return { data: (r.data ?? []) as { lead_id: string; status: string; note: string | null }[], error: r.error }
+    })(),
+
+    (async () => {
+      if (!plan.homework) return [] as HomeworkRow[]
+      // Every submission for this week's homework, matched or not — the
+      // unmatched ones are the point of asking for all of them.
+      const r = await supabase
+        .from('homework_submissions')
+        .select(homeworkColumns)
+        .eq('homework_slug', plan.homework.slug)
+        .order('created_at', { ascending: false })
+      if (r.error) throw new Error(r.error.message)
+      return (r.data ?? []) as unknown as HomeworkRow[]
+    })(),
+
+    (async () => {
+      if (!plan.exam || ids.length === 0) return [] as ExamRow[]
+      const r = await supabase
+        .from('exam_submissions')
+        .select('lead_id, total_score, total_marks, passed, source, created_at')
+        .eq('exam_slug', plan.exam.slug)
+        .in('lead_id', ids)
+        .order('created_at', { ascending: false })
+      if (r.error) throw new Error(r.error.message)
+      return (r.data ?? []) as ExamRow[]
+    })(),
   ])
 
-  const markByLead = new Map((marks.data ?? []).map((m) => [m.lead_id, m]))
+  const markByLead = new Map(marks.data.map((m) => [m.lead_id, m]))
 
-  type HomeworkRow = {
-    lead_id: string
-    homework_slug: string
-    total_score: number
-    total_marks: number
-    passed: boolean
-    created_at: string
-  }
-  type ExamRow = {
-    lead_id: string
-    exam_slug: string
-    total_score: number
-    total_marks: number
-    passed: boolean
-    source: string | null
-    created_at: string
+  // ── Homework: best score per student, and the ones that match nobody ──────
+  const hwByLead = new Map<string, NonNullable<RegisterRow['homework']>>()
+  const unmatchedByKey = new Map<string, UnmatchedSubmission>()
+
+  for (const h of homework) {
+    if (h.lead_id) {
+      const prior = hwByLead.get(h.lead_id)
+      if (!prior) {
+        hwByLead.set(h.lead_id, {
+          score: h.total_score,
+          marks: h.total_marks,
+          passed: h.passed,
+          attempts: 1,
+          at: h.created_at,
+        })
+      } else {
+        prior.attempts += 1
+        if (h.total_score > prior.score) {
+          prior.score = h.total_score
+          prior.passed = h.passed
+        }
+      }
+      continue
+    }
+
+    // Grouped by phone for an admin and by name for the team, because the
+    // team's query never fetched a phone to group by.
+    const key = (role === 'admin' ? h.phone : h.student_name) || `anon:${h.created_at}`
+    const prior = unmatchedByKey.get(key)
+    if (!prior) {
+      unmatchedByKey.set(key, {
+        name: h.student_name,
+        phone: role === 'admin' ? (h.phone ?? null) : null,
+        score: h.total_score,
+        marks: h.total_marks,
+        attempts: 1,
+        at: h.created_at,
+      })
+    } else {
+      prior.attempts += 1
+      if (h.total_score > prior.score) prior.score = h.total_score
+    }
   }
 
-  // Ordered newest-first above, so the FIRST row seen for a student is their
-  // latest. `has` rather than overwrite keeps it that way.
-  const latestHomework = new Map<string, HomeworkRow>()
-  for (const h of (homework.data ?? []) as HomeworkRow[]) {
-    if (h.lead_id && !latestHomework.has(h.lead_id)) latestHomework.set(h.lead_id, h)
-  }
-  const latestExam = new Map<string, ExamRow>()
-  for (const e of (exams.data ?? []) as ExamRow[]) {
-    if (e.lead_id && !latestExam.has(e.lead_id)) latestExam.set(e.lead_id, e)
+  // ── The paper: a hand-entered mark is the teacher's, so it wins ───────────
+  const examByLead = new Map<string, NonNullable<RegisterRow['exam']>>()
+  for (const e of exams) {
+    const prior = examByLead.get(e.lead_id)
+    const candidate = {
+      score: e.total_score,
+      marks: e.total_marks,
+      passed: e.passed,
+      source: e.source ?? 'online',
+      at: e.created_at,
+    }
+    if (!prior) {
+      examByLead.set(e.lead_id, candidate)
+    } else if (prior.source !== 'manual' && (candidate.source === 'manual' || candidate.score > prior.score)) {
+      examByLead.set(e.lead_id, candidate)
+    }
   }
 
-  const registerRows = rows.map((lead) => {
+  const rows: RegisterRow[] = leads.map((lead) => {
     const mark = markByLead.get(lead.id)
-    const hw = latestHomework.get(lead.id)
-    const ex = latestExam.get(lead.id)
-
     return {
       leadId: lead.id,
       name: lead.name,
@@ -176,37 +257,23 @@ export async function getRegister(
       branch: lead.branch,
       status: (mark?.status as AttendanceStatus | undefined) ?? null,
       note: mark?.note ?? null,
-      homework: hw
-        ? {
-            slug: hw.homework_slug,
-            score: hw.total_score,
-            marks: hw.total_marks,
-            passed: hw.passed,
-            at: hw.created_at,
-          }
-        : null,
-      exam: ex
-        ? {
-            slug: ex.exam_slug,
-            score: ex.total_score,
-            marks: ex.total_marks,
-            passed: ex.passed,
-            source: ex.source ?? 'online',
-            at: ex.created_at,
-          }
-        : null,
+      homework: hwByLead.get(lead.id) ?? null,
+      exam: examByLead.get(lead.id) ?? null,
     }
   })
 
-  return { rows: registerRows, attendanceError: marks.error?.message ?? null }
+  return {
+    rows,
+    attendanceError: marks.error?.message ?? null,
+    unmatched: [...unmatchedByKey.values()],
+  }
 }
 
 /**
- * Marks a student present or absent.
+ * Marks a student present or absent for a week.
  *
  * An upsert on (lead_id, session_date): pressing a different button for the
- * same student on the same day is a CORRECTION, not a second attendance. A
- * register that accumulates contradictory rows is a register nobody trusts.
+ * same student in the same week is a CORRECTION, not a second attendance.
  */
 export async function setAttendance(
   actor: SessionUser,
@@ -301,7 +368,7 @@ export async function recordExamMark(
   if (error) throw new Error(error.message)
 }
 
-/** The day's totals, for the strip above the list. */
+/** The week's totals, for the strip above the list. */
 export function summarise(rows: RegisterRow[]) {
   return {
     total: rows.length,
@@ -311,5 +378,6 @@ export function summarise(rows: RegisterRow[]) {
     excused: rows.filter((r) => r.status === 'excused').length,
     unmarked: rows.filter((r) => !r.status).length,
     didHomework: rows.filter((r) => r.homework).length,
+    satExam: rows.filter((r) => r.exam).length,
   }
 }

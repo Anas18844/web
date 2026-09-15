@@ -5,11 +5,15 @@ import { useTransition } from 'react'
 import { ATTENDANCE, BRANCHES, GRADES } from '@/content/site'
 
 /**
- * The register's controls: which day, which group.
+ * The register's controls: which week, which group.
  *
- * State lives in the URL so a filtered register is a link — the teacher can
- * bookmark "second bacc, Helwan" and open it straight to that group before each
- * lesson rather than re-selecting every time.
+ * The WEEK leads, because it decides everything else on the page — attendance,
+ * the homework being checked and the paper being marked all follow from it.
+ * There is no date picker any more: a date was a way of reaching a week, and a
+ * wrong day inside the right week would have filed a register nobody could find.
+ *
+ * State lives in the URL so a register is a link: "week 3, second bacc,
+ * Helwan" can be bookmarked and opened straight to that group.
  */
 const control =
   'min-h-[2.25rem] rounded border border-navy-line bg-navy px-2.5 py-1.5 text-xs font-bold text-ink ' +
@@ -17,16 +21,14 @@ const control =
 
 export function RegisterFilters({
   values,
-  exams,
+  weeks,
 }: {
   values: Record<string, string | undefined>
   /**
-   * Passed in from the server page rather than imported. `content/exams.ts` is
-   * server-only — it holds the answer key — so a client component cannot read
-   * it, and duplicating the titles into a second file would be one more place
-   * to forget when an exam is renamed.
+   * Passed in from the server rather than computed here: the week calendar lives
+   * in a server-only module that also reads the homework and exam banks.
    */
-  exams: readonly { slug: string; title: string }[]
+  weeks: readonly { week: number; label: string }[]
 }) {
   const router = useRouter()
   const params = useSearchParams()
@@ -39,48 +41,28 @@ export function RegisterFilters({
     startTransition(() => router.push(`/dashboard/register?${next.toString()}`))
   }
 
-  const shiftDay = (days: number) => {
-    const base = values.date ? new Date(`${values.date}T12:00:00`) : new Date()
-    base.setDate(base.getDate() + days)
-    set('date', base.toISOString().slice(0, 10))
-  }
-
   return (
     <div className={`flex flex-wrap items-center gap-2 ${pending ? 'opacity-60' : ''}`}>
-      {/* Day stepping, because "yesterday" is the most common correction. */}
-      <div className="flex items-center gap-1">
-        <button
-          type="button"
-          onClick={() => shiftDay(-1)}
-          aria-label="اليوم اللي قبله"
-          className="flex h-9 w-9 items-center justify-center rounded border border-navy-line text-ink-muted transition-colors duration-200 hover:border-gold/50 hover:text-gold"
-        >
-          →
-        </button>
-        <input
-          type="date"
-          aria-label="تاريخ الحصة"
-          value={values.date ?? ''}
-          onChange={(e) => set('date', e.target.value)}
-          className={`${control} font-mono`}
-        />
-        <button
-          type="button"
-          onClick={() => shiftDay(1)}
-          aria-label="اليوم اللي بعده"
-          className="flex h-9 w-9 items-center justify-center rounded border border-navy-line text-ink-muted transition-colors duration-200 hover:border-gold/50 hover:text-gold"
-        >
-          ←
-        </button>
-      </div>
+      <select
+        aria-label="الأسبوع"
+        value={values.week ?? ''}
+        onChange={(e) => set('week', e.target.value)}
+        className={`${control} border-gold/50 text-sm`}
+      >
+        {weeks.map((w) => (
+          <option key={w.week} value={w.week}>
+            {w.label}
+          </option>
+        ))}
+      </select>
 
+      {/* No "all grades": a week's homework and paper belong to one grade. */}
       <select
         aria-label="الصف"
-        value={values.grade ?? ''}
+        value={values.grade ?? 'second_bacc'}
         onChange={(e) => set('grade', e.target.value)}
         className={control}
       >
-        <option value="">كل الصفوف</option>
         {GRADES.map((g) => (
           <option key={g.value} value={g.value}>
             {g.label}
@@ -115,21 +97,6 @@ export function RegisterFilters({
           </option>
         ))}
       </select>
-
-      {exams.length > 1 && (
-        <select
-          aria-label="الامتحان"
-          value={values.exam ?? ''}
-          onChange={(e) => set('exam', e.target.value)}
-          className={control}
-        >
-          {exams.map((e) => (
-            <option key={e.slug} value={e.slug}>
-              {e.title}
-            </option>
-          ))}
-        </select>
-      )}
     </div>
   )
 }

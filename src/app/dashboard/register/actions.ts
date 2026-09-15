@@ -4,33 +4,40 @@ import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { audit, requireUser } from '@/lib/auth'
 import { clearAttendance, recordExamMark, setAttendance } from '@/lib/register-repo'
-import { findExam, totalMarks } from '@/content/exams'
+import { cairoToday, planFor, weekDate, weekOf } from '@/lib/weeks'
 
 /**
  * The register's writes.
  *
- * Every one begins with `requireUser()` before it looks at its input, for the
- * same reason as the rest of the dashboard: a server action is a public
- * endpoint, and whether a button was rendered says nothing about who can call
- * it.
+ * Every one begins with `requireUser()` before it looks at its input: a server
+ * action is a public endpoint, and whether a button was rendered says nothing
+ * about who can call it.
  *
- * Marking attendance is open to BOTH roles. A team member taking the register
- * while the teacher teaches is the normal case, and it reveals nothing — the
- * screen they do it from already shows them no phone numbers.
+ * Both take a WEEK, never a date or an exam slug, and derive the rest here. The
+ * browser used to send the date and the slug itself — which meant the week an
+ * attendance landed in, and the paper a mark was filed against, were whatever
+ * the client said they were.
  */
 
 export type RegisterState = { ok?: boolean; error?: string; message?: string }
 
+/** A week that exists: from the first to the one being taught now. */
+const week = z
+  .number()
+  .int()
+  .min(1)
+  .refine((w) => w <= weekOf(cairoToday()), 'الأسبوع ده لسه ماجاش')
+
 const attendanceSchema = z.object({
   leadId: z.string().uuid(),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'التاريخ مش مظبوط'),
+  week,
   status: z.enum(['present', 'absent', 'late', 'excused', 'clear']),
   note: z.string().trim().max(300).optional(),
 })
 
 export async function markAttendanceAction(input: {
   leadId: string
-  date: string
+  week: number
   status: string
   note?: string
 }): Promise<RegisterState> {
@@ -46,7 +53,8 @@ export async function markAttendanceAction(input: {
     return { error: parsed.error.issues[0]?.message ?? 'بيانات مش مظبوطة' }
   }
 
-  const { leadId, date, status, note } = parsed.data
+  const { leadId, status, note } = parsed.data
+  const date = weekDate(parsed.data.week)
 
   try {
     if (status === 'clear') {
@@ -56,12 +64,9 @@ export async function markAttendanceAction(input: {
     }
 
     /**
-     * Deliberately NOT written to the audit log.
-     *
-     * A register is dozens of taps per lesson, and every one of them would be a
-     * row. The audit table exists so a deletion or an edited phone number can be
-     * traced later; burying that under three hundred attendance ticks a week
-     * would make it useless for what it is for. `recorded_by` on the row itself
+     * Deliberately NOT written to the audit log: a register is dozens of taps
+     * per lesson, and burying a deleted phone number under three hundred ticks
+     * would make the log useless for what it is for. `recorded_by` on the row
      * already says who marked it.
      */
     revalidatePath('/dashboard/register')
@@ -73,13 +78,15 @@ export async function markAttendanceAction(input: {
 
 const markSchema = z.object({
   leadId: z.string().uuid(),
-  examSlug: z.string().min(1).max(80),
+  grade: z.enum(['first_sec', 'second_bacc']),
+  week,
   score: z.number().int().min(0).max(1000),
 })
 
 export async function recordExamMarkAction(input: {
   leadId: string
-  examSlug: string
+  grade: string
+  week: number
   score: number
 }): Promise<RegisterState> {
   let actor
@@ -92,22 +99,21 @@ export async function recordExamMarkAction(input: {
   const parsed = markSchema.safeParse(input)
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'بيانات مش مظبوطة' }
 
-  const exam = findExam(parsed.data.examSlug)
-  if (!exam) return { error: 'الامتحان ده مش موجود' }
+  const { exam } = planFor(parsed.data.grade, parsed.data.week)
+  if (!exam) return { error: 'مفيش امتحان في الأسبوع ده' }
 
-  const marks = totalMarks(exam)
-  if (parsed.data.score > marks) {
-    return { error: `الدرجة لازم تكون من ${marks} أو أقل` }
+  if (parsed.data.score > exam.marks) {
+    return { error: `الدرجة لازم تكون من ${exam.marks} أو أقل` }
   }
 
   try {
-    await recordExamMark(actor, parsed.data.leadId, exam.slug, parsed.data.score, marks, exam.passMark)
+    await recordExamMark(actor, parsed.data.leadId, exam.slug, parsed.data.score, exam.marks, exam.passMark)
 
     // This one IS audited: a mark is a claim about a student that somebody
     // will act on, and unlike a tick it is entered once and rarely revisited.
     await audit(actor, 'update', {
       leadId: parsed.data.leadId,
-      after: { exam: exam.slug, score: parsed.data.score, of: marks, source: 'manual' },
+      after: { exam: exam.slug, week: parsed.data.week, score: parsed.data.score, of: exam.marks, source: 'manual' },
     })
 
     revalidatePath('/dashboard/register')

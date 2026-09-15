@@ -16,27 +16,31 @@ const STATUSES: { value: AttendanceStatus; label: string; short: string; tone: s
 ]
 
 /**
- * One student, one row, everything the teacher needs before the lesson starts.
+ * One student, one row, everything the teacher needs for this week.
  *
  * The attendance buttons write IMMEDIATELY — no save button, no form. He is
  * standing in front of a class with a phone in one hand; a flow that ends in
  * "don't forget to press save" is a flow that loses a register.
  *
- * `useTransition` keeps the row responsive while the write is in flight, and
- * the chosen state is held locally so the tick appears on the tap rather than
- * after the round trip.
+ * Every label names its week — «واجب الأسبوع التاني», not «الواجب». With weeks
+ * on the screen, an unlabelled "did the homework" invites exactly the question
+ * this page exists to answer: which homework?
  */
 export function RegisterRowItem({
   row,
-  date,
-  examSlug,
-  examMarks,
+  week,
+  grade,
+  homeworkLabel,
+  exam,
   isAdmin,
 }: {
   row: Row
-  date: string
-  examSlug: string | null
-  examMarks: number
+  week: number
+  grade: string
+  /** Null in a week with no homework to check. */
+  homeworkLabel: string | null
+  /** Null in a week with no paper. */
+  exam: { label: string; marks: number } | null
   isAdmin: boolean
 }) {
   const [status, setStatus] = useState<AttendanceStatus | null>(row.status)
@@ -55,7 +59,7 @@ export function RegisterRowItem({
     setError(null)
 
     startTransition(async () => {
-      const result = await markAttendanceAction({ leadId: row.leadId, date, status: value })
+      const result = await markAttendanceAction({ leadId: row.leadId, week, status: value })
       if (result.error) {
         setError(result.error)
         setStatus(row.status)
@@ -64,15 +68,15 @@ export function RegisterRowItem({
   }
 
   async function saveMark() {
-    if (!examSlug) return
+    if (!exam) return
     const value = Number(score)
-    if (!Number.isFinite(value) || value < 0) {
+    if (!Number.isInteger(value) || value < 0) {
       setError('اكتب رقم صحيح')
       return
     }
     setSavingMark(true)
     setError(null)
-    const result = await recordExamMarkAction({ leadId: row.leadId, examSlug, score: value })
+    const result = await recordExamMarkAction({ leadId: row.leadId, grade, week, score: value })
     setSavingMark(false)
     if (result.error) setError(result.error)
     else setMarkOpen(false)
@@ -128,44 +132,51 @@ export function RegisterRowItem({
         </div>
       </div>
 
-      {/* ── Homework and exam, side by side ─────────────────────────────── */}
+      {/* ── This week's homework and paper ────────────────────────────── */}
       <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-navy-line/60 pt-3">
-        {row.homework ? (
-          <span
-            className={`inline-flex items-center gap-1.5 rounded-sm px-2.5 py-1 text-xs font-bold ${
-              row.homework.passed
-                ? 'bg-emerald-500/15 text-emerald-300'
-                : 'bg-amber-500/15 text-amber-300'
-            }`}
-          >
-            الواجب {ar(row.homework.score)}/{ar(row.homework.marks)}
-          </span>
-        ) : (
-          <span className="inline-flex items-center rounded-sm bg-red-500/15 px-2.5 py-1 text-xs font-bold text-red-300">
-            ماحلّش الواجب
-          </span>
-        )}
+        {homeworkLabel &&
+          (row.homework ? (
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-sm px-2.5 py-1 text-xs font-bold ${
+                row.homework.passed
+                  ? 'bg-emerald-500/15 text-emerald-300'
+                  : 'bg-amber-500/15 text-amber-300'
+              }`}
+            >
+              {homeworkLabel} {ar(row.homework.score)}/{ar(row.homework.marks)}
+              {row.homework.attempts > 1 && (
+                <span className="text-[0.65rem] font-normal opacity-70">
+                  ({ar(row.homework.attempts)} محاولات)
+                </span>
+              )}
+            </span>
+          ) : (
+            <span className="inline-flex items-center rounded-sm bg-red-500/15 px-2.5 py-1 text-xs font-bold text-red-300">
+              ماحلّش {homeworkLabel}
+            </span>
+          ))}
 
-        {row.exam ? (
-          <span
-            className={`inline-flex items-center gap-1.5 rounded-sm px-2.5 py-1 text-xs font-bold ${
-              row.exam.passed
-                ? 'bg-emerald-500/15 text-emerald-300'
-                : 'bg-amber-500/15 text-amber-300'
-            }`}
-          >
-            الامتحان {ar(row.exam.score)}/{ar(row.exam.marks)}
-            {row.exam.source === 'manual' && (
-              <span className="text-[0.65rem] font-normal opacity-70">(يدوي)</span>
-            )}
-          </span>
-        ) : (
-          <span className="inline-flex items-center rounded-sm bg-navy-line/60 px-2.5 py-1 text-xs font-bold text-ink-faint">
-            مامتحنش
-          </span>
-        )}
+        {exam &&
+          (row.exam ? (
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-sm px-2.5 py-1 text-xs font-bold ${
+                row.exam.passed
+                  ? 'bg-emerald-500/15 text-emerald-300'
+                  : 'bg-amber-500/15 text-amber-300'
+              }`}
+            >
+              {exam.label} {ar(row.exam.score)}/{ar(row.exam.marks)}
+              {row.exam.source === 'manual' && (
+                <span className="text-[0.65rem] font-normal opacity-70">(ورقي)</span>
+              )}
+            </span>
+          ) : (
+            <span className="inline-flex items-center rounded-sm bg-navy-line/60 px-2.5 py-1 text-xs font-bold text-ink-faint">
+              لسه مالهوش درجة في {exam.label}
+            </span>
+          ))}
 
-        {examSlug && (
+        {exam && (
           <button
             type="button"
             onClick={() => setMarkOpen((v) => !v)}
@@ -176,16 +187,16 @@ export function RegisterRowItem({
         )}
       </div>
 
-      {markOpen && examSlug && (
+      {markOpen && exam && (
         <div className="mt-3 flex flex-wrap items-center gap-2 rounded border border-gold/40 bg-gold/[0.06] p-3">
           <label htmlFor={`mark-${row.leadId}`} className="text-xs font-bold text-ink">
-            درجة الامتحان من {ar(examMarks)}
+            درجة {exam.label} من {ar(exam.marks)}
           </label>
           <input
             id={`mark-${row.leadId}`}
             type="number"
             min={0}
-            max={examMarks}
+            max={exam.marks}
             inputMode="numeric"
             value={score}
             onChange={(e) => setScore(e.target.value)}
