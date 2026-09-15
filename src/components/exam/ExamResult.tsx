@@ -159,8 +159,14 @@ export function ExamResult({
         >
           كل الامتحانات
         </Link>
+        {/*
+          Week N examines lecture N, so the summary slug is the exam's with the
+          word swapped. This used to hardcode `week-1` → `lecture-1`, which sent
+          every exam after the first to a summary that does not exist — the link
+          looked fine and 404'd.
+        */}
         <Link
-          href={`/summary/${exam.slug.replace('week-1', 'lecture-1')}`}
+          href={`/summary/${exam.slug.replace('week-', 'lecture-')}`}
           className="min-h-[3rem] rounded border border-navy-line px-6 py-3 text-sm font-bold text-ink-muted transition-colors duration-200 hover:border-gold/50 hover:text-gold"
         >
           راجع الملخص

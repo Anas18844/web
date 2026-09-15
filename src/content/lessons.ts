@@ -97,7 +97,7 @@ export const LESSONS: readonly Lesson[] = [
     youtubeId: 'jKc5wAX9Mv8',
     summarySlug: 'second-bacc-lecture-2',
     homeworkSlug: 'second-bacc-lecture-2',
-    // Exam paper lands with the Tuesday lesson.
+    examSlug: 'second-bacc-week-2',
   },
 
   // ── أولى ثانوي ────────────────────────────────────────────────────────────
