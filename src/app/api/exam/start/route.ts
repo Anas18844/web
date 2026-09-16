@@ -67,6 +67,67 @@ export async function POST(request: Request) {
     )
   }
 
+  /**
+   * ── ONE SITTING ───────────────────────────────────────────────────────────
+   *
+   * A student who already has a recorded result does not get the paper again.
+   * Not strictness for its own sake: they have already seen the answer to every
+   * question they got wrong on the result card, so a second attempt measures
+   * nothing — and the register would carry two marks for one sitting, with no
+   * way to tell which was the real one.
+   *
+   * Checked BEFORE the homework query, so a student who sat the exam is told
+   * that, rather than a homework message that does not apply to them.
+   */
+  let sat: {
+    total_score: number
+    total_marks: number
+    passed: boolean
+    created_at: string
+  } | null = null
+  try {
+    const { data, error } = await getSupabaseAdmin()
+      .from('exam_submissions')
+      .select('total_score, total_marks, passed, created_at')
+      .eq('exam_slug', exam.slug)
+      .eq('phone', phone)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (error) throw new Error(error.message)
+    sat = data
+  } catch (error) {
+    // Fail CLOSED, for the same reason the homework check below does: a
+    // database that cannot say whether this paper has already been sat must not
+    // hand it out on the assumption that it has not.
+    return NextResponse.json(
+      {
+        ok: false,
+        reason: 'unavailable',
+        message: 'مش قادرين نتأكد من بياناتك دلوقتي. جرّب تاني بعد شوية.',
+        detail: error instanceof Error ? error.message : String(error),
+      },
+      { status: 503 },
+    )
+  }
+
+  if (sat) {
+    return NextResponse.json({
+      ok: false,
+      reason: 'already_sat',
+      message: 'إنت امتحنت الامتحان ده قبل كده. الامتحان بيتحل مرة واحدة بس.',
+      // The mark is shown back, so a student who returns worried about whether
+      // it counted gets an answer instead of a closed door.
+      result: {
+        total: sat.total_score,
+        marks: sat.total_marks,
+        passed: sat.passed,
+        at: sat.created_at,
+      },
+    })
+  }
+
   const homework = findHomework(exam.requiresHomework)
 
   let submission: { id: string; student_name: string | null; lead_id: string | null } | null = null

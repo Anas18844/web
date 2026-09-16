@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Icon } from '@/components/ui/Icon'
 import { events } from '@/lib/analytics'
+import { toArabicDigits } from '@/lib/arabic'
 
 /**
  * What a student meets before the exam — and, if they have not done the
@@ -19,7 +20,14 @@ import { events } from '@/lib/analytics'
  */
 export type GateResult =
   | { ok: true; pass: string; name: string | null; exam: unknown }
-  | { ok: false; reason: string; message: string; homework?: { slug: string; title: string; lesson: string } | null }
+  | {
+      ok: false
+      reason: string
+      message: string
+      homework?: { slug: string; title: string; lesson: string } | null
+      /** Sent with `already_sat` — the mark this student already has. */
+      result?: { total: number; marks: number; passed: boolean; at: string }
+    }
 
 export function ExamGate({
   slug,
@@ -137,9 +145,53 @@ export function ExamGate({
         {blocked && !blocked.ok && (
           <div
             role="alert"
-            className="mt-5 rounded border border-red-500/40 bg-red-500/10 p-5"
+            className={`mt-5 rounded border p-5 ${
+              blocked.reason === 'already_sat'
+                ? 'border-gold/40 bg-gold/[0.07]'
+                : 'border-red-500/40 bg-red-500/10'
+            }`}
           >
-            <p className="font-bold text-red-100">{blocked.message}</p>
+            <p
+              className={`font-bold ${
+                blocked.reason === 'already_sat' ? 'text-ink' : 'text-red-100'
+              }`}
+            >
+              {blocked.message}
+            </p>
+
+            {/*
+              A student who already sat it is not being told off — they are
+              being told the result counted. Showing the mark answers the
+              question that brought them back, and red would say "something
+              went wrong" about a paper they finished.
+            */}
+            {blocked.reason === 'already_sat' && blocked.result && (
+              <>
+                <p className="mt-4 font-mono text-4xl font-extrabold text-gold">
+                  {toArabicDigits(blocked.result.total)}
+                  <span className="text-xl text-ink-faint">
+                    {' / '}
+                    {toArabicDigits(blocked.result.marks)}
+                  </span>
+                </p>
+                <p className="mt-1 font-bold text-ink">
+                  {blocked.result.passed ? 'ناجح 🎉' : 'محتاج مراجعة'}
+                </p>
+                <p className="mt-1 text-xs text-ink-faint">
+                  اتسجّلت{' '}
+                  {new Intl.DateTimeFormat('ar-EG', {
+                    day: 'numeric',
+                    month: 'long',
+                  }).format(new Date(blocked.result.at))}
+                </p>
+                <Link
+                  href={`/summary/${slug.replace('week-', 'lecture-')}`}
+                  className="mt-4 inline-flex min-h-[2.75rem] w-full items-center justify-center rounded border border-gold/50 px-5 text-sm font-extrabold text-gold transition-colors duration-200 hover:bg-gold hover:text-navy"
+                >
+                  راجع الملخص
+                </Link>
+              </>
+            )}
 
             {/* Not a dead end: the way to fix it is one tap away. */}
             {blocked.reason === 'no_homework' && (

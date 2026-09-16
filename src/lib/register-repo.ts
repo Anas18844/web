@@ -362,7 +362,16 @@ export async function recordExamMark(
       // corrects it rather than adding a second result.
       attempt_key: `manual:${examSlug}:${lead.id}`,
     },
-    { onConflict: 'attempt_key' },
+    /**
+     * Conflicts on the STUDENT, not on this key.
+     *
+     * An exam is sat once (migration 009), and the teacher is the authority on
+     * the mark. So a paper mark typed in for a student who already sat the
+     * paper online CORRECTS the row they have rather than being refused by the
+     * unique index — which is what conflicting on `attempt_key` would have
+     * meant, since a manual key never matches an online one.
+     */
+    { onConflict: 'exam_slug,phone' },
   )
 
   if (error) throw new Error(error.message)

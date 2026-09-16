@@ -81,6 +81,49 @@ export async function POST(request: Request) {
   const exam = findExam(claims.slug)
   if (!exam) return NextResponse.json({ ok: false, error: 'NOT_FOUND' }, { status: 404 })
 
+  /**
+   * ── ONE SITTING, CHECKED AGAIN ────────────────────────────────────────────
+   *
+   * /api/exam/start refuses a second sitting, but the pass it issued lives for
+   * three hours — long enough to be replayed against this endpoint after a
+   * result has been recorded. So the rule is enforced here too, on the phone
+   * INSIDE the pass rather than anything the browser sent.
+   *
+   * The same `attemptKey` arriving twice is NOT a second sitting: that is one
+   * attempt sent twice — a double tap, a retried request — and the upsert below
+   * is built to stay idempotent for exactly that case.
+   *
+   * ⚠️ A database that cannot answer does NOT block the student here, unlike
+   * the gate. They have already written the paper, and refusing to mark it
+   * would cost them work they have done. The unique index on
+   * (exam_slug, phone) is what actually guarantees one row; this check is here
+   * to give a clear answer instead of a failed save.
+   *
+   * Placed before marking so a replay never spends a grading call.
+   */
+  try {
+    const { data } = await getSupabaseAdmin()
+      .from('exam_submissions')
+      .select('attempt_key')
+      .eq('exam_slug', exam.slug)
+      .eq('phone', claims.phone)
+      .limit(1)
+      .maybeSingle()
+
+    if (data && data.attempt_key !== attemptKey) {
+      return NextResponse.json(
+        {
+          ok: false,
+          reason: 'already_sat',
+          message: 'إنت امتحنت الامتحان ده قبل كده. الامتحان بيتحل مرة واحدة بس.',
+        },
+        { status: 409 },
+      )
+    }
+  } catch {
+    // Unknown — mark the paper anyway and let the index be the backstop.
+  }
+
   // ── Multiple choice ───────────────────────────────────────────────────────
   const mcqDetail = exam.mcq.map((q) => {
     const chosen = mcq[String(q.id)]
