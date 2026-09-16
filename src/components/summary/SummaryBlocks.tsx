@@ -159,6 +159,46 @@ export function Block({ block }: { block: SummaryBlock }) {
         </div>
       )
 
+    /**
+     * Scrolls sideways rather than wrapping. A four-column row crushed into a
+     * phone's width is unreadable, and a scrollbar is honest about that where
+     * squeezing is not.
+     */
+    case 'table':
+      return (
+        <div className="overflow-x-auto rounded border border-navy-line">
+          <table className="w-full min-w-[34rem] border-collapse text-start text-sm">
+            <thead>
+              <tr className="border-b border-navy-line bg-navy-soft/60 text-xs text-ink-faint">
+                {block.head.map((h, i) => (
+                  <th key={i} className="px-4 py-2.5 text-start font-bold">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {block.rows.map((row, i) => (
+                <tr key={i} className="border-b border-navy-line/60 last:border-0">
+                  {row.map((cell, j) => (
+                    <td
+                      key={j}
+                      // The first column is the row's label — the service, the
+                      // industry, the number — so it carries the weight.
+                      className={`px-4 py-2.5 align-top leading-relaxed ${
+                        j === 0 ? 'font-bold text-ink' : 'text-ink-muted'
+                      }`}
+                    >
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )
+
     case 'terms':
       return (
         <div className="overflow-hidden rounded border border-navy-line">

@@ -59,7 +59,18 @@ function Step({ step }: { step: LessonStep }) {
 
   /** One element, two tags: a link when there is somewhere to go. */
   const Wrapper = ready ? Link : 'div'
-  const wrapperProps = ready ? { href: step.href! } : {}
+  /**
+   * The booklet lives on Drive, not here. Sending a student off-site in the
+   * same tab loses them the lesson they were halfway through, so anything
+   * leaving the site opens beside it instead.
+   */
+  const external = Boolean(step.href && /^https?:\/\//.test(step.href))
+  const wrapperProps = ready
+    ? {
+        href: step.href!,
+        ...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {}),
+      }
+    : {}
 
   return (
     <li className="relative">

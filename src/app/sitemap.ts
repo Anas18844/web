@@ -17,7 +17,7 @@ import { GRADE_SLUG, LESSONS, gradesWithLessons } from '@/content/lessons'
  * Bump this by hand when a page's content genuinely changes. Being a little
  * stale here is harmless; being wrong every deploy is not.
  */
-const CONTENT_UPDATED = new Date('2026-09-11')
+const CONTENT_UPDATED = new Date('2026-09-16')
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

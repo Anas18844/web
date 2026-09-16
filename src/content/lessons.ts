@@ -47,6 +47,15 @@ export type Lesson = {
   summarySlug?: string
   homeworkSlug?: string
   examSlug?: string
+
+  /**
+   * The lecture's printed booklet (الملزمة) as a PDF.
+   *
+   * Optional for the same reason as the three slugs above: a booklet is
+   * scanned and uploaded after the lesson, so the step can say "لسه" instead
+   * of linking to nothing.
+   */
+  bookletUrl?: string
 }
 
 /** The slug used in URLs for a grade — `first_sec` is not a nice URL. */
@@ -99,6 +108,21 @@ export const LESSONS: readonly Lesson[] = [
     homeworkSlug: 'second-bacc-lecture-2',
     examSlug: 'second-bacc-week-2',
   },
+  {
+    slug: 'lecture-3',
+    grade: 'second_bacc',
+    n: 3,
+    eyebrow: 'المحاضرة الثالثة',
+    title: 'الذكاء الاصطناعي في الحياة اليومية والصناعة',
+    blurb:
+      'AI شغّال فين فعلًا — التوصيات والترجمة والمصانع والمستشفيات — وبيبرع في إيه، وإيه اللي يتطلب حذر.',
+    youtubeId: 'Lweb2IodrqQ',
+    summarySlug: 'second-bacc-lecture-3',
+    homeworkSlug: 'second-bacc-lecture-3',
+    bookletUrl:
+      'https://drive.google.com/file/d/1YbRHa0DWyW1RSTmcDlOoj7buoeaNhIWm/view?usp=drive_link',
+    // Exam paper lands with the Tuesday lesson.
+  },
 
   // ── أولى ثانوي ────────────────────────────────────────────────────────────
   {
@@ -136,7 +160,7 @@ export function gradesWithLessons(): readonly Grade[] {
 
 // ── What a step looks like to the page ───────────────────────────────────────
 
-export type StepKey = 'video' | 'summary' | 'homework' | 'exam'
+export type StepKey = 'video' | 'summary' | 'homework' | 'exam' | 'booklet'
 
 export type LessonStep = {
   key: StepKey
@@ -211,6 +235,22 @@ export function stepsFor(lesson: Lesson): LessonStep[] {
       note: lesson.examSlug
         ? 'مفتوح للي خلّص الواجب — بتدخله برقم تليفونك.'
         : 'امتحان الحصة بينزل يوم المحاضرة الجاية.',
+    },
+    /**
+     * The booklet sits LAST, after the exam, because it is not a step in the
+     * sequence — it is the lesson on paper, for the student who wants to
+     * revise away from a screen. Putting it earlier would interrupt a path
+     * whose whole point is "watch, revise, practise, test".
+     */
+    {
+      key: 'booklet',
+      n: 5,
+      title: 'نزّل الملزمة',
+      body: 'المحاضرة مطبوعة PDF — للمذاكرة على الورق ومن غير نت.',
+      href: lesson.bookletUrl,
+      meta: lesson.bookletUrl ? 'PDF' : undefined,
+      state: lesson.bookletUrl ? 'ready' : 'soon',
+      note: lesson.bookletUrl ? undefined : 'الملزمة بتترفع بعد المحاضرة.',
     },
   ]
 }
