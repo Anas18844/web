@@ -97,6 +97,8 @@ export const LESSONS: readonly Lesson[] = [
     examSlug: 'second-bacc-week-1',
     bookletUrl:
       'https://drive.google.com/file/d/1qI7Gm5zzdfXDiREFToNJxvDe7gb5KEgR/view?usp=drive_link',
+    bookletUrl:
+      'https://drive.google.com/file/d/1qI7Gm5zzdfXDiREFToNJxvDe7gb5KEgR/view?usp=drive_link',
   },
   {
     slug: 'lecture-2',
@@ -109,6 +111,8 @@ export const LESSONS: readonly Lesson[] = [
     summarySlug: 'second-bacc-lecture-2',
     homeworkSlug: 'second-bacc-lecture-2',
     examSlug: 'second-bacc-week-2',
+    bookletUrl:
+      'https://drive.google.com/file/d/1HDdEdUxbTsmsmEc9k0P2vKWAQ_DF_Dgm/view?usp=drive_link',
     bookletUrl:
       'https://drive.google.com/file/d/1HDdEdUxbTsmsmEc9k0P2vKWAQ_DF_Dgm/view?usp=drive_link',
   },
