@@ -130,9 +130,18 @@ export default async function SummaryPage({
             <div className="mt-6 rounded border border-gold/50 bg-gold/[0.09] p-6 text-center sm:p-8">
               <h2 className="text-title font-extrabold text-ink">ذاكرت الملخص؟ اختبر نفسك دلوقتي</h2>
               <p className="mt-3 text-body text-ink-muted">
-                {ar(homework.mcq.length + homework.essay.length)} سؤال بتصحيح فوري —{' '}
-                {ar(homework.mcq.length)} اختيار و{ar(homework.essay.length)} مقالي، من{' '}
-                {ar(totalMarks(homework))} درجة.
+                {homework.essay.length > 0 ? (
+                  <>
+                    {ar(homework.mcq.length + homework.essay.length)} سؤال بتصحيح فوري —{' '}
+                    {ar(homework.mcq.length)} اختيار و{ar(homework.essay.length)} مقالي، من{' '}
+                    {ar(totalMarks(homework))} درجة.
+                  </>
+                ) : (
+                  <>
+                    {ar(homework.mcq.length)} سؤال اختيار من متعدد بتصحيح فوري، من{' '}
+                    {ar(totalMarks(homework))} درجة.
+                  </>
+                )}
               </p>
 
               <Link

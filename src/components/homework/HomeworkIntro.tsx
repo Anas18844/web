@@ -34,9 +34,16 @@ export function HomeworkIntro({
         <h1 className="mt-2 text-title font-extrabold text-ink">{homework.title}</h1>
         <p className="mt-2 text-body text-ink-muted">{homework.lesson}</p>
 
-        <dl className="mt-6 grid grid-cols-3 gap-3 border-y border-navy-line py-4 text-center">
+        <dl
+          className={`mt-6 grid gap-3 border-y border-navy-line py-4 text-center ${
+            homework.essay.length > 0 ? 'grid-cols-3' : 'grid-cols-2'
+          }`}
+        >
           <Fact label="اختيار" value={`${homework.mcq.length}`} />
-          <Fact label="مقالي" value={`${homework.essay.length}`} />
+          {/* A paper with no essays says nothing about them, rather than «٠». */}
+          {homework.essay.length > 0 && (
+            <Fact label="مقالي" value={`${homework.essay.length}`} />
+          )}
           <Fact label="الدرجة" value={`${homework.totalMarks}`} />
         </dl>
 

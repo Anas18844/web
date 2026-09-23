@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useMemo, useRef, useState } from 'react'
+import { Fragment, useMemo, useRef, useState } from 'react'
 import type { PublicHomework } from '@/content/homework'
 import { Container } from '@/components/ui/Container'
 import { events } from '@/lib/analytics'
@@ -55,6 +55,26 @@ export function HomeworkPaper({
     if (!graded) return new Map<number, { correct: boolean; answer: number }>()
     return new Map(graded.mcq.map((m) => [m.id, { correct: m.correct, answer: m.answer }]))
   }, [graded])
+
+  /**
+   * The multiple choice as runs, each under its axis when the paper asks for
+   * `sections: 'axis'`. Every other paper is one run with no heading, so it
+   * renders exactly as it did. Numbering stays continuous across runs — it is
+   * the paper's number, not the section's.
+   */
+  const mcqGroups = useMemo(() => {
+    const groups: {
+      axis: string | null
+      items: { q: PublicHomework['mcq'][number]; index: number }[]
+    }[] = []
+    homework.mcq.forEach((q, index) => {
+      const axis = homework.sections === 'axis' ? q.axis : null
+      const last = groups[groups.length - 1]
+      if (last && last.axis === axis) last.items.push({ q, index })
+      else groups.push({ axis, items: [{ q, index }] })
+    })
+    return groups
+  }, [homework])
 
   const essayVerdict = useMemo(() => {
     if (!graded)
@@ -171,167 +191,199 @@ export function HomeworkPaper({
           marks={`${ar(homework.mcq.length)} درجة`}
         />
 
-        <ol className="grid gap-5">
-          {homework.mcq.map((q, index) => {
-            const verdict = mcqVerdict.get(q.id)
-            return (
-              <li
-                key={q.id}
-                className={`rounded border p-5 ${
-                  reviewing && verdict
-                    ? verdict.correct
-                      ? 'border-emerald-500/40 bg-emerald-500/[0.06]'
-                      : 'border-red-500/40 bg-red-500/[0.06]'
-                    : 'border-navy-line bg-navy-soft/25'
-                }`}
+        {mcqGroups.map((group, gi) => (
+          <Fragment key={gi}>
+            {group.axis && (
+              <h3
+                className={
+                  gi > 0
+                    ? 'mb-4 mt-10 flex items-center gap-3 text-sm font-extrabold text-gold'
+                    : 'mb-4 flex items-center gap-3 text-sm font-extrabold text-gold'
+                }
               >
-                <div className="flex items-start gap-3">
-                  <span className="mt-0.5 shrink-0 font-mono text-sm font-extrabold text-gold">
-                    {ar(index + 1)}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-bold leading-relaxed text-ink">{q.q}</p>
-
-                    {/*
-                      Capped by HEIGHT, not just width. Several of these are
-                      portrait scans from the textbook: constrained only by
-                      width, a 732x1000 photograph is over 900px tall and
-                      pushes every answer option below the fold, so the student
-                      has to scroll past the picture to find out what they are
-                      being asked to pick.
-                    */}
-                    {q.image && (
-                      <Image
-                        src={q.image.src}
-                        alt=""
-                        width={q.image.width}
-                        height={q.image.height}
-                        sizes="(min-width: 768px) 480px, 90vw"
-                        className="mt-4 max-h-64 w-auto max-w-full rounded border border-navy-line object-contain"
-                      />
-                    )}
-
-                    <div className="mt-4 grid gap-2">
-                      {q.options.map((option, oi) => {
-                        const chosen = mcq[q.id] === oi
-                        const isAnswer = reviewing && verdict?.answer === oi
-                        return (
-                          <label
-                            key={oi}
-                            className={`flex cursor-pointer items-start gap-3 rounded border p-3 text-sm transition-colors duration-150 ${
-                              isAnswer
-                                ? 'border-emerald-500/60 bg-emerald-500/10'
-                                : chosen
-                                  ? 'border-gold bg-gold/10'
-                                  : 'border-navy-line hover:border-gold/40'
-                            } ${reviewing ? 'cursor-default' : ''}`}
-                          >
-                            <input
-                              type="radio"
-                              name={`mcq-${q.id}`}
-                              checked={chosen}
-                              disabled={reviewing}
-                              onChange={() => setMcq((p) => ({ ...p, [q.id]: oi }))}
-                              className="mt-1 h-4 w-4 shrink-0 accent-[#CBA352]"
-                            />
-                            <span className="leading-relaxed text-ink-muted">{option}</span>
-                          </label>
-                        )
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </li>
-            )
-          })}
-        </ol>
-
-        {/* ── Essays ───────────────────────────────────────────────────── */}
-        <SectionHead
-          badge="القسم الثاني"
-          title="الأسئلة المقالية"
-          marks={`${ar(homework.essay.reduce((t, q) => t + q.marks, 0))} درجة`}
-          className="mt-12"
-        />
-
-        <p className="mb-5 rounded border border-navy-line bg-navy-soft/40 px-4 py-3 text-sm text-ink-muted">
-          ✍️ جاوب في <b className="text-ink">{ar(homework.maxWords)} كلمات كحد أقصى</b>. المطلوب
-          المصطلح أو المعنى الصحيح، مش شرح مطوّل.
-        </p>
-
-        <ol className="grid gap-5">
-          {homework.essay.map((q, index) => {
-            const verdict = essayVerdict.get(q.id)
-            return (
-              <li
-                key={q.id}
-                className={`rounded border p-5 ${
-                  reviewing && verdict
-                    ? verdict.correct
-                      ? 'border-emerald-500/40 bg-emerald-500/[0.06]'
-                      : 'border-red-500/40 bg-red-500/[0.06]'
-                    : 'border-navy-line bg-navy-soft/25'
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <span className="mt-0.5 shrink-0 font-mono text-sm font-extrabold text-gold">
-                    {ar(index + 1)}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-3">
-                      <p className="font-bold leading-relaxed text-ink">{q.q}</p>
-                      {/* Questions are no longer worth the same. A student who
-                          cannot see that this one is worth six needs to guess
-                          how much to write, and will guess from its length. */}
-                      <span className="mt-0.5 shrink-0 rounded border border-navy-line px-2 py-0.5 font-mono text-xs font-bold text-ink-faint">
-                        {ar(q.marks)}
+                {group.axis}
+                <span className="font-mono text-xs font-bold text-ink-faint">
+                  · {ar(group.items.length)} سؤال
+                </span>
+                <span aria-hidden="true" className="h-px flex-1 bg-navy-line" />
+              </h3>
+            )}
+            <ol className="grid gap-5">
+              {group.items.map(({ q, index }) => {
+                const verdict = mcqVerdict.get(q.id)
+                return (
+                  <li
+                    key={q.id}
+                    className={`rounded border p-5 ${
+                      reviewing && verdict
+                        ? verdict.correct
+                          ? 'border-emerald-500/40 bg-emerald-500/[0.06]'
+                          : 'border-red-500/40 bg-red-500/[0.06]'
+                        : 'border-navy-line bg-navy-soft/25'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="mt-0.5 shrink-0 font-mono text-sm font-extrabold text-gold">
+                        {ar(index + 1)}
                       </span>
-                    </div>
-
-                    {/* A one-line box is an instruction. It tells a student the
-                        answer is a phrase — right for "ما المصطلح…؟", and wrong
-                        for a six-mark analysis that wants several sentences. */}
-                    {q.marks > 2 ? (
-                      <textarea
-                        rows={4}
-                        value={essay[q.id] || ''}
-                        disabled={reviewing}
-                        onChange={(e) => setEssay((p) => ({ ...p, [q.id]: e.target.value }))}
-                        placeholder="اكتب إجابتك… السؤال ده محتاج أكتر من جملة"
-                        className="mt-4 w-full resize-y rounded border border-navy-line bg-navy px-4 py-3 text-base leading-relaxed text-ink placeholder:text-ink-faint/70 transition-colors duration-200 focus:border-gold focus:outline-none disabled:opacity-70"
-                      />
-                    ) : (
-                      <input
-                        type="text"
-                        value={essay[q.id] || ''}
-                        disabled={reviewing}
-                        onChange={(e) => setEssay((p) => ({ ...p, [q.id]: e.target.value }))}
-                        placeholder="اكتب إجابتك…"
-                        className="mt-4 w-full min-h-[3rem] rounded border border-navy-line bg-navy px-4 py-3 text-base text-ink placeholder:text-ink-faint/70 transition-colors duration-200 focus:border-gold focus:outline-none disabled:opacity-70"
-                      />
-                    )}
-
-                    {reviewing && verdict && !verdict.correct && (
-                      <p className="mt-3 text-sm text-gold">
-                        {/* With partial credit, "not correct" covers two very
-                            different results. A student who earned half must
-                            be told so here, or they will read the red border
-                            as a zero and come asking why. */}
-                        {verdict.earned > 0 && (
-                          <b className="text-emerald-300">
-                            خدت {ar(verdict.earned)} من {ar(verdict.marks)} —{' '}
-                          </b>
+                      <div className="min-w-0 flex-1">
+                        {q.official && (
+                          <span className="mb-2 inline-block rounded-sm border border-gold/40 bg-gold/10 px-2 py-0.5 text-[0.7rem] font-bold text-gold">
+                            تقييمات الوزارة
+                          </span>
                         )}
-                        الإجابة النموذجية: {verdict.model}
-                        <span className="text-ink-faint"> · تطابق {ar(verdict.match)}٪</span>
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </li>
-            )
-          })}
-        </ol>
+                        <p className="font-bold leading-relaxed text-ink">{q.q}</p>
+
+                        {/*
+                          Capped by HEIGHT, not just width. Several of these are
+                          portrait scans from the textbook: constrained only by
+                          width, a 732x1000 photograph is over 900px tall and
+                          pushes every answer option below the fold, so the student
+                          has to scroll past the picture to find out what they are
+                          being asked to pick.
+                        */}
+                        {q.image && (
+                          <Image
+                            src={q.image.src}
+                            alt=""
+                            width={q.image.width}
+                            height={q.image.height}
+                            sizes="(min-width: 768px) 480px, 90vw"
+                            className="mt-4 max-h-64 w-auto max-w-full rounded border border-navy-line object-contain"
+                          />
+                        )}
+
+                        <div className="mt-4 grid gap-2">
+                          {q.options.map((option, oi) => {
+                            const chosen = mcq[q.id] === oi
+                            const isAnswer = reviewing && verdict?.answer === oi
+                            return (
+                              <label
+                                key={oi}
+                                className={`flex cursor-pointer items-start gap-3 rounded border p-3 text-sm transition-colors duration-150 ${
+                                  isAnswer
+                                    ? 'border-emerald-500/60 bg-emerald-500/10'
+                                    : chosen
+                                      ? 'border-gold bg-gold/10'
+                                      : 'border-navy-line hover:border-gold/40'
+                                } ${reviewing ? 'cursor-default' : ''}`}
+                              >
+                                <input
+                                  type="radio"
+                                  name={`mcq-${q.id}`}
+                                  checked={chosen}
+                                  disabled={reviewing}
+                                  onChange={() => setMcq((p) => ({ ...p, [q.id]: oi }))}
+                                  className="mt-1 h-4 w-4 shrink-0 accent-[#CBA352]"
+                                />
+                                <span className="leading-relaxed text-ink-muted">{option}</span>
+                              </label>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                )
+              })}
+            </ol>
+          </Fragment>
+        ))}
+
+        {/*
+          A paper with no essays shows no essay section — not an empty heading
+          worth «٠ درجة» over a word limit for answers nobody is asked to write.
+        */}
+        {homework.essay.length > 0 && (
+          <>
+            {/* ── Essays ───────────────────────────────────────────────────── */}
+            <SectionHead
+              badge="القسم الثاني"
+              title="الأسئلة المقالية"
+              marks={`${ar(homework.essay.reduce((t, q) => t + q.marks, 0))} درجة`}
+              className="mt-12"
+            />
+
+            <p className="mb-5 rounded border border-navy-line bg-navy-soft/40 px-4 py-3 text-sm text-ink-muted">
+              ✍️ جاوب في <b className="text-ink">{ar(homework.maxWords)} كلمات كحد أقصى</b>. المطلوب
+              المصطلح أو المعنى الصحيح، مش شرح مطوّل.
+            </p>
+
+            <ol className="grid gap-5">
+              {homework.essay.map((q, index) => {
+                const verdict = essayVerdict.get(q.id)
+                return (
+                  <li
+                    key={q.id}
+                    className={`rounded border p-5 ${
+                      reviewing && verdict
+                        ? verdict.correct
+                          ? 'border-emerald-500/40 bg-emerald-500/[0.06]'
+                          : 'border-red-500/40 bg-red-500/[0.06]'
+                        : 'border-navy-line bg-navy-soft/25'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="mt-0.5 shrink-0 font-mono text-sm font-extrabold text-gold">
+                        {ar(index + 1)}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-3">
+                          <p className="font-bold leading-relaxed text-ink">{q.q}</p>
+                          {/* Questions are no longer worth the same. A student who
+                              cannot see that this one is worth six needs to guess
+                              how much to write, and will guess from its length. */}
+                          <span className="mt-0.5 shrink-0 rounded border border-navy-line px-2 py-0.5 font-mono text-xs font-bold text-ink-faint">
+                            {ar(q.marks)}
+                          </span>
+                        </div>
+
+                        {/* A one-line box is an instruction. It tells a student the
+                            answer is a phrase — right for "ما المصطلح…؟", and wrong
+                            for a six-mark analysis that wants several sentences. */}
+                        {q.marks > 2 ? (
+                          <textarea
+                            rows={4}
+                            value={essay[q.id] || ''}
+                            disabled={reviewing}
+                            onChange={(e) => setEssay((p) => ({ ...p, [q.id]: e.target.value }))}
+                            placeholder="اكتب إجابتك… السؤال ده محتاج أكتر من جملة"
+                            className="mt-4 w-full resize-y rounded border border-navy-line bg-navy px-4 py-3 text-base leading-relaxed text-ink placeholder:text-ink-faint/70 transition-colors duration-200 focus:border-gold focus:outline-none disabled:opacity-70"
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            value={essay[q.id] || ''}
+                            disabled={reviewing}
+                            onChange={(e) => setEssay((p) => ({ ...p, [q.id]: e.target.value }))}
+                            placeholder="اكتب إجابتك…"
+                            className="mt-4 w-full min-h-[3rem] rounded border border-navy-line bg-navy px-4 py-3 text-base text-ink placeholder:text-ink-faint/70 transition-colors duration-200 focus:border-gold focus:outline-none disabled:opacity-70"
+                          />
+                        )}
+
+                        {reviewing && verdict && !verdict.correct && (
+                          <p className="mt-3 text-sm text-gold">
+                            {/* With partial credit, "not correct" covers two very
+                                different results. A student who earned half must
+                                be told so here, or they will read the red border
+                                as a zero and come asking why. */}
+                            {verdict.earned > 0 && (
+                              <b className="text-emerald-300">
+                                خدت {ar(verdict.earned)} من {ar(verdict.marks)} —{' '}
+                              </b>
+                            )}
+                            الإجابة النموذجية: {verdict.model}
+                            <span className="text-ink-faint"> · تطابق {ar(verdict.match)}٪</span>
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                )
+              })}
+            </ol>
+          </>
+        )}
 
         {reviewing && (
           <button

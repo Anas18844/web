@@ -68,7 +68,9 @@ function GradeCard({ label, items }: { label: string; items: readonly Homework[]
                   {hw.lesson}
                 </p>
                 <p className="mt-2 text-xs text-ink-faint">
-                  {hw.mcq.length} اختيار · {hw.essay.length} مقالي · من {totalMarks(hw)} درجة
+                  {hw.mcq.length} اختيار ·{' '}
+                  {hw.essay.length > 0 && <>{hw.essay.length} مقالي · </>}
+                  من {totalMarks(hw)} درجة
                 </p>
               </Link>
             </li>

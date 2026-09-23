@@ -18,7 +18,9 @@ export async function generateMetadata({
 
   return {
     title: `${hw.title} — ${hw.lesson}`,
-    description: `${hw.lesson}. ${hw.mcq.length} سؤال اختيار و${hw.essay.length} مقالي، بتصحيح فوري.`,
+    description: `${hw.lesson}. ${hw.mcq.length} سؤال اختيار${
+      hw.essay.length > 0 ? ` و${hw.essay.length} مقالي` : ''
+    }، بتصحيح فوري.`,
     alternates: { canonical: `/homework/${hw.slug}` },
   }
 }

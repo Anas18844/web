@@ -61,6 +61,12 @@ export function HomeworkResult({
 
   const wrongMcq = result.mcq.filter((m) => !m.correct)
   const wrongEssay = result.essay.filter((e) => !e.correct)
+  /**
+   * A paper can have no essays at all — lecture 4 is eighty multiple choice.
+   * The marker still reports `local` when it was handed nothing to mark, so
+   * without this every student would be told the AI marker was down.
+   */
+  const hasEssays = homework.essay.length > 0
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -83,7 +89,9 @@ export function HomeworkResult({
 
         <div className="grid gap-4 border-t border-navy-line p-6">
           <Line label="الاختيار من متعدد" value={score.mcq} outOf={score.mcqTotal} />
-          <Line label="الأسئلة المقالية" value={score.essay} outOf={score.essayTotal} />
+          {hasEssays && (
+            <Line label="الأسئلة المقالية" value={score.essay} outOf={score.essayTotal} />
+          )}
 
           {/* ── Was it recorded? ─────────────────────────────────────── */}
           {recorded.requested && recorded.saved && recorded.matchedStudent && (
@@ -113,7 +121,7 @@ export function HomeworkResult({
             </Note>
           )}
 
-          {grader.source === 'local' && (
+          {hasEssays && grader.source === 'local' && (
             <Note tone="warn">
               المصحّح الذكي مكانش متاح، فالمقالي اتصحّح بمطابقة الكلمات. لو شايف إن إجابة
               صح واتحسبت غلط، كلّم مستر أنس.

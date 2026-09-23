@@ -97,8 +97,6 @@ export const LESSONS: readonly Lesson[] = [
     examSlug: 'second-bacc-week-1',
     bookletUrl:
       'https://drive.google.com/file/d/1qI7Gm5zzdfXDiREFToNJxvDe7gb5KEgR/view?usp=drive_link',
-    bookletUrl:
-      'https://drive.google.com/file/d/1qI7Gm5zzdfXDiREFToNJxvDe7gb5KEgR/view?usp=drive_link',
   },
   {
     slug: 'lecture-2',
@@ -111,8 +109,6 @@ export const LESSONS: readonly Lesson[] = [
     summarySlug: 'second-bacc-lecture-2',
     homeworkSlug: 'second-bacc-lecture-2',
     examSlug: 'second-bacc-week-2',
-    bookletUrl:
-      'https://drive.google.com/file/d/1HDdEdUxbTsmsmEc9k0P2vKWAQ_DF_Dgm/view?usp=drive_link',
     bookletUrl:
       'https://drive.google.com/file/d/1HDdEdUxbTsmsmEc9k0P2vKWAQ_DF_Dgm/view?usp=drive_link',
   },
@@ -129,6 +125,21 @@ export const LESSONS: readonly Lesson[] = [
     homeworkSlug: 'second-bacc-lecture-3',
     bookletUrl:
       'https://drive.google.com/file/d/1YbRHa0DWyW1RSTmcDlOoj7buoeaNhIWm/view?usp=drive_link',
+    // Exam paper lands with the Tuesday lesson.
+  },
+  {
+    slug: 'lecture-4',
+    grade: 'second_bacc',
+    n: 4,
+    eyebrow: 'المحاضرة الرابعة',
+    title: 'القضايا الأخلاقية المتعلقة بالذكاء الاصطناعي',
+    blurb:
+      'لو بيانات التدريب متحيزة النظام بيكرر تحيزها — التحيز والخصوصية ومين المسؤول، والمبادئ اللي تحكم استخدامه.',
+    youtubeId: 'HMLv05wfJj4',
+    summarySlug: 'second-bacc-lecture-4',
+    homeworkSlug: 'second-bacc-lecture-4',
+    bookletUrl:
+      'https://drive.google.com/file/d/1M2cpmseXqaBWJnYex0Pmo46V77bM7yJx/view?usp=drive_link',
     // Exam paper lands with the Tuesday lesson.
   },
 
