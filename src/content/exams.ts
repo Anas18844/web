@@ -443,7 +443,12 @@ export type PublicExam = {
   mcq: readonly Omit<ExamMcq, 'answer'>[]
   trueFalse: readonly Omit<ExamTrueFalse, 'answer'>[]
   blanks: Omit<ExamBlanks, 'answers'> & { gaps: number }
-  essay: readonly Omit<ExamEssay, 'model'>[]
+  /**
+   * No `rubric` either. It reads like marking guidance but it is half the
+   * answer — week 2's says «مثال على التعلّم الآلي لا التوليدي» — and it used to
+   * travel with the paper. The result card gets it from the marked response.
+   */
+  essay: readonly Omit<ExamEssay, 'model' | 'rubric'>[]
 }
 
 export function toPublic(exam: Exam): PublicExam {
@@ -460,6 +465,6 @@ export function toPublic(exam: Exam): PublicExam {
       const { answers, ...rest } = exam.blanks
       return { ...rest, gaps: answers.length }
     })(),
-    essay: exam.essay.map(({ model: _model, ...rest }) => rest),
+    essay: exam.essay.map(({ model: _model, rubric: _rubric, ...rest }) => rest),
   }
 }
