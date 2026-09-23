@@ -1,4 +1,5 @@
 import 'server-only'
+import { createHash } from 'node:crypto'
 
 /**
  * الامتحانات — the weekly exam bank.
@@ -71,6 +72,17 @@ export type ExamEssay = {
   rubric: string
 }
 
+/** Which of an exam's equivalent papers a student sits. */
+export type ExamForm = 'A' | 'B'
+
+/** The questions of one paper — everything that differs between two forms. */
+export type ExamContent = {
+  mcq: readonly ExamMcq[]
+  trueFalse: readonly ExamTrueFalse[]
+  blanks: ExamBlanks
+  essay: readonly ExamEssay[]
+}
+
 export type Exam = {
   slug: string
   grade: 'first_sec' | 'second_bacc'
@@ -89,6 +101,13 @@ export type Exam = {
   trueFalse: readonly ExamTrueFalse[]
   blanks: ExamBlanks
   essay: readonly ExamEssay[]
+  /**
+   * A second, equivalent paper — form B. When it is present the fields above
+   * are form A, and each student is given one of the two (`formFor`). Same
+   * shape, same marks, different questions, so two students side by side in
+   * the centre are not answering the same paper.
+   */
+  formB?: ExamContent
 }
 
 const WEEK_1: Exam = {
@@ -406,7 +425,310 @@ const WEEK_2: Exam = {
   ],
 }
 
-export const EXAMS: readonly Exam[] = [WEEK_1, WEEK_2]
+/**
+ * ── الأسبوع الثالث — نموذجان ────────────────────────────────────────────────
+ *
+ * GENERATED from the two banks (exam-week-03-a / -b.bank.yaml), not retyped.
+ * The essay rubrics are the handoff file's own (exam-week-03-web.md); the banks
+ * do not carry them. Each gap in the bank is its own sentence with one blank —
+ * here they are stitched into the one paragraph the printed paper shows.
+ *
+ * Form A sits in the ordinary fields, form B in `formB`. Both are recorded as
+ * second-bacc-week-3, so the one-sitting rule covers the pair: a student who
+ * sat A cannot come back for B.
+ */
+const WEEK_3: Exam = {
+  slug: 'second-bacc-week-3',
+  grade: 'second_bacc',
+  week: 'الأسبوع الثالث',
+  title: 'امتحان الأسبوع الثالث',
+  lesson: 'الدرس الثالث — الذكاء الاصطناعي في الحياة اليومية والصناعة',
+  minutes: 20,
+  passMark: 10,
+  requiresHomework: 'second-bacc-lecture-3',
+
+  // ── النموذج (A) ──
+  mcq: [
+    {
+      id: 1,
+      q: "أي من الخيارات التالية يُعد مثالًا على نظام يتنبأ بالتفضيلات من بيانات السلوك السابق ويعرض التوصيات؟",
+      options: [
+        "المساعد الصوتي",
+        "نظام التوصية",
+        "الترجمة الآلية",
+        "التعرف على الوجه",
+      ],
+      answer: 1,
+    },
+    {
+      id: 2,
+      q: "أي من القطاعات الصناعية التالية ترتبط بمهمة «تحسين مسارات التوصيل»؟",
+      options: [
+        "الرعاية الصحية",
+        "الزراعة",
+        "الخدمات اللوجستية",
+        "التصنيع",
+      ],
+      answer: 2,
+    },
+    {
+      id: 3,
+      q: "ما هو المصطلح الذي يصف توليد معلومات غير صحيحة أو غير مدعومة تبدو مقنعة من قِبل الذكاء الاصطناعي؟",
+      options: [
+        "مشكلة الصندوق الأسود",
+        "التمييز أو التحيز",
+        "بيانات التدريب غير الكافية",
+        "الهلوسة",
+      ],
+      answer: 3,
+    },
+    {
+      id: 4,
+      q: "القرارات ذات البعد الأخلاقي التي قد تؤدي إلى تمييز أو تحيز تُعد ضمن:",
+      options: [
+        "ما يتطلب الحذر عند استخدام الذكاء الاصطناعي",
+        "ما يبرع فيه الذكاء الاصطناعي",
+        "المهارات الأساسية للتعلم العميق",
+        "دور أنظمة التوصية اليومية",
+      ],
+      answer: 0,
+    },
+    {
+      id: 5,
+      q: "أي من الآتي يُعد الوصف الصحيح لما يبرع فيه الذكاء الاصطناعي؟",
+      options: [
+        "اتخاذ الأحكام الأخلاقية المطلقة بدون بشر",
+        "ضمان خلو المخرجات تمامًا من أي تحيز",
+        "حفظ البيانات الشخصية وحمايتها بسرية تامة",
+        "إيجاد وتصنيف الأنماط في البيانات المعقدة والاستدلال الاحتمالي",
+      ],
+      answer: 3,
+    },
+    {
+      id: 6,
+      q: "مصنع يتوقّف خط إنتاجه فجأة كل شهرين بسبب عُطل مفاجئ في إحدى الآلات، وقرّر أن يركّب نظامًا يقرأ بيانات تشغيل الآلات أولًا بأول. أي استخدام للذكاء الاصطناعي يحقّق هدفه؟",
+      options: [
+        "الترجمة الآلية لتقارير الصيانة الأجنبية",
+        "الصيانة التنبؤية لتوقّع العُطل قبل وقوعه",
+        "نظام توصية يقترح على المصنع آلات جديدة",
+        "التعرّف على وجوه العمال عند بوابة المصنع",
+      ],
+      answer: 1,
+    },
+    {
+      id: 7,
+      q: "بنك يستخدم نظام ذكاء اصطناعي لقبول طلبات القروض، فرُفض طلب أحد العملاء ولم يستطع أحد في البنك شرح سبب الرفض. ما أدقّ وصف للمشكلة هنا؟",
+      options: [
+        "مشكلة صندوق أسود في قرار عالي الأثر",
+        "هلوسة أنتجت معلومات غير صحيحة تمامًا",
+        "خطأ في سرعة معالجة بيانات العميل",
+        "نجاح للنظام لأنه أنهى الطلب بسرعة",
+      ],
+      answer: 0,
+    },
+    {
+      id: 8,
+      q: "نظام تشخيص بالصور دُرّب على صور مرضى من فئة عمرية واحدة، فقلّت دقته مع باقي الفئات. أي مفهوم من الدرس السابق يفسّر ذلك؟",
+      options: [
+        "التعلم العميق يحتاج شبكات عصبية بطبقة واحدة",
+        "الحوسبة السحابية تقدّم الموارد في صورة خدمة",
+        "قانون مور يصف تضاعف الترانزستورات كل عامين",
+        "بيانات التدريب غير الممثِّلة تقلّل دقة الأحكام",
+      ],
+      answer: 3,
+    },
+  ],
+
+  trueFalse: [
+    {
+      id: 1,
+      statement: "الصيانة التنبؤية هي استخدام البيانات للتنبؤ بأعطال الآلات أو المعدّات قبل وقوعها.",
+      answer: true,
+    },
+    {
+      id: 2,
+      statement: "إصدار الأحكام الأخلاقية من ضمن ما يبرع فيه الذكاء الاصطناعي.",
+      answer: false,
+    },
+    {
+      id: 3,
+      statement: "تقل دقة أحكام الذكاء الاصطناعي عندما تكون بيانات التدريب متحيزة أو غير كافية.",
+      answer: true,
+    },
+    {
+      id: 4,
+      statement: "مرشِّح الرسائل المزعجة مثال على الذكاء الاصطناعي التوليدي.",
+      answer: false,
+    },
+  ],
+
+  blanks: {
+    id: 9,
+    title: 'أكمل ما يلي',
+    marks: 6,
+    marksPerBlank: 2,
+    segments: [
+      "يعتمد يوتيوب على",
+      "الذي يتنبّأ بتفضيلاتك من بيانات سلوكك السابق ويعرض عليك التوصيات. وفي المصانع تُستخدم",
+      "للتنبّؤ بأعطال الآلات قبل وقوعها. ولمّا يكون غير واضح كيف وصل الذكاء الاصطناعي إلى حكمه، تُسمّى هذه",
+      ".",
+    ],
+    answers: ["نظام التوصية", "الصيانة التنبؤية", "مشكلة الصندوق الأسود"],
+  },
+
+  essay: [
+    {
+      id: 10,
+      q: "اشرح سبب ضرورة وجود تأكيد من طبيب بشري للتشخيص الطبي بدلًا من الاعتماد على الذكاء الاصطناعي وحده.",
+      marks: 2,
+      model: "قرار عالي الأثر، والنظام لا يضمن صحة النتيجة (بيانات تدريب متحيزة · صندوق أسود)، فيبقى الطبيب صاحب القرار النهائي.",
+      rubric: "درجة لحدود النظام · درجة للقرار عالي الأثر والمسؤولية.",
+    },
+  ],
+
+  // ── النموذج (B) ──
+  formB: {
+    mcq: [
+      {
+        id: 1,
+        q: "ما هي الخدمة التي تقوم بترجمة النص تلقائيًا إلى لغات مختلفة كما ورد في خدمات الذكاء الاصطناعي اليومية؟",
+        options: [
+          "الترجمة الآلية",
+          "نظام التوصية",
+          "المساعد الصوتي",
+          "التعرف على الوجه",
+        ],
+        answer: 0,
+      },
+      {
+        id: 2,
+        q: "ماذا يقصد بمشكلة «الصندوق الأسود» في سياق تطبيقات الذكاء الاصطناعي؟",
+        options: [
+          "توليد معلومات غير صحيحة تبدو مقنعة للمستخدم",
+          "عدم الوضوح حول كيفية توصل الذكاء الاصطناعي إلى حكمه أو قراره",
+          "استخدام أعمال محمية بحقوق المؤلف كبيانات تدريب",
+          "نقص بيانات التدريب أو عدم تمثيلها للواقع بدقة",
+        ],
+        answer: 1,
+      },
+      {
+        id: 3,
+        q: "ما هي الصناعة التي تستخدم الذكاء الاصطناعي للكشف عن الأمراض من صور الأشعة السينية والتصوير المقطعي؟",
+        options: [
+          "الزراعة",
+          "التصنيع",
+          "الرعاية الصحية",
+          "الخدمات اللوجستية",
+        ],
+        answer: 2,
+      },
+      {
+        id: 4,
+        q: "أي من الخيارات الآتية يمثل المهمة الرئيسية للذكاء الاصطناعي في قطاع الزراعة؟",
+        options: [
+          "تحسين مسارات التوصيل",
+          "فحص جودة المنتج والصيانة التنبؤية",
+          "تحليل الصور الطبية واكتشاف الأدوية",
+          "التنبؤ بموعد الحصاد والكشف عن الآفات والأمراض",
+        ],
+        answer: 3,
+      },
+      {
+        id: 5,
+        q: "من ضمن المهام التي يجيدها الذكاء الاصطناعي:",
+        options: [
+          "اتخاذ القرارات الأخلاقية المعقدة",
+          "التعرف على الصور والأصوات والنصوص وتوليد المحتوى",
+          "ضمان دقة النتائج المطلقة دون بيانات تدريب",
+          "حماية الخصوصية الشخصية تلقائيًا",
+        ],
+        answer: 1,
+      },
+      {
+        id: 6,
+        q: "الترجمة الآلية تتعلّم من ملايين الأمثلة. إلى أي فرع تنتمي؟",
+        options: [
+          "التعلّم الآلي",
+          "الحوسبة الطرفية",
+          "الواقع المعزّز",
+          "الحوسبة الكمومية",
+        ],
+        answer: 0,
+      },
+      {
+        id: 7,
+        q: "شركة تريد أن يتولّى نظام ذكاء اصطناعي رفض المتقدّمين للوظائف نهائيًا دون أي مراجعة بشرية. ما أدقّ تقييم لهذا القرار؟",
+        options: [
+          "مناسب لأن النظام أسرع كثيرًا من لجنة التوظيف",
+          "مناسب لأن النظام لا يتحيّز مثل البشر في الحكم",
+          "غير مناسب لأن سرعة معالجته لا تزال بطيئة جدًا",
+          "غير مناسب لأنه قرار عالي الأثر ذو بُعد أخلاقي",
+        ],
+        answer: 3,
+      },
+      {
+        id: 8,
+        q: "طالب طلب من أداة توليدية إحصائية لبحثه، فأعطته رقمًا دقيقًا ومصدرًا لم يجده في أي مكان. ما الوصف والتصرّف السليم؟",
+        options: [
+          "صندوق أسود، والتصرّف أن يغيّر الأداة فورًا",
+          "هلوسة، والتصرّف أن يتحقّق من مصدر موثوق",
+          "تحيّز خوارزمي، والتصرّف أن يحذف بحثه كله",
+          "نجاح للأداة، والتصرّف أن ينشر الإحصائية",
+        ],
+        answer: 1,
+      },
+    ],
+
+    trueFalse: [
+      {
+        id: 1,
+        statement: "التعرّف على الوجه خدمة تكشف وجوه الأشخاص في الصور وتتعرّف عليها تلقائيًا.",
+        answer: true,
+      },
+      {
+        id: 2,
+        statement: "الذكاء الاصطناعي يضمن خلوّ مخرجاته من التحيّز تلقائيًا.",
+        answer: false,
+      },
+      {
+        id: 3,
+        statement: "التشخيص بالصور يُغني عن تأكيد الطبيب البشري في القرارات عالية الأثر.",
+        answer: false,
+      },
+      {
+        id: 4,
+        statement: "أُتيح الإنترنت للاستخدام التجاري وظهر الويب في تسعينيات القرن الماضي.",
+        answer: true,
+      },
+    ],
+
+    blanks: {
+      id: 9,
+      title: 'أكمل ما يلي',
+      marks: 6,
+      marksPerBlank: 2,
+      segments: [
+        "في الرعاية الصحية يُستخدم",
+        "للكشف عن الأمراض من صور الأشعة السينية والتصوير المقطعي. ومن مخاطر الاستخدام أن يولّد النظام معلومات غير صحيحة تبدو مقنعة، وتُسمّى",
+        ". وتقلّ دقة أحكامه عندما تكون",
+        "متحيزة أو غير كافية.",
+      ],
+      answers: ["الذكاء الاصطناعي للتشخيص بالصور", "الهلوسة", "بيانات التدريب"],
+    },
+
+    essay: [
+      {
+        id: 10,
+        q: "اشرح مقولة «الذكاء الاصطناعي بارع في إيجاد الأنماط في البيانات، لكن الحكم البشري لا يزال ضروريًا».",
+        marks: 2,
+        model: "بارع في الأنماط والتعرّف والتنبؤ، لكنه لا يضمن الصحة ولا العدالة، فيبقى الحكم البشري في الأخلاق والقرارات عالية الأثر.",
+        rubric: "درجة لما يبرع فيه · درجة لما يتطلب الحذر.",
+      },
+    ],
+  },
+}
+
+export const EXAMS: readonly Exam[] = [WEEK_1, WEEK_2, WEEK_3]
 
 export function findExam(slug: string): Exam | undefined {
   return EXAMS.find((e) => e.slug === slug)
@@ -427,6 +749,29 @@ export function totalMarks(exam: Exam): number {
 }
 
 /**
+ * Which form a student sits — fixed by their phone number.
+ *
+ * Derived, not drawn: the same phone gets the same form every time the exam is
+ * opened, with nothing stored anywhere, and the form can be recovered later
+ * from the phone alone. Salted with the slug so a student is not on form A for
+ * every two-form exam of the term.
+ *
+ * A student cannot shop for a form by typing someone else's number: the gate
+ * wants a marked homework on that number, and the result is recorded against
+ * it.
+ */
+export function formFor(exam: Exam, phone: string): ExamForm | undefined {
+  if (!exam.formB) return undefined
+  const digest = createHash('sha256').update(`${exam.slug}:${phone}`).digest()
+  return digest[0] % 2 === 0 ? 'A' : 'B'
+}
+
+/** The exam as ONE paper — form B's questions swapped in when that is the form. */
+export function paperFor(exam: Exam, form: ExamForm | undefined): Exam {
+  return form === 'B' && exam.formB ? { ...exam, ...exam.formB } : exam
+}
+
+/**
  * The exam as the browser is allowed to see it — every question, no answers.
  *
  * The page never renders from `Exam` directly. This is the only shape that
@@ -440,6 +785,8 @@ export type PublicExam = {
   lesson: string
   minutes: number
   totalMarks: number
+  /** Only on a two-form exam: which paper this is, printed on its header. */
+  form?: ExamForm
   mcq: readonly Omit<ExamMcq, 'answer'>[]
   trueFalse: readonly Omit<ExamTrueFalse, 'answer'>[]
   blanks: Omit<ExamBlanks, 'answers'> & { gaps: number }
@@ -451,7 +798,7 @@ export type PublicExam = {
   essay: readonly Omit<ExamEssay, 'model' | 'rubric'>[]
 }
 
-export function toPublic(exam: Exam): PublicExam {
+export function toPublic(exam: Exam, form?: ExamForm): PublicExam {
   return {
     slug: exam.slug,
     week: exam.week,
@@ -459,6 +806,7 @@ export function toPublic(exam: Exam): PublicExam {
     lesson: exam.lesson,
     minutes: exam.minutes,
     totalMarks: totalMarks(exam),
+    ...(form ? { form } : {}),
     mcq: exam.mcq.map(({ answer: _answer, ...rest }) => rest),
     trueFalse: exam.trueFalse.map(({ answer: _answer, ...rest }) => rest),
     blanks: (() => {

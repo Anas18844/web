@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { findExam, toPublic } from '@/content/exams'
+import { findExam, formFor, paperFor, toPublic, type ExamForm } from '@/content/exams'
 import { findHomework } from '@/content/homework'
 import { getSupabaseAdmin, resolveConfig } from '@/lib/supabase'
 import { deriveSecret, signPayload } from '@/lib/session-crypto'
@@ -38,6 +38,12 @@ export type ExamPass = {
   homeworkId: string | null
   leadId: string | null
   name: string | null
+  /**
+   * Which paper was handed out, on a two-form exam. Signed with everything
+   * else, so the student cannot swap themselves onto the other form between
+   * opening the paper and submitting it.
+   */
+  form?: ExamForm
 }
 
 const schema = z.object({
@@ -172,6 +178,9 @@ export async function POST(request: Request) {
     })
   }
 
+  // Undefined on a one-paper exam, so its pass and paper are exactly as before.
+  const form = formFor(exam, phone)
+
   const secret = deriveSecret(process.env.DASHBOARD_SESSION_SECRET, resolveConfig().key)
   const pass = signPayload<ExamPass>(
     {
@@ -180,6 +189,7 @@ export async function POST(request: Request) {
       homeworkId: submission.id,
       leadId: submission.lead_id,
       name: submission.student_name,
+      ...(form ? { form } : {}),
     },
     secret,
     PASS_TTL_MS,
@@ -189,6 +199,7 @@ export async function POST(request: Request) {
     ok: true,
     pass,
     name: submission.student_name,
-    exam: toPublic(exam),
+    // This student's form only. The other paper never leaves the server.
+    exam: toPublic(paperFor(exam, form), form),
   })
 }

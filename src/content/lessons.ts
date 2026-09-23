@@ -123,9 +123,9 @@ export const LESSONS: readonly Lesson[] = [
     youtubeId: 'Lweb2IodrqQ',
     summarySlug: 'second-bacc-lecture-3',
     homeworkSlug: 'second-bacc-lecture-3',
+    examSlug: 'second-bacc-week-3',
     bookletUrl:
       'https://drive.google.com/file/d/1YbRHa0DWyW1RSTmcDlOoj7buoeaNhIWm/view?usp=drive_link',
-    // Exam paper lands with the Tuesday lesson.
   },
   {
     slug: 'lecture-4',

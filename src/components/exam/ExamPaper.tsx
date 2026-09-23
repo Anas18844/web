@@ -100,7 +100,12 @@ export function ExamPaper({
       <header className="card p-5 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-bold text-gold">{exam.week}</p>
+            <p className="text-xs font-bold text-gold">
+              {exam.week}
+              {/* Printed on the header like the paper copy, so a student comparing
+                  notes with a friend knows they did not sit the same paper. */}
+              {exam.form && ` · النموذج (${exam.form})`}
+            </p>
             <h1 className="mt-1 text-xl font-extrabold text-ink sm:text-2xl">{exam.title}</h1>
             <p className="mt-1 text-sm text-ink-muted">{exam.lesson}</p>
           </div>

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { findExam, totalMarks } from '@/content/exams'
+import { findExam, paperFor, totalMarks } from '@/content/exams'
 import { gradeEssays, PASS_THRESHOLD, scoreEssay } from '@/lib/homework-grader'
 import { getSupabaseAdmin, resolveConfig } from '@/lib/supabase'
 import { deriveSecret, verifyPayload } from '@/lib/session-crypto'
@@ -78,8 +78,11 @@ export async function POST(request: Request) {
     )
   }
 
-  const exam = findExam(claims.slug)
-  if (!exam) return NextResponse.json({ ok: false, error: 'NOT_FOUND' }, { status: 404 })
+  const found = findExam(claims.slug)
+  if (!found) return NextResponse.json({ ok: false, error: 'NOT_FOUND' }, { status: 404 })
+  // The form comes from the PASS, like the phone — never from the request —
+  // so a paper is always marked against the key of the paper that was sat.
+  const exam = paperFor(found, claims.form)
 
   /**
    * ── ONE SITTING, CHECKED AGAIN ────────────────────────────────────────────
