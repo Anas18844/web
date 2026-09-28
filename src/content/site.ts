@@ -46,6 +46,15 @@ export const site = {
       'https://whatsapp.com/channel/0029VbDIp68HQbS2zYldQ317',
   },
 
+  /**
+   * The paid online platform (Code Up) and the video that walks a student
+   * through subscribing. Both open from /platform, which the hero points at.
+   */
+  platform: {
+    url: 'https://code-up.tech/eng-anas-ahmed',
+    guideVideo: { youtubeId: '62fxo3GaV10', title: 'طريقة الاشتراك في منصة مستر أنس أحمد' },
+  },
+
   email: process.env.NEXT_PUBLIC_EMAIL || 'eng.anas.ai.official@gmail.com',
 
   /**

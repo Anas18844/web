@@ -80,6 +80,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${site.url}/platform`,
+      lastModified: new Date('2026-09-28'),
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
       url: `${site.url}/parents`,
       lastModified: CONTENT_UPDATED,
       changeFrequency: 'monthly',

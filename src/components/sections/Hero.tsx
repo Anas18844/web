@@ -92,14 +92,25 @@ export function Hero() {
               {home.hero.lead}
             </p>
 
-            <div className="mt-8 sm:mt-10">
-              {/* The single action leans toward the cursor — spring physics on
-                  the one element the whole page is pointing at. */}
+            <div className="mt-8 flex flex-wrap items-center gap-3 sm:mt-10">
+              {/* The main action leans toward the cursor — spring physics on
+                  the element the page is pointing at. */}
               <Magnetic>
                 <ButtonLink href="/#start" data-cta="hero" className="px-8 text-lg">
                   {home.hero.primaryCta}
                 </ButtonLink>
               </Magnetic>
+              {/* Second action since the online platform opened (September
+                  2026): the owner asked for it here. Secondary styling keeps
+                  booking the first thing the eye lands on. */}
+              <ButtonLink
+                href="/platform"
+                variant="secondary"
+                data-cta="hero-platform"
+                className="px-8 text-lg"
+              >
+                {home.hero.platformCta}
+              </ButtonLink>
             </div>
           </HeroIntro>
         </div>
