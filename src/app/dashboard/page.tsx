@@ -135,6 +135,14 @@ export default async function DashboardPage({
             التحليلات
           </Link>
         )}
+        {isAdmin && (
+          <Link
+            href="/dashboard/finance"
+            className="font-bold text-ink-faint transition-colors duration-200 hover:text-gold"
+          >
+            الحسابات
+          </Link>
+        )}
       </nav>
 
       {/* ── The list ─────────────────────────────────────────────────────── */}

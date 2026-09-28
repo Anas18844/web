@@ -9,6 +9,7 @@
                     "lint":  "next lint",
                     "typecheck":  "tsc --noEmit",
                     "verify:auth":  "node scripts/verify-auth.mjs",
+                    "verify:finance":  "node --experimental-strip-types --no-warnings scripts/verify-finance.mjs",
                     "dashboard:user":  "node scripts/dashboard-user.mjs"
                 },
     "dependencies":  {
