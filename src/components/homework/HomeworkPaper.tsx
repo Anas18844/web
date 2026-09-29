@@ -425,6 +425,7 @@ export function HomeworkPaper({
 
       {asking && (
         <SubmitDialog
+          paper={homework.kind === 'bank' ? 'البنك' : 'الواجب'}
           answered={answered}
           total={totalQuestions}
           sending={sending}

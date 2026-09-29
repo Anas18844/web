@@ -36,7 +36,10 @@ export async function generateMetadata({
 
   return {
     title: `${lesson.eyebrow} — ${lesson.title}`,
-    description: `${lesson.blurb} شرح بالفيديو، ملخص مكتوب، وواجب بتصحيح فوري — ${gradeLabel(grade)}.`,
+    description:
+      lesson.kind === 'review'
+        ? `${lesson.blurb} مراجعة الوحدة بالفيديو، وبنك أسئلة بتصحيح فوري — ${gradeLabel(grade)}.`
+        : `${lesson.blurb} شرح بالفيديو، ملخص مكتوب، وواجب بتصحيح فوري — ${gradeLabel(grade)}.`,
     alternates: { canonical: `/lessons/${gradeSlug}/${lessonSlug}` },
   }
 }
@@ -84,10 +87,21 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
       </header>
 
       <div className="mx-auto max-w-4xl">
-        <VideoFacade
-          video={{ youtubeId: lesson.youtubeId, title: `${lesson.eyebrow} — ${lesson.title}` }}
-          proofName={`lesson:${gradeSlug}:${lesson.slug}`}
-        />
+        {lesson.youtubeId ? (
+          <VideoFacade
+            video={{ youtubeId: lesson.youtubeId, title: `${lesson.eyebrow} — ${lesson.title}` }}
+            proofName={`lesson:${gradeSlug}:${lesson.slug}`}
+          />
+        ) : (
+          // Only a unit review goes up before its video: say so, and let the
+          // path below send the student to the bank that is already there.
+          <div className="grid aspect-video w-full place-items-center rounded border border-dashed border-navy-line bg-navy-soft/30 p-6 text-center">
+            <div>
+              <p className="text-subtitle font-extrabold text-ink">فيديو المراجعة بينزل قريب على يوتيوب</p>
+              <p className="mt-2 text-sm text-ink-muted">بنك الأسئلة جاهز — ابدأ فيه من تحت.</p>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="mx-auto mt-10 max-w-3xl">

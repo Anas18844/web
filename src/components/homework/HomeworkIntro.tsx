@@ -26,6 +26,9 @@ export function HomeworkIntro({
   summarySlug?: string
   onStart: () => void
 }) {
+  // A unit bank is not homework, and calling it that tells the student they owe it.
+  const paper = homework.kind === 'bank' ? 'البنك' : 'الواجب'
+
   return (
     <div data-reveal className="mx-auto max-w-2xl">
       <div className="card p-6 sm:p-8">
@@ -56,9 +59,9 @@ export function HomeworkIntro({
             <div>
               <p className="font-extrabold text-ink">اقرا ده قبل ما تبدأ</p>
               <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-                لو إنت <b className="text-ink">حاجز مع مستر أنس</b>، في آخر الواجب هيتطلب منك
+                لو إنت <b className="text-ink">حاجز مع مستر أنس</b>، في آخر {paper} هيتطلب منك
                 رقم التليفون اللي حجزت بيه — عشان درجتك تتسجّل باسمك، ومايتكتبش عليك إنك
-                ماحلّتش الواجب.
+                ماحلّتش {paper}.
               </p>
               <p className="mt-3 text-sm leading-relaxed text-ink-muted">
                 ولو <b className="text-ink">لسه ماحجزتش</b>، احجز دلوقتي قبل ما تبدأ عشان
@@ -109,7 +112,7 @@ export function HomeworkIntro({
           onClick={onStart}
           className="shine mt-6 flex min-h-[3.25rem] w-full items-center justify-center rounded bg-gold px-6 text-base font-extrabold text-navy transition-[background-color,box-shadow] duration-200 hover:bg-gold-deep hover:text-ink hover:shadow-[0_0_28px_-8px_rgba(203,163,82,0.9)]"
         >
-          ابدأ الواجب
+          ابدأ {paper}
         </button>
       </div>
     </div>

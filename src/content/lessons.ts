@@ -34,7 +34,20 @@ export type Lesson = {
   title: string
   /** One line on why it matters, for the card. */
   blurb: string
-  youtubeId: string
+  /**
+   * Optional only for a unit review: its page and its bank go up before the
+   * video does, so the bank is ready the moment the review is published. A
+   * lecture always has one — it goes up because its video exists.
+   */
+  youtubeId?: string
+
+  /**
+   * Absent: a lecture. `'review'`: a unit review — the free YouTube revision of
+   * a whole unit, with the unit's question bank attached. It has two steps, not
+   * five, and it is not a teaching week: `weeks.ts` skips it, so it never
+   * becomes a homework checked at the door.
+   */
+  kind?: 'review'
 
   /**
    * The three slugs, each optional ON PURPOSE.
@@ -142,6 +155,19 @@ export const LESSONS: readonly Lesson[] = [
       'https://drive.google.com/file/d/1M2cpmseXqaBWJnYex0Pmo46V77bM7yJx/view?usp=drive_link',
     // Exam paper lands with the Tuesday lesson.
   },
+  {
+    slug: 'unit-1-review',
+    grade: 'second_bacc',
+    // Between lecture 4 and lecture 5 in course order; not a week number.
+    n: 4.5,
+    kind: 'review',
+    eyebrow: 'مراجعة الوحدة الأولى',
+    title: 'تكنولوجيا المعلومات والمجتمع — الوحدة كاملة',
+    blurb:
+      'الدروس الأربعة في مراجعة واحدة، ومعاها بنك ١٠٠ سؤال بأفكار متقدمة وتصحيح فوري.',
+    // youtubeId: added the day the review video is published.
+    homeworkSlug: 'second-bacc-unit-1-bank',
+  },
 
   // ── أولى ثانوي ────────────────────────────────────────────────────────────
   {
@@ -205,6 +231,8 @@ export type LessonStep = {
  * the page can never drift from the paper behind it.
  */
 export function stepsFor(lesson: Lesson): LessonStep[] {
+  if (lesson.kind === 'review') return reviewSteps(lesson)
+
   const summary = lesson.summarySlug
     ? SUMMARIES.find((s) => s.slug === lesson.summarySlug)
     : undefined
@@ -270,6 +298,40 @@ export function stepsFor(lesson: Lesson): LessonStep[] {
       meta: lesson.bookletUrl ? 'PDF' : undefined,
       state: lesson.bookletUrl ? 'ready' : 'soon',
       note: lesson.bookletUrl ? undefined : 'الملزمة بتترفع بعد المحاضرة.',
+    },
+  ]
+}
+
+/**
+ * A unit review is two steps: watch the review, then solve the bank. The bank
+ * is up before the video, so a student who finds the page early can start.
+ */
+function reviewSteps(lesson: Lesson): LessonStep[] {
+  const bank = lesson.homeworkSlug
+    ? HOMEWORK.find((h) => h.slug === lesson.homeworkSlug)
+    : undefined
+
+  return [
+    {
+      key: 'video',
+      n: 1,
+      title: 'اتفرّج على المراجعة',
+      body: 'الوحدة كلها في فيديو واحد مجاني على يوتيوب — الأفكار مجمّعة ومربوطة ببعض.',
+      state: lesson.youtubeId ? 'ready' : 'soon',
+      meta: lesson.youtubeId ? 'فوق في الصفحة' : undefined,
+      note: lesson.youtubeId ? undefined : 'فيديو المراجعة بينزل قريب على يوتيوب.',
+    },
+    {
+      key: 'homework',
+      n: 2,
+      title: 'حل بنك الأسئلة',
+      body: 'أفكار متقدمة وتدريب مكثف على الوحدة كلها — تصحيح فوري بالإجابة الصحيحة.',
+      href: bank ? `/homework/${bank.slug}` : undefined,
+      meta: bank
+        ? `${toArabicDigits(bank.mcq.length + bank.essay.length)} سؤال · ${toArabicDigits(homeworkMarks(bank))} درجة`
+        : undefined,
+      state: bank ? 'ready' : 'soon',
+      note: bank ? undefined : 'البنك بينزل مع فيديو المراجعة.',
     },
   ]
 }

@@ -1,6 +1,7 @@
 import { JsonLd } from '@/components/JsonLd'
 import { homeGraph } from '@/lib/schema-org'
 import { Hero } from '@/components/sections/Hero'
+import { PlatformTour } from '@/components/sections/PlatformTour'
 import { AboutTeaser } from '@/components/sections/AboutTeaser'
 import { Audience } from '@/components/sections/Audience'
 import { System } from '@/components/sections/System'
@@ -17,12 +18,17 @@ import { Capture } from '@/components/sections/Capture'
  * Rebuilt in August 2026 around two grades and one promise. The free-content
  * teaser, the question list and the courses page all came out: the page now
  * argues the teaching, not the offer.
+ *
+ * September 2026: the full platform-details video went in straight under the
+ * hero, at the owner's request — the teacher explaining his own system answers
+ * "how does it hold me?" before any card does.
  */
 export default function HomePage() {
   return (
     <>
       <JsonLd data={homeGraph()} />
       <Hero />
+      <PlatformTour />
       <AboutTeaser />
       <Audience />
       <System />

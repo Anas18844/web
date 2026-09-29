@@ -52,7 +52,7 @@ export const site = {
    */
   platform: {
     url: 'https://code-up.tech/eng-anas-ahmed',
-    guideVideo: { youtubeId: '62fxo3GaV10', title: 'طريقة الاشتراك في منصة مستر أنس أحمد' },
+    guideVideo: { youtubeId: '62fxo3GaV10', title: 'فيديو تفاصيل منصة مستر أنس أحمد كامل' },
   },
 
   email: process.env.NEXT_PUBLIC_EMAIL || 'eng.anas.ai.official@gmail.com',

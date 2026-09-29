@@ -18,9 +18,10 @@ const ICONS: Record<string, IconName> = {
  * نظام الشرح — the teaching system.
  *
  * Six mechanisms, not six adjectives. Each card names something that actually
- * happens on a schedule: a test before every session, a supervisor with a
- * name, a correction method, an exam format, a monthly level split, three
- * support lines. That is the founder's whole argument — the system carries the
+ * happens on a schedule or by a rule: a unit a month, a class exam that unlocks
+ * the next lecture, nine question levels, essays marked by a person, weekly
+ * question hours, named support lines (rewritten 2026-09-30 from the platform
+ * video). That is the founder's whole argument — the system carries the
  * student, so the student does not have to carry themselves.
  *
  * A six-card grid rather than the old three stacked rows: at six items the

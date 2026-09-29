@@ -101,19 +101,31 @@ function LessonCard({ lesson, gradeSlug }: { lesson: Lesson; gradeSlug: string }
           already in next.config's remote patterns — no new host, no new config.
         */}
         <div className="relative aspect-video w-full overflow-hidden bg-navy-deep">
-          <Image
-            src={`https://i.ytimg.com/vi/${lesson.youtubeId}/hqdefault.jpg`}
-            alt=""
-            fill
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-cover opacity-70 transition-[opacity,transform] duration-500 ease-out group-hover:scale-[1.03] group-hover:opacity-100"
-          />
-          <span className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/20 to-transparent" />
-          <span className="absolute bottom-3 end-4 grid h-11 w-11 place-items-center rounded-full bg-gold text-navy transition-transform duration-300 ease-out group-hover:scale-105">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </span>
+          {lesson.youtubeId ? (
+            <>
+              <Image
+                src={`https://i.ytimg.com/vi/${lesson.youtubeId}/hqdefault.jpg`}
+                alt=""
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover opacity-70 transition-[opacity,transform] duration-500 ease-out group-hover:scale-[1.03] group-hover:opacity-100"
+              />
+              <span className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/20 to-transparent" />
+              <span className="absolute bottom-3 end-4 grid h-11 w-11 place-items-center rounded-full bg-gold text-navy transition-transform duration-300 ease-out group-hover:scale-105">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </span>
+            </>
+          ) : (
+            // A unit review whose video is not out yet: the bank already is.
+            <span className="absolute inset-0 grid place-items-center p-6 text-center">
+              <span>
+                <span className="block text-sm font-bold text-gold">الفيديو بينزل قريب</span>
+                <span className="mt-1 block text-xs text-ink-faint">بنك الأسئلة جاهز من دلوقتي</span>
+              </span>
+            </span>
+          )}
         </div>
 
         <div className="p-5 sm:p-6">

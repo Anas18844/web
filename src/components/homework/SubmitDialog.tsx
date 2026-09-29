@@ -16,12 +16,15 @@ import { EG_MOBILE, normalizePhone } from '@/lib/phone'
  * homework they never did.
  */
 export function SubmitDialog({
+  paper,
   answered,
   total,
   sending,
   onSubmit,
   onCancel,
 }: {
+  /** «الواجب» or «البنك» — what the student is handing in. */
+  paper: string
   answered: number
   total: number
   sending: boolean
@@ -72,7 +75,7 @@ export function SubmitDialog({
           <p className="font-extrabold text-ink">أنا حاجز مع مستر أنس</p>
           <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">
             اكتب رقم التليفون اللي حجزت بيه، عشان الدرجة تتسجّل باسمك ومايتكتبش عليك إنك
-            ماحلّتش الواجب.
+            ماحلّتش {paper}.
           </p>
 
           <div className="mt-4 grid gap-3">
