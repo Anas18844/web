@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation'
 import { Section } from '@/components/ui/Section'
 import { VideoFacade } from '@/components/VideoFacade'
 import { LessonPath } from '@/components/lessons/LessonPath'
+import { ExamNotice } from '@/components/ExamNotice'
+import { SECOND_BACC_COMPREHENSIVE_EXAM } from '@/content/announcements'
 import {
   GRADE_SLUG,
   LESSONS,
@@ -85,6 +87,12 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
         <h1 className="mt-2 text-title font-extrabold leading-tight text-ink">{lesson.title}</h1>
         <p className="mt-3 max-w-prose text-body leading-relaxed text-ink-muted">{lesson.blurb}</p>
       </header>
+
+      {SECOND_BACC_COMPREHENSIVE_EXAM.lessonPath === `${gradeSlug}/${lesson.slug}` && (
+        <div className="mx-auto mb-8 max-w-4xl">
+          <ExamNotice notice={SECOND_BACC_COMPREHENSIVE_EXAM} variant="card" />
+        </div>
+      )}
 
       <div className="mx-auto max-w-4xl">
         {lesson.youtubeId ? (

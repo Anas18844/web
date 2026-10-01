@@ -43,7 +43,7 @@ export type Lesson = {
 
   /**
    * Absent: a lecture. `'review'`: a unit review — the free YouTube revision of
-   * a whole unit, with the unit's question bank attached. It has two steps, not
+   * a whole unit, with the unit's question bank attached. It has four steps, not
    * five, and it is not a teaching week: `weeks.ts` skips it, so it never
    * becomes a homework checked at the door.
    */
@@ -69,6 +69,13 @@ export type Lesson = {
    * of linking to nothing.
    */
   bookletUrl?: string
+
+  /**
+   * A unit review only: the worked answers to the ministry's assessment book
+   * (كتاب التقييمات) as a PDF. Free for every student. It is NOT the answer key
+   * to our own bank — that stays behind `homework.ts`, server-only.
+   */
+  answerKeyUrl?: string
 }
 
 /** The slug used in URLs for a grade — `first_sec` is not a nice URL. */
@@ -164,9 +171,13 @@ export const LESSONS: readonly Lesson[] = [
     eyebrow: 'مراجعة الوحدة الأولى',
     title: 'تكنولوجيا المعلومات والمجتمع — الوحدة كاملة',
     blurb:
-      'الدروس الأربعة في مراجعة واحدة، ومعاها بنك ١٠٠ سؤال بأفكار متقدمة وتصحيح فوري.',
-    // youtubeId: added the day the review video is published.
+      'الدروس الأربعة في مراجعة واحدة، وحل كل أسئلة كتاب التقييمات، ومعاها بنك ١٠٠ سؤال بأفكار متقدمة وتصحيح فوري.',
+    youtubeId: '02USRaT-Zm8',
     homeworkSlug: 'second-bacc-unit-1-bank',
+    answerKeyUrl:
+      'https://drive.google.com/file/d/1_6w63vNgx8ONJZQQTDEm-KIRDBicLpT4/view?usp=drive_link',
+    bookletUrl:
+      'https://drive.google.com/file/d/1UpyIKfNviAIPPf2RByik09BvSSd-ZITv/view?usp=drive_link',
   },
 
   // ── أولى ثانوي ────────────────────────────────────────────────────────────
@@ -205,7 +216,7 @@ export function gradesWithLessons(): readonly Grade[] {
 
 // ── What a step looks like to the page ───────────────────────────────────────
 
-export type StepKey = 'video' | 'summary' | 'homework' | 'exam' | 'booklet'
+export type StepKey = 'video' | 'summary' | 'homework' | 'exam' | 'booklet' | 'answers'
 
 export type LessonStep = {
   key: StepKey
@@ -303,8 +314,9 @@ export function stepsFor(lesson: Lesson): LessonStep[] {
 }
 
 /**
- * A unit review is two steps: watch the review, then solve the bank. The bank
- * is up before the video, so a student who finds the page early can start.
+ * A unit review: watch the review, solve the bank, check the assessment book
+ * against its answer key, and the unit booklet last. The bank is up before the
+ * video, so a student who finds the page early can start.
  */
 function reviewSteps(lesson: Lesson): LessonStep[] {
   const bank = lesson.homeworkSlug
@@ -332,6 +344,27 @@ function reviewSteps(lesson: Lesson): LessonStep[] {
         : undefined,
       state: bank ? 'ready' : 'soon',
       note: bank ? undefined : 'البنك بينزل مع فيديو المراجعة.',
+    },
+    {
+      key: 'answers',
+      n: 3,
+      title: 'صحّح حلك في كتاب التقييمات',
+      body: 'نموذج إجابة كل أسئلة كتاب تقييمات الوزارة للوحدة — PDF مجاني.',
+      href: lesson.answerKeyUrl,
+      meta: lesson.answerKeyUrl ? 'PDF' : undefined,
+      state: lesson.answerKeyUrl ? 'ready' : 'soon',
+      note: lesson.answerKeyUrl ? undefined : 'نموذج الإجابة بيترفع مع فيديو المراجعة.',
+    },
+    // Last, as in a lecture: the unit on paper, not a step in the sequence.
+    {
+      key: 'booklet',
+      n: 4,
+      title: 'نزّل ملزمة الوحدة',
+      body: 'الوحدة كاملة مطبوعة PDF — للمذاكرة على الورق ومن غير نت.',
+      href: lesson.bookletUrl,
+      meta: lesson.bookletUrl ? 'PDF' : undefined,
+      state: lesson.bookletUrl ? 'ready' : 'soon',
+      note: lesson.bookletUrl ? undefined : 'الملزمة بتترفع مع فيديو المراجعة.',
     },
   ]
 }
