@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Section } from '@/components/ui/Section'
 import { PageHero } from '@/components/ui/PageHero'
+import { Notice } from '@/components/Notice'
+import { SECOND_BACC_MOVED_TO_CODE_UP } from '@/content/announcements'
 import {
   GRADE_SLUG,
   gradeFromSlug,
@@ -64,6 +66,12 @@ export default async function GradeLessonsPage({ params }: { params: Promise<Par
       />
 
       <Section>
+        {grade === 'second_bacc' && (
+          <div className="mb-8">
+            <Notice notice={SECOND_BACC_MOVED_TO_CODE_UP} variant="card" />
+          </div>
+        )}
+
         <ul data-reveal-stagger className="grid gap-5 lg:grid-cols-2">
           {lessons.map((lesson) => (
             <LessonCard key={lesson.slug} lesson={lesson} gradeSlug={gradeSlug} />

@@ -10,8 +10,8 @@ import { RouteFade } from '@/components/RouteFade'
 import { SiteChrome } from '@/components/SiteChrome'
 import { PageSpine } from '@/components/PageSpine'
 import { MobileDock } from '@/components/MobileDock'
-import { ExamNotice } from '@/components/ExamNotice'
-import { SECOND_BACC_COMPREHENSIVE_EXAM } from '@/content/announcements'
+import { Notice } from '@/components/Notice'
+import { SITE_NOTICES } from '@/content/announcements'
 import { site } from '@/content/site'
 import './globals.css'
 
@@ -132,7 +132,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               descend. Fixed, so it must sit outside <main>, where a page-level
               transform could never become its containing block. */}
           <PageSpine />
-          <ExamNotice notice={SECOND_BACC_COMPREHENSIVE_EXAM} variant="bar" />
+          {SITE_NOTICES.map((n) => (
+            <Notice key={n.short} notice={n} variant="bar" />
+          ))}
           <SiteHeader />
         </SiteChrome>
 
