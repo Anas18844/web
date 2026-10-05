@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import type { PublicHomework } from '@/content/homework'
 import { toArabicDigits } from '@/lib/arabic'
+import { CodeBlock, OPTION_LETTERS, readsLtr } from './Code'
 
 export type GradedResult = {
   score: {
@@ -138,12 +139,32 @@ export function HomeworkResult({
               <ul className="mt-3 grid gap-2">
                 {wrongMcq.map((m) => {
                   const q = homework.mcq.find((x) => x.id === m.id)
+                  const answer = q?.options[m.answer]
+                  // The right answer to a code question is drawn as the paper
+                  // drew it — a program in its box, or a plain value LTR.
+                  if (q && answer !== undefined && q.codeOptions) {
+                    return (
+                      <li key={`m${m.id}`} className="min-w-0 text-sm text-ink-muted">
+                        <span className="font-bold text-ink">سؤال {ar(m.id)}</span> — {m.axis}
+                        <br />
+                        <span className="text-gold">
+                          الإجابة الصحيحة: {OPTION_LETTERS[m.answer]}
+                        </span>
+                        <CodeBlock code={answer} size="sm" className="mt-1.5" />
+                      </li>
+                    )
+                  }
                   return (
                     <li key={`m${m.id}`} className="text-sm text-ink-muted">
                       <span className="font-bold text-ink">سؤال {ar(m.id)}</span> — {m.axis}
                       <br />
                       <span className="text-gold">
-                        الإجابة الصحيحة: {q?.options[m.answer]}
+                        الإجابة الصحيحة:{' '}
+                        {q?.code && answer !== undefined && readsLtr(answer) ? (
+                          <span dir="ltr">{answer}</span>
+                        ) : (
+                          answer
+                        )}
                       </span>
                     </li>
                   )

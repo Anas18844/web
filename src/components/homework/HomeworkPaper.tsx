@@ -6,6 +6,7 @@ import type { PublicHomework } from '@/content/homework'
 import { Container } from '@/components/ui/Container'
 import { events } from '@/lib/analytics'
 import { toArabicDigits } from '@/lib/arabic'
+import { CodeBlock, OPTION_LETTERS, QuestionText, fitsTwoColumns, readsLtr } from './Code'
 import { HomeworkIntro } from './HomeworkIntro'
 import { HomeworkResult, type GradedResult } from './HomeworkResult'
 import { SubmitDialog } from './SubmitDialog'
@@ -211,10 +212,13 @@ export function HomeworkPaper({
             <ol className="grid gap-5">
               {group.items.map(({ q, index }) => {
                 const verdict = mcqVerdict.get(q.id)
+                // A paper without code takes none of the branches below, so it
+                // renders exactly as it did before code questions existed.
+                const isCode = Boolean(q.code || q.codeOptions)
                 return (
                   <li
                     key={q.id}
-                    className={`rounded border p-5 ${
+                    className={`${isCode ? 'min-w-0 ' : ''}rounded border p-5 ${
                       reviewing && verdict
                         ? verdict.correct
                           ? 'border-emerald-500/40 bg-emerald-500/[0.06]'
@@ -232,7 +236,11 @@ export function HomeworkPaper({
                             تقييمات الوزارة
                           </span>
                         )}
-                        <p className="font-bold leading-relaxed text-ink">{q.q}</p>
+                        <p className="font-bold leading-relaxed text-ink">
+                          <QuestionText text={q.q} />
+                        </p>
+
+                        {q.code && <CodeBlock code={q.code} className="mt-4" />}
 
                         {/*
                           Capped by HEIGHT, not just width. Several of these are
@@ -253,14 +261,20 @@ export function HomeworkPaper({
                           />
                         )}
 
-                        <div className="mt-4 grid gap-2">
+                        <div
+                          className={
+                            q.codeOptions
+                              ? `mt-4 grid grid-cols-1 gap-2 ${fitsTwoColumns(q.options) ? 'md:grid-cols-2' : ''}`
+                              : 'mt-4 grid gap-2'
+                          }
+                        >
                           {q.options.map((option, oi) => {
                             const chosen = mcq[q.id] === oi
                             const isAnswer = reviewing && verdict?.answer === oi
                             return (
                               <label
                                 key={oi}
-                                className={`flex cursor-pointer items-start gap-3 rounded border p-3 text-sm transition-colors duration-150 ${
+                                className={`${q.codeOptions ? 'min-w-0 ' : ''}flex cursor-pointer items-start gap-3 rounded border p-3 text-sm transition-colors duration-150 ${
                                   isAnswer
                                     ? 'border-emerald-500/60 bg-emerald-500/10'
                                     : chosen
@@ -276,7 +290,21 @@ export function HomeworkPaper({
                                   onChange={() => setMcq((p) => ({ ...p, [q.id]: oi }))}
                                   className="mt-1 h-4 w-4 shrink-0 accent-[#CBA352]"
                                 />
-                                <span className="leading-relaxed text-ink-muted">{option}</span>
+                                {q.codeOptions ? (
+                                  <>
+                                    <span className="mt-0.5 shrink-0 font-bold text-ink">
+                                      {OPTION_LETTERS[oi]}
+                                    </span>
+                                    <CodeBlock code={option} size="sm" className="min-w-0 flex-1" />
+                                  </>
+                                ) : (
+                                  <span
+                                    dir={isCode && readsLtr(option) ? 'ltr' : undefined}
+                                    className="leading-relaxed text-ink-muted"
+                                  >
+                                    {option}
+                                  </span>
+                                )}
                               </label>
                             )
                           })}

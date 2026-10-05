@@ -44,7 +44,9 @@ export async function generateMetadata({
     description:
       lesson.kind === 'review'
         ? `${lesson.blurb} مراجعة الوحدة بالفيديو، وبنك أسئلة بتصحيح فوري — ${gradeLabel(grade)}.`
-        : `${lesson.blurb} شرح بالفيديو، ملخص مكتوب، وواجب بتصحيح فوري — ${gradeLabel(grade)}.`,
+        : lesson.kind === 'practical'
+          ? `${lesson.blurb} — ${gradeLabel(grade)}.`
+          : `${lesson.blurb} شرح بالفيديو، ملخص مكتوب، وواجب بتصحيح فوري — ${gradeLabel(grade)}.`,
     alternates: { canonical: `/lessons/${gradeSlug}/${lessonSlug}` },
   }
 }
@@ -121,6 +123,19 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
       <div className="mx-auto mt-10 max-w-3xl">
         <h2 className="mb-4 text-sm font-extrabold text-ink">خطوتك الجاية</h2>
         <LessonPath steps={steps} />
+        {lesson.platformHelpUrl && (
+          <p className="mt-4 text-sm text-ink-muted">
+            مش عارف تدخل المنصة؟{' '}
+            <a
+              href={lesson.platformHelpUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-gold underline-offset-4 hover:underline"
+            >
+              اتفرّج على فيديو الجزء العملي
+            </a>
+          </p>
+        )}
       </div>
 
       {/* Where to go when the lesson is finished. */}

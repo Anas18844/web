@@ -131,7 +131,8 @@ export type WeekPlan = {
 export function planFor(grade: Grade, week: number): WeekPlan {
   const date = weekDate(week)
   const previous = week - 1
-  const lesson = previous >= 1 ? lessonsFor(grade).find((l) => l.n === previous && l.kind !== 'review') : undefined
+  // Lectures only: a review or a practical is never a week's homework at the door.
+  const lesson = previous >= 1 ? lessonsFor(grade).find((l) => l.n === previous && !l.kind) : undefined
 
   const hw = lesson?.homeworkSlug ? HOMEWORK.find((h) => h.slug === lesson.homeworkSlug) : undefined
 

@@ -30,6 +30,14 @@ export type McqQuestion = {
    */
   official?: boolean
   q: string
+  /**
+   * A program shown under the question, white on black like the Qureo screen
+   * it is copied from — LTR, monospace, spacing kept, never syntax-coloured.
+   * Not a secret: it is the question, so it survives `toPublic`.
+   */
+  code?: string
+  /** The four options are programs, not text — each drawn as code. */
+  codeOptions?: boolean
   options: readonly string[]
   /** ⚠️ Never leaves the server before a student has submitted. */
   answer: number
@@ -3833,6 +3841,369 @@ const UNIT_1_BANK_MCQ: readonly McqQuestion[] = [
   },
 ]
 
+/**
+ * بنك توفاس — العملي الأول (مراجعة كيريو ١–٣٠) — generated from the question bank in mr-anas-hq:
+ *   curriculum/second-bacc/practical/p01-qureo-js-review/bank/second-bacc-practical-p01.bank.yaml
+ * via web/make-web.py → web/tofas-bank.json. Every program was run in Node and
+ * matched its answer. Word for word and in the bank's order. Edit the bank, then
+ * regenerate — never here.
+ */
+const PRACTICAL_1_TOFAS_MCQ: readonly McqQuestion[] = [
+  {
+    id: 1,
+    level: 'easy',
+    axis: 'الطباعة والحساب',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'console.log("5 + 3");',
+    options: [
+      '8',
+      '5 + 3',
+      '53',
+      'Error',
+    ],
+    answer: 1,
+  },
+  {
+    id: 2,
+    level: 'mid',
+    axis: 'الطباعة والحساب',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'let price = 20;\nconsole.log("Total: " + price + 5);',
+    options: [
+      'Total: 25',
+      'Total: 20 5',
+      'Total: 205',
+      'Total: NaN',
+    ],
+    answer: 2,
+  },
+  {
+    id: 3,
+    level: 'mid',
+    axis: 'الصندوق',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'let a = 10;\nlet b = a;\nb = b + 5;\nconsole.log(a + " " + b);',
+    options: [
+      '10 15',
+      '15 15',
+      '10 10',
+      '15 10',
+    ],
+    answer: 0,
+  },
+  {
+    id: 4,
+    level: 'mid',
+    axis: 'الصندوق',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'let x = 7;\nlet y = "3";\nconsole.log(typeof (x + y));',
+    options: [
+      'number',
+      'boolean',
+      'undefined',
+      'string',
+    ],
+    answer: 3,
+  },
+  {
+    id: 5,
+    level: 'mid',
+    axis: 'الصندوق',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'let s = "12";\nconsole.log(Number(s) + 8);',
+    options: [
+      '20',
+      '128',
+      'NaN',
+      '12 8',
+    ],
+    answer: 0,
+  },
+  {
+    id: 6,
+    level: 'easy',
+    axis: 'الصندوق',
+    q: 'ما قيمة score التي ستظهر في الـConsole؟',
+    code: 'let score = 10;\nscore += 4;\nscore++;\nconsole.log(score);',
+    options: [
+      '14',
+      '11',
+      '15',
+      '16',
+    ],
+    answer: 2,
+  },
+  {
+    id: 7,
+    level: 'mid',
+    axis: 'القرار',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'let temp = 33;\nif (temp >= 35) {\n  console.log("Very hot");\n} else if (temp >= 25) {\n  console.log("Warm");\n} else if (temp >= 15) {\n  console.log("Nice");\n} else {\n  console.log("Cold");\n}',
+    options: [
+      'Very hot',
+      'Warm',
+      'Nice',
+      'Cold',
+    ],
+    answer: 1,
+  },
+  {
+    id: 8,
+    level: 'hard',
+    axis: 'القرار',
+    q: 'اختر البرنامج الذي يطبع: `Please wait, Mr. Adel.`',
+    code: 'let client = "Mr. Adel";\nlet booked = "Mr. Samy";',
+    codeOptions: true,
+    options: [
+      'if (client == booked) {\n  console.log("Please wait, " + client + ".");\n}',
+      'if (client != booked) {\n  console.log("Please wait, " * client * ".");\n}',
+      'if (client == booked) {\n  console.log("Please wait, " - client - ".");\n}',
+      'if (client != booked) {\n  console.log("Please wait, " + client + ".");\n}',
+    ],
+    answer: 3,
+  },
+  {
+    id: 9,
+    level: 'hard',
+    axis: 'القرار',
+    q: 'اختر البرنامج الذي يطبع: `Not today`',
+    code: 'let weather = "sunny";\nlet wind = 30;',
+    codeOptions: true,
+    options: [
+      'if (weather == "sunny" || wind < 20) {\n  console.log("Go to the beach");\n} else {\n  console.log("Not today");\n}',
+      'if (weather == "sunny" && wind < 20) {\n  console.log("Go to the beach");\n} else {\n  console.log("Not today");\n}',
+      'if (weather == "sunny" ! wind < 20) {\n  console.log("Go to the beach");\n} else {\n  console.log("Not today");\n}',
+      'if (weather == "sunny" && wind < 20) {\n  console.log("Not today");\n} else {\n  console.log("Go to the beach");\n}',
+    ],
+    answer: 1,
+  },
+  {
+    id: 10,
+    level: 'mid',
+    axis: 'القرار',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'let written = "Pass";\nlet practical = "Fail";\nif (!(written == "Pass" && practical == "Pass")) {\n  console.log("Makeup");\n} else {\n  console.log("Success");\n}',
+    options: [
+      'Success',
+      'Error',
+      'Makeup',
+      'Pass',
+    ],
+    answer: 2,
+  },
+  {
+    id: 11,
+    level: 'mid',
+    axis: 'القرار',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'let age = 16;\nlet ticket = true;\nif (age >= 18) {\n  console.log("Enter");\n  if (ticket == true) {\n    console.log("Seat A");\n  }\n} else {\n  console.log("Young");\n}',
+    options: [
+      'Young',
+      'Enter',
+      'Seat A',
+      'لا شيء',
+    ],
+    answer: 0,
+  },
+  {
+    id: 12,
+    level: 'mid',
+    axis: 'آلة العدّ',
+    q: 'كم مرة ستظهر كلمة Hi في الـConsole؟',
+    code: 'for (let i = 2; i <= 6; i += 2) {\n  console.log("Hi");\n}',
+    options: [
+      '4',
+      '5',
+      '2',
+      '3',
+    ],
+    answer: 3,
+  },
+  {
+    id: 13,
+    level: 'mid',
+    axis: 'آلة العدّ',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'let total = 0;\nfor (let i = 1; i <= 3; i++) {\n  total = total + i * i;\n}\nconsole.log(total);',
+    options: [
+      '14',
+      '6',
+      '9',
+      '36',
+    ],
+    answer: 0,
+  },
+  {
+    id: 14,
+    level: 'mid',
+    axis: 'آلة العدّ',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'let n = 0;\nfor (let i = 0; i < 3; i++) {\n  n = n + 2;\n  console.log(n);\n}',
+    options: [
+      '6 ثم 6 ثم 6',
+      '0 ثم 2 ثم 4',
+      '2 ثم 4 ثم 6',
+      '2 ثم 2 ثم 2',
+    ],
+    answer: 2,
+  },
+  {
+    id: 15,
+    level: 'mid',
+    axis: 'آلة العدّ',
+    q: 'كم مرة ستظهر العلامة * في الـConsole؟',
+    code: 'for (let i = 0; i < 3; i++) {\n  for (let j = 0; j < 2; j++) {\n    console.log("*");\n  }\n}',
+    options: [
+      '5',
+      '6',
+      '3',
+      '9',
+    ],
+    answer: 1,
+  },
+  {
+    id: 16,
+    level: 'easy',
+    axis: 'القايمة',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'let colors = ["Red", "Green", "Blue", "Black"];\nconsole.log(colors[2]);',
+    options: [
+      'Green',
+      'Red',
+      'Black',
+      'Blue',
+    ],
+    answer: 3,
+  },
+  {
+    id: 17,
+    level: 'mid',
+    axis: 'القايمة',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'let a = [3, 6, 9];\na.push(12);\nconsole.log(a.length + " " + a[a.length - 1]);',
+    options: [
+      '4 12',
+      '3 9',
+      '4 9',
+      '3 12',
+    ],
+    answer: 0,
+  },
+  {
+    id: 18,
+    level: 'hard',
+    axis: 'القايمة',
+    q: 'أكمل الشرط الناقص ليطبع البرنامج الدرجات الأكبر من 50 فقط (72 و91).',
+    code: 'let scores = [45, 72, 50, 91];\nfor (let i = 0; i < scores.length; i++) {\n  if ( ؟ ) {\n    console.log(scores[i]);\n  }\n}',
+    codeOptions: true,
+    options: [
+      'scores[50] > i',
+      'scores[i] >= 50',
+      'scores[i] > 50',
+      'scores.length > 50',
+    ],
+    answer: 2,
+  },
+  {
+    id: 19,
+    level: 'mid',
+    axis: 'القايمة',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'let fruits = ["Kiwi", "Apple", "Mango"];\nfor (let i = 0; i < fruits.length; i++) {\n  if (fruits[i] == "Mango") {\n    console.log(i);\n  }\n}',
+    options: [
+      '3',
+      '2',
+      'Mango',
+      '1',
+    ],
+    answer: 1,
+  },
+  {
+    id: 20,
+    level: 'hard',
+    axis: 'القايمة',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'let marks = [12, 7, 15, 9, 20];\nlet total = 0;\nfor (let m of marks) {\n  if (m < 10) {\n    total = total + m;\n  }\n}\nconsole.log(total);',
+    options: [
+      '47',
+      '63',
+      '2',
+      '16',
+    ],
+    answer: 3,
+  },
+  {
+    id: 21,
+    level: 'easy',
+    axis: 'الماكينة',
+    q: 'أي دالة ترجّع حاصل ضرب الرقمين a وb؟',
+    codeOptions: true,
+    options: [
+      'function mul(a, b) {\n  return a + b;\n}',
+      'function mul(a, b) {\n  print(a * b);\n}',
+      'function mul(a, b) {\n  return a * b;\n}',
+      'function mul(a, b) {\n  return "a * b";\n}',
+    ],
+    answer: 2,
+  },
+  {
+    id: 22,
+    level: 'mid',
+    axis: 'الماكينة',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'function half(n) {\n  return n / 2;\n}\nlet r = half(10) + half(4);\nconsole.log(r);',
+    options: [
+      '7',
+      '5',
+      '14',
+      'NaN',
+    ],
+    answer: 0,
+  },
+  {
+    id: 23,
+    level: 'hard',
+    axis: 'الماكينة',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'function result(s) {\n  if (s >= 50) {\n    return "Pass";\n  }\n  return "Fail";\n}\nconsole.log(result(Math.round(49.5)));',
+    options: [
+      'Fail',
+      'Pass',
+      '49.5',
+      'Error',
+    ],
+    answer: 1,
+  },
+  {
+    id: 24,
+    level: 'mid',
+    axis: 'قاعدة الـ{ }',
+    q: 'ما الذي سيظهر في الـConsole؟',
+    code: 'function area(w, h) {\n  let result = w * h;\n  return result;\n}\nconsole.log(area(3, 4));\nconsole.log(result);',
+    options: [
+      '12 ثم 12',
+      'Error ثم 12',
+      '12 ثم 0',
+      '12 ثم Error',
+    ],
+    answer: 3,
+  },
+  {
+    id: 25,
+    level: 'mid',
+    axis: 'الويب',
+    q: 'عندك فقرات مكتوب فيها class="pass". أي كود CSS يلوّنها كلها بالأخضر؟',
+    codeOptions: true,
+    options: [
+      'pass { color: green; }',
+      '#pass { color: green; }',
+      '.pass { color: green; }',
+      '.pass { green: color; }',
+    ],
+    answer: 2,
+  },
+]
+
 export const HOMEWORK: readonly Homework[] = [
   {
     slug: 'second-bacc-lecture-1',
@@ -3892,6 +4263,21 @@ export const HOMEWORK: readonly Homework[] = [
     // Nothing to cap — kept so every paper is the same shape.
     maxWords: 120,
     mcq: UNIT_1_BANK_MCQ,
+    essay: [],
+    sections: 'axis',
+    kind: 'bank',
+  },
+  {
+    slug: 'second-bacc-practical-1-tofas',
+    grade: 'second_bacc',
+    lecture: 'العملي الأول',
+    title: 'بنك توفاس — مراجعة كيريو ١–٣٠',
+    lesson: 'JavaScript · الفصول من ١ لـ ٣٠',
+    // Half of 25 rounded up — pass_ratio 0.5 in education/assessment-design.md.
+    passMark: 13,
+    // Nothing to cap — kept so every paper is the same shape.
+    maxWords: 120,
+    mcq: PRACTICAL_1_TOFAS_MCQ,
     essay: [],
     sections: 'axis',
     kind: 'bank',

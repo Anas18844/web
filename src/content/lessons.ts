@@ -46,8 +46,12 @@ export type Lesson = {
    * a whole unit, with the unit's question bank attached. It has four steps, not
    * five, and it is not a teaching week: `weeks.ts` skips it, so it never
    * becomes a homework checked at the door.
+   *
+   * `'practical'`: a practical session — a Qureo platform review on video, a
+   * Tofas-style bank, and its booklet. Three steps, and not a teaching week
+   * either: `weeks.ts` counts only lectures.
    */
-  kind?: 'review'
+  kind?: 'review' | 'practical'
 
   /**
    * The three slugs, each optional ON PURPOSE.
@@ -76,6 +80,12 @@ export type Lesson = {
    * to our own bank — that stays behind `homework.ts`, server-only.
    */
   answerKeyUrl?: string
+
+  /**
+   * A practical only: the video on getting into the platform, for the student
+   * stuck before the first exercise. A line under the path, not a step in it.
+   */
+  platformHelpUrl?: string
 }
 
 /** The slug used in URLs for a grade — `first_sec` is not a nice URL. */
@@ -179,6 +189,22 @@ export const LESSONS: readonly Lesson[] = [
     bookletUrl:
       'https://drive.google.com/file/d/1UpyIKfNviAIPPf2RByik09BvSSd-ZITv/view?usp=drive_link',
   },
+  {
+    slug: 'practical-1',
+    grade: 'second_bacc',
+    // After the unit 1 review and before lecture 5 in course order; not a week number.
+    n: 4.7,
+    kind: 'practical',
+    eyebrow: 'العملي الأول · منصة كيريو',
+    title: 'مراجعة كيريو JavaScript — الفصول من ١ لـ ٣٠',
+    blurb:
+      'الـ٣٠ فصل في فيديو واحد مقسومين ٩ محاور، ومعاهم بنك ٢٥ سؤال على نمط توفاس بتصحيح فوري، والملزمة PDF مجانًا.',
+    youtubeId: '1wEqUXtlyMk',
+    homeworkSlug: 'second-bacc-practical-1-tofas',
+    bookletUrl:
+      'https://drive.google.com/file/d/1gNyaklz80ww0jY3gxXasHnA24pVAlJd7/view?usp=drive_link',
+    platformHelpUrl: 'https://youtu.be/zjIHczoedKc',
+  },
 
   // ── أولى ثانوي ────────────────────────────────────────────────────────────
   {
@@ -243,6 +269,7 @@ export type LessonStep = {
  */
 export function stepsFor(lesson: Lesson): LessonStep[] {
   if (lesson.kind === 'review') return reviewSteps(lesson)
+  if (lesson.kind === 'practical') return practicalSteps(lesson)
 
   const summary = lesson.summarySlug
     ? SUMMARIES.find((s) => s.slug === lesson.summarySlug)
@@ -361,6 +388,51 @@ function reviewSteps(lesson: Lesson): LessonStep[] {
       n: 4,
       title: 'نزّل ملزمة الوحدة',
       body: 'الوحدة كاملة مطبوعة PDF — للمذاكرة على الورق ومن غير نت.',
+      href: lesson.bookletUrl,
+      meta: lesson.bookletUrl ? 'PDF' : undefined,
+      state: lesson.bookletUrl ? 'ready' : 'soon',
+      note: lesson.bookletUrl ? undefined : 'الملزمة بتترفع مع فيديو المراجعة.',
+    },
+  ]
+}
+
+/**
+ * A practical: watch the platform review, solve the Tofas bank, and the
+ * booklet last. A function of its own rather than a generalised `reviewSteps`:
+ * every line of copy differs, and there is no assessment book to check.
+ */
+function practicalSteps(lesson: Lesson): LessonStep[] {
+  const bank = lesson.homeworkSlug
+    ? HOMEWORK.find((h) => h.slug === lesson.homeworkSlug)
+    : undefined
+
+  return [
+    {
+      key: 'video',
+      n: 1,
+      title: 'اتفرّج على المراجعة',
+      body: 'الـ٣٠ فصل في فيديو واحد مجاني — كل مفهوم بكوده وناتجه في الـConsole.',
+      state: lesson.youtubeId ? 'ready' : 'soon',
+      meta: lesson.youtubeId ? 'فوق في الصفحة' : undefined,
+      note: lesson.youtubeId ? undefined : 'فيديو المراجعة بينزل قريب على يوتيوب.',
+    },
+    {
+      key: 'homework',
+      n: 2,
+      title: 'حل بنك توفاس',
+      body: '٢٥ سؤال زي امتحان توفاس — توقّع الـConsole واختار البرنامج — بتصحيح فوري.',
+      href: bank ? `/homework/${bank.slug}` : undefined,
+      meta: bank
+        ? `${toArabicDigits(bank.mcq.length + bank.essay.length)} سؤال · ${toArabicDigits(homeworkMarks(bank))} درجة`
+        : undefined,
+      state: bank ? 'ready' : 'soon',
+      note: bank ? undefined : 'البنك بينزل مع فيديو المراجعة.',
+    },
+    {
+      key: 'booklet',
+      n: 3,
+      title: 'نزّل ملزمة المراجعة',
+      body: 'الشرح بترتيب الفيديو، والبنك، ونموذج الإجابة — PDF مجاني.',
       href: lesson.bookletUrl,
       meta: lesson.bookletUrl ? 'PDF' : undefined,
       state: lesson.bookletUrl ? 'ready' : 'soon',
