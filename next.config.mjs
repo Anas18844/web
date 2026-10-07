@@ -17,6 +17,14 @@ const nextConfig = {
     return [{ source: '/courses', destination: '/', permanent: true }]
   },
 
+  /**
+   * Interactive lesson pages are plain HTML in public/interactive/<grade>/<lesson>/.
+   * Serve each folder's index.html at the clean folder URL.
+   */
+  async rewrites() {
+    return [{ source: '/interactive/:grade/:lesson', destination: '/interactive/:grade/:lesson/index.html' }]
+  },
+
   async headers() {
     return [
       {

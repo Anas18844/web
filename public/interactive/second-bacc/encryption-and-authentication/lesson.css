@@ -1,0 +1,80 @@
+/* أشكال خاصة بالدرس 2-1: مسرح المصافحة، ومحطات HTTP، وموبايل تسجيل الدخول،
+   وفاحص 2FA، والمتصفح المزيف. الباقي من templates/interactive/style.css */
+
+/* مسرح المصافحة */
+.stage{position:relative;display:grid;grid-template-columns:1fr 1.6fr 1fr;grid-template-rows:auto auto;gap:10px 8px;min-height:360px}
+.stage .addr{color:var(--muted);font-size:13px;direction:ltr}
+.stage[data-wire="plain"] .line{background:repeating-linear-gradient(90deg,var(--danger) 0 12px,transparent 12px 20px)}
+.stage[data-wire="secure"] .line{background:var(--ok);box-shadow:0 0 14px var(--ok)}
+.stage[data-wire="plain"] .wire-label{color:var(--danger)}
+.stage[data-wire="secure"] .wire-label{color:var(--ok)}
+.pocket{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:6px;min-height:34px}
+.chip{background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;white-space:nowrap}
+.chip-priv{border-color:var(--danger)}
+.chip-session{border-color:var(--ok);background:var(--ok-bg);font-weight:700}
+.bubble{min-height:26px;font-size:14px;font-weight:700;color:var(--ok);opacity:0;transition:opacity .4s}
+.bubble.show{opacity:1}
+.checks{list-style:none;margin:6px 0 0;padding:0;font-size:13px;text-align:start}
+.checks li{opacity:0;transform:translateY(6px);transition:all .4s;padding:2px 0}
+.checks li.show{opacity:1;transform:none}
+.checks li b{color:var(--ok)}
+.bench{min-height:44px;margin-top:6px;font-size:24px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
+.bench small{font-size:13px;color:var(--muted);font-weight:600}
+.bench .item{display:inline-flex;align-items:center;gap:4px;background:var(--deep);border:1px dashed var(--accent);border-radius:12px;padding:4px 10px}
+
+/* قاعدة البيانات وموبايل تسجيل الدخول */
+.db{display:grid;gap:4px;margin-top:4px;font-size:13px;direction:ltr}
+.db div{background:var(--deep);border:1px solid var(--line);border-radius:8px;padding:3px 8px;transition:all .3s}
+.db div[data-tone=good]{border-color:var(--ok);background:var(--ok-bg);color:var(--ink)}
+.db div[data-tone=bad]{border-color:var(--danger);background:#45202a;color:var(--ink)}
+.phone{width:min(300px,100%);margin:18px auto 0;background:#0b1830;border:2px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.ph-top{background:var(--panel-2);padding:8px;text-align:center;font-weight:800;font-size:15px}
+.ph-body{padding:12px;display:grid;gap:8px}
+.ph-body label{display:grid;gap:3px;font-size:13px;color:var(--muted)}
+.ph-msg{font-size:14px;text-align:center;min-height:44px;line-height:1.7}
+
+/* محطات HTTP */
+.hops{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding-top:6px}
+.hops::before{content:"";position:absolute;top:calc(6px + clamp(36px,5.5vw,54px)/2 - 2px);inset-inline:10%;height:4px;border-radius:4px;background:var(--line);transition:all .4s}
+.hops.plain::before{background:repeating-linear-gradient(90deg,var(--danger) 0 12px,transparent 12px 20px)}
+.hops.secure::before{background:var(--ok);box-shadow:0 0 14px var(--ok)}
+.hop{text-align:center;position:relative;min-width:0}
+.hop .icon{font-size:clamp(36px,5.5vw,54px);height:clamp(36px,5.5vw,54px);line-height:1;display:flex;align-items:center;justify-content:center;position:relative;z-index:1}
+.hop .name{font-weight:700;font-size:14px;margin-top:4px}
+.eye{font-size:14px;font-weight:700;min-height:44px;margin-top:4px;color:var(--muted)}
+
+/* فاحص 2FA وكروت الخدمات */
+.cat-k{--c:var(--info)} .cat-h{--c:var(--accent)} .cat-b{--c:var(--bio)}
+.pick{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.fchip{font-size:15px;padding:8px 14px;border-radius:999px}
+.fchip[aria-pressed=true]{background:var(--accent);color:#1a1a1a;border-color:var(--accent)}
+.presets{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;margin-top:12px;color:var(--muted);font-size:14px}
+.presets button{font-size:14px;padding:5px 12px}
+.eq{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;margin-top:18px;min-height:64px}
+.tok{display:grid;justify-items:center;border:2px solid var(--c,var(--line));border-radius:14px;padding:6px 14px;font-weight:800;font-size:16px;background:var(--deep)}
+.tok small{color:var(--c,var(--muted));font-size:12px}
+.plus{font-size:24px;color:var(--muted)}
+.chips2{display:grid;gap:6px;width:100%}
+.chips2 span{border:1px solid var(--c);border-radius:10px;padding:4px 8px;font-size:14px;font-weight:700}
+.chips2 span small{display:block;color:var(--c);font-size:12px}
+
+/* المتصفح المزيف */
+.browser{max-width:560px;margin:0 auto;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;color:#1d2b3f;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.browser .bar{background:#dfe5ee;padding:8px 10px;display:flex;align-items:center;gap:10px;direction:ltr}
+.dots3 i{display:inline-block;width:10px;height:10px;border-radius:50%;background:#ff5f57;margin-right:5px}
+.dots3 i:nth-child(2){background:#febc2e} .dots3 i:nth-child(3){background:#28c840}
+.browser .addr{flex:1;background:#fff;border-radius:99px;padding:4px 12px;font-size:15px;font-family:monospace;color:#1d2b3f}
+.browser .addr b.hl{background:#ffd9d9;color:#c0262d;border-radius:4px;padding:0 3px}
+.browser .page{padding:20px;text-align:center}
+.browser .gift{font-size:52px}
+.browser h3{margin:4px 0;font-size:22px;color:#0b7a3e}
+.browser p{margin:4px 0 12px}
+.fake-in{border:1px solid #c8d1dd;border-radius:8px;padding:8px;color:#8792a2;direction:ltr;font-family:monospace}
+
+@media (max-width:640px){
+  .stage{grid-template-columns:1fr 1.1fr 1fr;min-height:340px}
+  .stage .attacker{grid-column:1 / -1}
+  .chip{font-size:11px;padding:2px 7px}
+  .hop .name{font-size:11px}
+  .eye{font-size:11px}
+}
