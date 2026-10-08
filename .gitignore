@@ -34,3 +34,6 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# exam questions before the exam opens (repo is public): mr-anas-hq generates them
+/.private/
