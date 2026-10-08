@@ -95,7 +95,8 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
 
       {grade === 'second_bacc' && (
         <div className="mx-auto mb-8 grid max-w-4xl gap-4">
-          {SECOND_BACC_COMPREHENSIVE_EXAM.href === `/lessons/${gradeSlug}/${lesson.slug}` && (
+          {/* The exam card lives on the unit review it follows; its button goes to the exam. */}
+          {gradeSlug === 'second-bacc' && lesson.slug === 'unit-1-review' && (
             <Notice notice={SECOND_BACC_COMPREHENSIVE_EXAM} variant="card" />
           )}
           <Notice notice={SECOND_BACC_MOVED_TO_CODE_UP} variant="card" />
