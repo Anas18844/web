@@ -372,9 +372,9 @@ const W = {
         <div class="req" data-req></div>
         <div class="btn-row" data-ab hidden><button class="good-btn" data-x="1">${allow}</button><button class="bad-btn" data-x="0">${block}</button></div>
         <div class="verdict" data-v></div>
-        <div class="btn-row"><button class="primary" data-n hidden></button></div>`;
+        <div class="btn-row"><button class="primary" data-next hidden></button></div>`;
         const Q = s => b.querySelector(s), I = k => Q(`[data-n="${k}"]`);
-        const req = Q('[data-req]'), ab = Q('[data-ab]'), v = Q('[data-v]'), nx = Q('[data-n]');
+        const req = Q('[data-req]'), ab = Q('[data-ab]'), v = Q('[data-v]'), nx = Q('[data-next]');
         let i = 0, score = 0;
         const show = safe(async () => {
           ab.hidden = true; nx.hidden = true; tone(v, '', '');
