@@ -5,6 +5,7 @@ import { Section } from '@/components/ui/Section'
 import { VideoFacade } from '@/components/VideoFacade'
 import { LessonPath } from '@/components/lessons/LessonPath'
 import { Notice } from '@/components/Notice'
+import { site } from '@/content/site'
 import {
   SECOND_BACC_COMPREHENSIVE_EXAM,
   SECOND_BACC_MOVED_TO_CODE_UP,
@@ -46,7 +47,9 @@ export async function generateMetadata({
         ? `${lesson.blurb} مراجعة الوحدة بالفيديو، وبنك أسئلة بتصحيح فوري — ${gradeLabel(grade)}.`
         : lesson.kind === 'practical'
           ? `${lesson.blurb} — ${gradeLabel(grade)}.`
-          : `${lesson.blurb} شرح بالفيديو، ملخص مكتوب، وواجب بتصحيح فوري — ${gradeLabel(grade)}.`,
+          : lesson.kind === 'codeup'
+            ? `${lesson.blurb} صفحة تفاعلية مجانية وملزمة الوحدة PDF — ${gradeLabel(grade)}.`
+            : `${lesson.blurb} شرح بالفيديو، ملخص مكتوب، وواجب بتصحيح فوري — ${gradeLabel(grade)}.`,
     alternates: { canonical: `/lessons/${gradeSlug}/${lessonSlug}` },
   }
 }
@@ -109,6 +112,26 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
             video={{ youtubeId: lesson.youtubeId, title: `${lesson.eyebrow} — ${lesson.title}` }}
             proofName={`lesson:${gradeSlug}:${lesson.slug}`}
           />
+        ) : lesson.kind === 'codeup' ? (
+          // A Code Up lecture: the video lives on the platform, the path below
+          // says what is free here.
+          <div className="grid aspect-video w-full place-items-center rounded border border-gold/30 bg-gradient-to-br from-navy-soft to-navy-deep p-6 text-center">
+            <div>
+              <p className="text-subtitle font-extrabold text-ink">المحاضرة دي على منصة كود أب</p>
+              <p className="mt-2 text-sm text-ink-muted">
+                الشرح والواجب وامتحان الحصة على المنصة. والصفحة التفاعلية والملزمة مجانًا هنا تحت.
+              </p>
+              <a
+                href={site.platform.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cta={`lesson_codeup_${lesson.slug}`}
+                className="mt-5 inline-flex min-h-[2.75rem] items-center justify-center rounded bg-gold px-6 text-sm font-extrabold text-navy transition-colors duration-200 hover:bg-gold-deep hover:text-ink"
+              >
+                ادخل المحاضرة على كود أب
+              </a>
+            </div>
+          </div>
         ) : (
           // Only a unit review goes up before its video: say so, and let the
           // path below send the student to the bank that is already there.

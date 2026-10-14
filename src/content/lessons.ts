@@ -1,6 +1,7 @@
 import { GRADES, type Grade } from '@/content/site'
 import { HOMEWORK, totalMarks as homeworkMarks } from '@/content/homework'
 import { SUMMARIES } from '@/content/summaries'
+import { site } from '@/content/site'
 import { toArabicDigits } from '@/lib/arabic'
 
 /**
@@ -50,8 +51,13 @@ export type Lesson = {
    * `'practical'`: a practical session — a Qureo platform review on video, a
    * Tofas-style bank, and its booklet. Three steps, and not a teaching week
    * either: `weeks.ts` counts only lectures.
+   *
+   * `'codeup'`: a second-bacc lecture from October 2026 on, published on Code
+   * Up only. Its card is here so the course does not look as if it stopped at
+   * lecture 4: the steps send the student to Code Up, to the free interactive
+   * page, and to the unit booklet. No video on the site, by design.
    */
-  kind?: 'review' | 'practical'
+  kind?: 'review' | 'practical' | 'codeup'
 
   /**
    * The three slugs, each optional ON PURPOSE.
@@ -86,6 +92,9 @@ export type Lesson = {
    * stuck before the first exercise. A line under the path, not a step in it.
    */
   platformHelpUrl?: string
+
+  /** The lesson's interactive page under /interactive, when it is published. */
+  interactiveUrl?: string
 }
 
 /** The slug used in URLs for a grade — `first_sec` is not a nice URL. */
@@ -206,6 +215,40 @@ export const LESSONS: readonly Lesson[] = [
     platformHelpUrl: 'https://youtu.be/zjIHczoedKc',
   },
 
+  {
+    slug: 'lecture-5',
+    grade: 'second_bacc',
+    n: 5,
+    kind: 'codeup',
+    eyebrow: 'المحاضرة الخامسة · الدرس ٢-١',
+    title: 'تقنيات التشفير والمصادقة',
+    blurb: 'HTTPS والتشفير، والمصادقة وأنواعها، وإزاي بنركّب طرق الأمان مع بعض — والمحاضرة كاملة على كود أب.',
+    interactiveUrl: '/interactive/second-bacc/encryption-and-authentication',
+    bookletUrl: '/files/booklets/second-bacc-unit-2.pdf',
+  },
+  {
+    slug: 'lecture-6',
+    grade: 'second_bacc',
+    n: 6,
+    kind: 'codeup',
+    eyebrow: 'المحاضرة السادسة · الدرس ٢-٢',
+    title: 'تصميم أمان الشبكات',
+    blurb: 'جدار الحماية والـVPN والـDMZ، والدفاع في العمق ونهج انعدام الثقة — والمحاضرة كاملة على كود أب.',
+    interactiveUrl: '/interactive/second-bacc/network-security-design',
+    bookletUrl: '/files/booklets/second-bacc-unit-2.pdf',
+  },
+  {
+    slug: 'lecture-7',
+    grade: 'second_bacc',
+    n: 7,
+    kind: 'codeup',
+    eyebrow: 'المحاضرة السابعة · الدرس ٢-٣',
+    title: 'الاستجابة للحوادث وإدارة المخاطر',
+    blurb: 'الحادث الأمني ومراحل الاستجابة ليه، وتقييم المخاطر بالمصفوفة — والمحاضرة كاملة على كود أب.',
+    interactiveUrl: '/interactive/second-bacc/incident-response-and-risk',
+    bookletUrl: '/files/booklets/second-bacc-unit-2.pdf',
+  },
+
   // ── أولى ثانوي ────────────────────────────────────────────────────────────
   {
     slug: 'unit-1',
@@ -224,6 +267,7 @@ export const LESSONS: readonly Lesson[] = [
     title: 'القوانين والحقوق في مجتمع المعلومات',
     blurb: 'الوحدة كاملة، شرح وحل كتاب المدرسة.',
     youtubeId: 'ROqnYtA1Mrk',
+    bookletUrl: '/files/booklets/first-sec-unit-2.pdf',
   },
   {
     slug: 'unit-3',
@@ -233,6 +277,7 @@ export const LESSONS: readonly Lesson[] = [
     title: 'أمن المعلومات',
     blurb: 'الوحدة كاملة، شرح وحل كتاب المدرسة.',
     youtubeId: 'nBJ6XlyYYjo',
+    bookletUrl: '/files/booklets/first-sec-unit-3.pdf',
   },
 ]
 
@@ -251,7 +296,14 @@ export function gradesWithLessons(): readonly Grade[] {
 
 // ── What a step looks like to the page ───────────────────────────────────────
 
-export type StepKey = 'video' | 'summary' | 'homework' | 'exam' | 'booklet' | 'answers'
+export type StepKey =
+  | 'video'
+  | 'summary'
+  | 'homework'
+  | 'exam'
+  | 'booklet'
+  | 'answers'
+  | 'interactive'
 
 export type LessonStep = {
   key: StepKey
@@ -279,6 +331,7 @@ export type LessonStep = {
 export function stepsFor(lesson: Lesson): LessonStep[] {
   if (lesson.kind === 'review') return reviewSteps(lesson)
   if (lesson.kind === 'practical') return practicalSteps(lesson)
+  if (lesson.kind === 'codeup') return codeupSteps(lesson)
 
   const summary = lesson.summarySlug
     ? SUMMARIES.find((s) => s.slug === lesson.summarySlug)
@@ -446,6 +499,54 @@ function practicalSteps(lesson: Lesson): LessonStep[] {
       meta: lesson.bookletUrl ? 'PDF' : undefined,
       state: lesson.bookletUrl ? 'ready' : 'soon',
       note: lesson.bookletUrl ? undefined : 'الملزمة بتترفع مع فيديو المراجعة.',
+    },
+  ]
+}
+
+/**
+ * A lecture on Code Up: the lecture itself, its homework and class exam live
+ * on the platform. What the site adds for free is the interactive page and the
+ * unit booklet.
+ */
+function codeupSteps(lesson: Lesson): LessonStep[] {
+  return [
+    {
+      key: 'video',
+      n: 1,
+      title: 'اتفرّج على المحاضرة على كود أب',
+      body: 'الشرح كامل، وحل أسئلة الكتاب، وحل الواجب — على منصة كود أب للمشتركين.',
+      href: site.platform.url,
+      meta: 'كود أب',
+      state: 'ready',
+    },
+    {
+      key: 'interactive',
+      n: 2,
+      title: 'جرّب الدرس تفاعلي',
+      body: 'الدرس كله مشاهد متحركة وألعاب صغيرة، وأسئلة الكتاب بتصحيح فوري — مجانًا لأي طالب.',
+      href: lesson.interactiveUrl,
+      meta: lesson.interactiveUrl ? 'مجانًا' : undefined,
+      state: lesson.interactiveUrl ? 'ready' : 'soon',
+      note: lesson.interactiveUrl ? undefined : 'الصفحة التفاعلية بتنزل بعد المحاضرة.',
+    },
+    {
+      key: 'homework',
+      n: 3,
+      title: 'حل الواجب وامتحان الحصة',
+      body: 'على كود أب: امتحان الحصة بيفتح المحاضرة اللي بعدها، والمقالي بيتصحّح يدوي.',
+      href: site.platform.url,
+      meta: 'كود أب',
+      state: 'ready',
+    },
+    {
+      key: 'booklet',
+      n: 4,
+      title: 'نزّل ملزمة الوحدة',
+      body: 'شرح الوحدة الثانية كامل مطبوع PDF — مجانًا لأي طالب.',
+      href: lesson.bookletUrl,
+      meta: lesson.bookletUrl ? 'PDF' : undefined,
+      state: lesson.bookletUrl ? 'ready' : 'soon',
+      note: lesson.bookletUrl ? undefined : 'الملزمة بتترفع قريب.',
     },
   ]
 }

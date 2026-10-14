@@ -72,6 +72,8 @@ export default async function GradeLessonsPage({ params }: { params: Promise<Par
           </div>
         )}
 
+        <InteractiveStrip lessons={lessons} />
+
         <ul data-reveal-stagger className="grid gap-5 lg:grid-cols-2">
           {lessons.map((lesson) => (
             <LessonCard key={lesson.slug} lesson={lesson} gradeSlug={gradeSlug} />
@@ -125,6 +127,17 @@ function LessonCard({ lesson, gradeSlug }: { lesson: Lesson; gradeSlug: string }
                 </svg>
               </span>
             </>
+          ) : lesson.kind === 'codeup' ? (
+            // A Code Up lecture has no video on the site, by design.
+            <span className="absolute inset-0 grid place-items-center bg-gradient-to-br from-navy-soft to-navy-deep p-6 text-center">
+              <span>
+                <span className="block text-xs font-bold text-ink-faint">المحاضرة على</span>
+                <span className="mt-1 block text-2xl font-extrabold text-gold">كود أب · Code Up</span>
+                <span className="mt-2 block text-xs text-ink-muted">
+                  {lesson.interactiveUrl ? 'والصفحة التفاعلية مجانًا هنا' : 'والملزمة مجانًا هنا'}
+                </span>
+              </span>
+            </span>
           ) : (
             // A unit review whose video is not out yet: the bank already is.
             <span className="absolute inset-0 grid place-items-center p-6 text-center">
@@ -166,6 +179,42 @@ function LessonCard({ lesson, gradeSlug }: { lesson: Lesson; gradeSlug: string }
         </div>
       </Link>
     </li>
+  )
+}
+
+/**
+ * The free interactive pages, as one strip above the cards: they are the one
+ * thing a Code Up lecture offers every student, and inside each card they were
+ * a step nobody would find.
+ */
+function InteractiveStrip({ lessons }: { lessons: readonly Lesson[] }) {
+  const pages = lessons.filter((l) => l.interactiveUrl)
+  if (pages.length === 0) return null
+
+  return (
+    <div className="mb-8 rounded border border-gold/30 bg-gold/[0.05] p-5 sm:p-6">
+      <p className="text-xs font-bold text-gold">مجانًا لأي طالب</p>
+      <h2 className="mt-1 text-lg font-extrabold text-ink">الدروس التفاعلية</h2>
+      <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">
+        الدرس كله مشاهد متحركة وألعاب صغيرة، وأسئلة الكتاب بتصحيح فوري.
+      </p>
+      <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        {pages.map((l) => (
+          <li key={l.slug}>
+            <a
+              href={l.interactiveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cta={`interactive_${l.slug}`}
+              className="group flex min-h-[3rem] items-center justify-between gap-3 rounded border border-navy-line bg-navy-deep/60 px-4 py-3 text-sm font-bold text-ink transition-colors duration-200 hover:border-gold/50 hover:text-gold"
+            >
+              <span>{l.title}</span>
+              <span aria-hidden="true" className="text-gold">←</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }
 

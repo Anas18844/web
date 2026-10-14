@@ -55,7 +55,8 @@ function Step({ step }: { step: LessonStep }) {
    */
   const open = Boolean(step.href) && (step.state === 'ready' || step.state === 'locked')
   const ready = open
-  const isVideo = step.key === 'video'
+  // A video step is the player above the path — unless it leaves for Code Up.
+  const isVideo = step.key === 'video' && !step.href
 
   /** One element, two tags: a link when there is somewhere to go. */
   const Wrapper = ready ? Link : 'div'
@@ -64,7 +65,9 @@ function Step({ step }: { step: LessonStep }) {
    * same tab loses them the lesson they were halfway through, so anything
    * leaving the site opens beside it instead.
    */
-  const external = Boolean(step.href && /^https?:\/\//.test(step.href))
+  // Same for the static PDFs and interactive pages served from /files and
+  // /interactive: they are not Next routes, so they open in their own tab.
+  const external = Boolean(step.href && /^(https?:\/\/|\/files\/|\/interactive\/)/.test(step.href))
   const wrapperProps = ready
     ? {
         href: step.href!,

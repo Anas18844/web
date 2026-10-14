@@ -70,13 +70,28 @@ export function SiteHeader() {
         <div className="flex items-center gap-2 sm:gap-3">
           <HeaderNav items={NAV} />
 
+          {/* Search, as an icon at every width: one tap from any page. */}
+          <Link
+            href="/search"
+            aria-label="بحث في الموقع"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded border border-white/[0.08] bg-white/[0.04] text-ink transition-colors duration-150 hover:border-gold/40 hover:text-gold"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-[18px] w-[18px]" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.5-3.5" />
+            </svg>
+          </Link>
+
           {/* RTL end — physical LEFT: the primary action. */}
           <Link
             href="/platform"
             data-cta="header"
             className="shrink-0 rounded bg-gold px-4 py-2 text-sm font-extrabold text-navy transition-[background-color,color,box-shadow,transform] duration-200 hover:bg-gold-deep hover:text-ink hover:shadow-[0_0_24px_-6px_rgba(203,163,82,0.8)] active:translate-y-px sm:px-5"
           >
-            {common.nav.start}
+            {/* «اشترك» alone between xl and 2xl: that is where the seven links
+                and the search icon leave no room for the full label. */}
+            <span className="hidden xl:inline 2xl:hidden">اشترك</span>
+            <span className="xl:hidden 2xl:inline">{common.nav.start}</span>
           </Link>
         </div>
       </Container>

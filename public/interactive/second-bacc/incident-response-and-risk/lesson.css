@@ -1,0 +1,117 @@
+/* أشكال خاصة بالدرس 2-3: ملفات الفدية، ومثلث السرية والسلامة والتوافر، ومعمل الأجهزة
+   (الانتشار والاحتواء وغرفة العمليات)، ومصفوفة المخاطر وقواعد الدمج.
+   كل الكلاسات هنا بتبدأ بـ ir- عشان متتكررش مع templates/interactive/style.css */
+
+/* سؤال الدرس الرئيسي */
+.ir-q{margin:16px auto 0;max-width:760px;background:linear-gradient(135deg,#3a2a14,var(--panel));border:2px solid var(--accent);border-radius:16px;padding:14px 18px;text-align:center;font-size:clamp(17px,2.4vw,20px);line-height:1.9}
+.ir-q small{display:block;color:var(--accent);font-size:15px;font-weight:700}
+
+/* البداية: كل الحماية شغالة… والملفات بتتقفل */
+.ir-guards{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:14px}
+.ir-guards span{border:1px solid var(--ok);color:var(--ok);background:var(--ok-bg);border-radius:99px;padding:2px 10px;font-size:13px;font-weight:700}
+.ir-files{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:560px;margin:14px auto 0}
+.ir-file{display:grid;justify-items:center;background:var(--deep);border:2px solid var(--line);border-radius:12px;padding:6px 4px;font-size:12px;font-weight:700;text-align:center;transition:border-color .4s,background .4s,color .4s}
+.ir-file .fi{font-size:28px;line-height:1.25}
+.ir-file.lock{border-color:var(--danger);background:var(--bad-bg);color:var(--danger)}
+.ir-file.back{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.ir-ransom{margin:14px auto 0;max-width:460px;background:#2a0f16;border:2px solid var(--danger);border-radius:14px;padding:10px 14px;text-align:center;font-weight:800;color:#ffb3b3;line-height:1.8;box-shadow:0 0 30px rgba(255,107,107,.35)}
+.ir-ransom .ri{font-size:34px;display:block;line-height:1.1}
+
+/* مثلث السرية والسلامة والتوافر */
+.ir-rec{background:var(--deep);border:1px solid var(--line);border-radius:10px;padding:3px 10px;font-size:14px;font-weight:700;transition:all .4s}
+.ir-rec[data-tone=bad]{border-color:var(--danger);background:var(--bad-bg)}
+.ir-cia{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.ir-pill{display:grid;justify-items:center;gap:2px;background:var(--deep);border:2px solid var(--ok);border-radius:14px;padding:10px 6px;text-align:center;transition:all .4s}
+.ir-pill .pe{font-size:30px;line-height:1.2}
+.ir-pill b{font-size:17px}
+.ir-pill small{color:var(--muted);font-size:12px;font-weight:600}
+.ir-pill .ps{font-size:13px;font-weight:800;color:var(--ok)}
+.ir-pill.hit{border-color:var(--danger);background:var(--bad-bg);box-shadow:0 0 22px rgba(255,107,107,.45);animation:ir-crack .5s}
+.ir-pill.hit .ps{color:var(--danger)}
+@keyframes ir-crack{25%{transform:translateX(-6px) rotate(-1deg)}75%{transform:translateX(6px) rotate(1deg)}}
+
+/* معمل الأجهزة: الانتشار، والاحتواء، وغرفة العمليات */
+.ir-lab{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:470px;margin:0 auto}
+.ir-lab.wide{grid-template-columns:repeat(3,1fr);max-width:none}
+.ir-pc{position:relative;display:grid;justify-items:center;gap:1px;background:var(--deep);border:2px solid var(--line);border-radius:14px;padding:8px 4px;font-size:13px;font-weight:700;transition:border-color .4s,background .4s,color .4s,box-shadow .4s}
+.ir-pc .pi{font-size:32px;line-height:1.25}
+.ir-pc.safe{border-color:var(--ok)}
+.ir-pc.sick{border-color:var(--danger);background:var(--bad-bg);color:var(--danger);box-shadow:0 0 18px rgba(255,107,107,.45)}
+.ir-pc.cut{border-style:dashed;border-color:var(--accent);box-shadow:0 0 0 4px rgba(255,201,77,.22)}
+.ir-pc.cut::after{content:"🔌 مفصول";position:absolute;top:-11px;inset-inline-start:50%;transform:translateX(50%);background:var(--accent);color:#1a1a1a;border-radius:99px;padding:0 8px;font-size:11px;white-space:nowrap}
+.ir-pc.clean{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.ir-track{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:14px}
+.ir-st{border:1px dashed var(--line);border-radius:10px;padding:6px 2px;text-align:center;font-size:12px;font-weight:700;color:var(--muted);line-height:1.5;transition:all .4s}
+.ir-st .se{display:block;font-size:20px}
+.ir-st.done{border-style:solid;border-color:var(--ok);background:var(--ok-bg);color:var(--ink)}
+.ir-st.ir-now{border-color:var(--accent);color:var(--accent)}
+.ir-ops{display:grid;grid-template-columns:1.25fr 1fr;gap:16px;align-items:start}
+.ir-side{display:grid;gap:10px}
+.ir-side .ir-files{grid-template-columns:repeat(3,1fr);margin:0}
+.ir-lamp{background:var(--deep);border:1px solid var(--line);border-radius:12px;padding:6px 10px;font-size:14px;font-weight:700;line-height:1.7}
+.ir-stages{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
+.ir-stages button{font-size:15px;padding:8px 14px}
+.ir-stages button.ok{border-color:var(--ok);color:var(--ok)}
+
+/* مصفوفة المخاطر */
+.ir-mx{max-width:520px;margin:0 auto}
+.ir-grid{display:grid;grid-template-columns:auto repeat(3,1fr);gap:6px}
+.ir-rl,.ir-cl{font-size:13px;font-weight:700;color:var(--muted);display:grid;place-items:center;text-align:center;padding:2px 4px;line-height:1.4}
+.ir-rl{color:var(--warm)} .ir-cl{color:var(--info)}
+.ir-cell{position:relative;min-height:64px;border-radius:12px;border:2px solid var(--lc);background:color-mix(in srgb,var(--lc) 16%,var(--deep));display:grid;place-items:center;text-align:center;font-weight:800;font-size:14px;color:var(--lc);transition:opacity .35s,transform .35s,box-shadow .35s;direction:rtl;cursor:default}
+.ir-cell .cs{display:block;font-size:11px;color:var(--muted);font-weight:700}
+.ir-mx.dim .ir-cell{opacity:.22}
+.ir-mx.dim .ir-cell.ir-line{opacity:.55}
+.ir-mx .ir-cell.on{opacity:1;transform:scale(1.08);box-shadow:0 0 26px var(--lc);z-index:2}
+.ir-cell.hide{border-color:var(--line);background:var(--deep);color:transparent}
+.ir-cell.hide .cs{visibility:hidden}
+.ir-cell.hide::before{content:"؟";position:absolute;color:var(--muted);font-size:20px}
+.ir-mx.pick .ir-cell{cursor:pointer}
+.ir-mx.pick .ir-cell:hover{transform:scale(1.04)}
+.ir-xlab{text-align:center;font-weight:800;color:var(--info);font-size:13px;margin-top:4px}
+.ir-tok{position:absolute;bottom:1px;inset-inline:0;display:flex;justify-content:center;gap:2px;font-size:18px}
+.ir-pickers{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.ir-pick{background:var(--deep);border:1px solid var(--line);border-radius:14px;padding:8px 10px;text-align:center}
+.ir-pick h4{margin:0 0 6px;font-size:15px}
+.ir-pick button{font-size:14px;padding:6px 12px;margin:2px}
+.ir-pick button[aria-pressed=true]{background:var(--accent);color:#1a1a1a;border-color:var(--accent)}
+.ir-score{margin-top:14px;text-align:center;font-size:clamp(18px,2.8vw,23px);font-weight:800;min-height:40px;line-height:1.8}
+.ir-score .lv{border-radius:10px;padding:2px 12px;color:#1a1a1a}
+.ir-rule{margin-top:6px;text-align:center;color:var(--accent);font-weight:700;font-size:15px;min-height:26px}
+
+/* تمرين الدمج */
+.ir-drill{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:center}
+.ir-pair{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;font-size:clamp(17px,2.6vw,21px);font-weight:800;min-height:56px}
+.ir-pair span{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:4px 12px}
+.ir-lvls{display:grid;gap:6px;margin-top:10px}
+.ir-lvls button{border-color:var(--lc);font-size:15px;padding:7px 10px}
+.ir-lvls button:hover:not(:disabled){background:color-mix(in srgb,var(--lc) 22%,var(--panel-2));border-color:var(--lc)}
+.ir-pg{text-align:center;color:var(--muted);font-size:13px}
+.ir-rules{display:grid;gap:8px;text-align:start;margin-top:8px}
+.ir-rules div{background:var(--deep);border-inline-start:4px solid var(--accent);border-radius:10px;padding:6px 12px;font-size:15px;line-height:1.8}
+
+/* ترتيب الأولويات */
+.ir-prio{display:grid;grid-template-columns:1fr 1.1fr;gap:16px;align-items:start}
+.ir-rank{display:grid;gap:8px;margin-top:8px}
+.ir-rank div{display:flex;align-items:center;gap:8px;background:var(--deep);border:2px solid var(--lc);border-radius:12px;padding:6px 10px;font-weight:700;font-size:14px}
+.ir-rank .rn{width:28px;height:28px;flex:none;border-radius:50%;background:var(--lc);color:#1a1a1a;display:grid;place-items:center;font-weight:800}
+.ir-rank .tie{font-size:12px;color:var(--accent);margin-inline-start:auto}
+
+@media (max-width:640px){
+  .ir-files{grid-template-columns:repeat(4,1fr);gap:5px}
+  .ir-file{font-size:10px}
+  .ir-file .fi{font-size:22px}
+  .ir-rec{font-size:11px;padding:2px 5px}
+  .ir-cia{gap:5px}
+  .ir-pill{padding:8px 2px}
+  .ir-pill b{font-size:14px}
+  .ir-pill small{font-size:10px}
+  .ir-lab{gap:10px}
+  .ir-pc{font-size:11px}
+  .ir-pc .pi{font-size:26px}
+  .ir-track{grid-template-columns:repeat(3,1fr)}
+  .ir-ops,.ir-drill,.ir-prio{grid-template-columns:1fr}
+  .ir-cell{min-height:52px;font-size:12px}
+  .ir-rl,.ir-cl{font-size:11px}
+  .ir-pickers{grid-template-columns:1fr}
+}

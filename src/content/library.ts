@@ -46,10 +46,10 @@ export const BOOKLETS: readonly LibraryItem[] = [
     grade: 'second_bacc',
     title: 'ملزمة شرح الوحدة الثانية — الأمن السيبراني',
     blurb: 'الوحدة الثانية كاملة بترتيب الشرح: التشفير والمصادقة، وتصميم أمن الشبكات، والاستجابة للحوادث وإدارة المخاطر.',
-    // Waiting on the owner's Drive link (the one sent on 2026-10-15 was the
-    // unit 1 booklet's link pasted twice).
-    url: undefined,
-    meta: 'شرح',
+    // Hosted here, not on Drive: no Drive access from the build machine
+    // (2026-10-15). Built in mr-anas-hq, curriculum/second-bacc/u2-cybersecurity/booklet.
+    url: '/files/booklets/second-bacc-unit-2.pdf',
+    meta: '٤٧ صفحة · شرح'
   },
   {
     id: 'second-bacc-unit-1',
@@ -66,6 +66,25 @@ export const BOOKLETS: readonly LibraryItem[] = [
     blurb: 'الـ٣٠ فصل بترتيب الفيديو، وبنك توفاس، ونموذج الإجابة.',
     url: LESSONS.find((l) => l.slug === 'practical-1')?.bookletUrl,
     meta: 'العملي',
+  },
+
+  // أولى ثانوي — one booklet per unit: a short summary, 40 questions, the answers,
+  // and a QR to the unit's video. Built in mr-anas-hq, curriculum/first-sec/<unit>/booklet.
+  {
+    id: 'first-sec-unit-3',
+    grade: 'first_sec',
+    title: 'ملزمة الوحدة الثالثة — أمن المعلومات',
+    blurb: 'ملخص بسيط للدروس الخمسة صفحة لكل درس، و٤٠ سؤال (٣٠ اختيار من متعدد و١٠ صح أو خطأ) بالإجابات، وكود يفتح فيديو الشرح.',
+    url: '/files/booklets/first-sec-unit-3.pdf',
+    meta: '١٢ صفحة · ملخص + ٤٠ سؤال',
+  },
+  {
+    id: 'first-sec-unit-2',
+    grade: 'first_sec',
+    title: 'ملزمة الوحدة الثانية — القوانين والحقوق في مجتمع المعلومات',
+    blurb: 'ملخص بسيط للدروس التلاتة صفحة لكل درس، و٤٠ سؤال (٣٠ اختيار من متعدد و١٠ صح أو خطأ) بالإجابات، وكود يفتح فيديو الشرح.',
+    url: '/files/booklets/first-sec-unit-2.pdf',
+    meta: '١٠ صفحات · ملخص + ٤٠ سؤال',
   },
 ]
 

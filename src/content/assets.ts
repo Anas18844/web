@@ -31,11 +31,15 @@ export const assets = {
    * Founder on the left, brand circuit motif on the right. Doubles as the
    * "am I in the right place?" continuity signal with the YouTube thumbnails.
    */
+  // October 2026: the circuit artwork was replaced by a chalkboard drawn from
+  // the syllabus itself (binary, a neural net, the encryption flow, a JS
+  // condition), in the chalk of the chapter-board dividers. Same framing as the
+  // old photo — the teacher stands where he stood — so every crop still holds.
   hero: {
-    src: '/images/hero.png',
-    alt: 'مستر أنس أحمد — مهندس ذكاء اصطناعي وبرمجيات ومدرّس برمجة',
-    width: 1376,
-    height: 768,
+    src: '/images/hero-chalk.webp',
+    alt: 'مستر أنس أحمد قدام سبورة عليها أفكار من المنهج',
+    width: 2752,
+    height: 1536,
   } as ImageAsset | null,
 
   // ---------------------------------------------------------------------------

@@ -1,7 +1,6 @@
 import Image from 'next/image'
 import { Container } from '@/components/ui/Container'
 import { ButtonLink } from '@/components/ui/Button'
-import { Circuit } from '@/components/ui/Circuit'
 import { HeroIntro } from '@/components/motion/HeroIntro'
 import { Magnetic } from '@/components/motion/Magnetic'
 import { home } from '@/content/copy'
@@ -49,10 +48,10 @@ export function Hero() {
           {/* Stacked (under xl): fade the band's bottom edge into the section
               so the photograph hands off to the copy instead of ending on a
               hard line. Banner (xl+, RTL): dim the right side so the copy is
-              readable over the circuit motif — the stops are placed so the
+              readable over the chalk sketches, while letting the board show through (October 2026) — the stops are placed so the
               scrim is fully clear before it reaches the portrait on the left,
               which must stay undimmed. */}
-          <div className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/45 to-transparent xl:bg-gradient-to-l xl:from-navy-deep xl:from-30% xl:via-navy-deep/85 xl:via-55% xl:to-transparent xl:to-75%" />
+          <div className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/45 to-transparent xl:bg-gradient-to-l xl:from-navy-deep/90 xl:from-25% xl:via-navy-deep/70 xl:via-50% xl:to-transparent xl:to-72%" />
         </div>
       ) : (
         <div
@@ -66,24 +65,9 @@ export function Hero() {
         />
       )}
 
-      {/* The same live circuit that opens every inner page, brought home.
-          The photograph already carries these traces as artwork on its right
-          side; this is the drawn version of them, in the corner where the
-          scrim is at its most opaque and there is nothing behind it to fight.
-          It draws itself as the page opens and then carries the two pulses,
-          so the motif the whole identity is built on is finally moving on the
-          first screen a visitor sees.
-
-          Desktop only. Below xl the hero is stacked — photograph on top, copy
-          beneath on flat navy — and there is no corner for it to occupy that
-          is not already someone's text. */}
-      <div
-        data-reveal
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 start-0 hidden opacity-40 xl:block"
-      >
-        <Circuit className="h-44 w-auto" />
-      </div>
+      {/* The drawn circuit that used to sit in this corner came out with the
+          circuit artwork (October 2026): the hero is a chalkboard now, and a
+          second motif on top of it was two ideas competing. */}
 
       <Container className="relative py-12 sm:py-16 xl:py-28">
         <div className="xl:max-w-[56%]">
