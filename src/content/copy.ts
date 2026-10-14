@@ -18,8 +18,9 @@ export const home = {
     eyebrow: 'برمجة وذكاء اصطناعي · أولى وتانية ثانوي',
     title: 'هفهمك البرمجة من الأساس لحد ما توصل للدرجة النهائية',
     lead: 'من غير حفظ، ومن غير ما تكون فاهم أي حاجة قبل كده. بنبدأ من الصفر، وبنمشي بنظام بيتابعك خطوة بخطوة لحد الامتحان.',
-    primaryCta: 'احجز دلوقتي',
-    platformCta: 'اشترك على المنصة',
+    primaryCta: 'اشترك على المنصة',
+    /** Second button since the booking form came out (October 2026). */
+    booksCta: 'الملازم مجانًا',
   },
 
   /** Credential numbers — every one of them is a fact stated by the founder. */
@@ -161,13 +162,15 @@ export const home = {
   },
 
   /**
-   * The capture section is now the form and nothing else — no heading, no
-   * standfirst, no second button competing with it. The only thing under the
-   * form is the WhatsApp route, in WhatsApp's own green, for the visitor who
-   * would rather talk than type.
+   * The close of the page. It held the booking form until October 2026, when
+   * the owner took booking off the site: students now sign up and do
+   * everything on Code Up. What is left is where to go next.
    */
-  capture: {
-    whatsappCta: 'أو كلّمنا على واتساب',
+  start: {
+    title: 'تبدأ منين؟',
+    body: 'المحاضرات والواجبات والامتحانات على منصة كود أب. والملازم وحل التقييمات مجانًا هنا على الموقع.',
+    booksCta: 'الملازم وحل التقييمات',
+    whatsappCta: 'عندك سؤال؟ كلّمنا على واتساب',
   },
 } as const
 
@@ -241,8 +244,8 @@ export const about = {
 
   cta: {
     title: 'عايز تبدأ؟',
-    body: 'لو وصلت لهنا يبقى عندك صورة واضحة. الخطوة الجاية بسيطة — سيب بياناتك ونتكلم.',
-    button: 'ابدأ من هنا',
+    body: 'لو وصلت لهنا يبقى عندك صورة واضحة. الخطوة الجاية بسيطة — اشترك على المنصة وابدأ من أول وحدة.',
+    button: 'اشترك على المنصة',
   },
 } as const
 
@@ -298,10 +301,6 @@ export const parents = {
     body: 'أسهل طريقة: خلي ابن حضرتك يجرّب أول حصة ويشوف الشرح والمنصة، وحضرتك تشوف التقرير. وبعدين تقرر. ولو حابب تتكلم مع حد قبل كده، رقمنا تحت.',
   },
 
-  capture: {
-    title: 'اطلب تواصل',
-    body: 'سيب بيانات حضرتك وهنتواصل معاك على الواتساب. لو تحب مكالمة، اكتبها في خانة الملاحظة وهنتصل.',
-  },
 } as const
 
 /**
@@ -458,7 +457,6 @@ export const platform = {
   before: {
     title: 'قبل ما تسجّل',
     items: [
-      'املأ فورم الحجز.',
       'حل الواجبات والامتحانات الأربعة اللي فاتت، عشان بياناتك تتنقل صح.',
       'جهّز: اسمك الثلاثي، وسنك، ورقمك (رقم الواتساب الأساسي)، ورقم ولي الأمر — رقم ولي الأمر ضروري عشان يتابعك، وعشان الحسابات الوهمية بتتقفل.',
     ],
@@ -557,7 +555,9 @@ export const common = {
     knowledge: 'مركز المعرفة',
     about: 'مين مستر أنس',
     parents: 'لولي الأمر',
-    start: 'سجّل معانا',
+    booklets: 'الملازم',
+    answers: 'حل التقييمات',
+    start: 'اشترك في المنصة',
 
     /** Kept for the old index pages, which are still reachable by link. */
     summary: 'الملخصات',

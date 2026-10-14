@@ -5,7 +5,12 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
-export type NavItem = { href: string; label: string }
+/**
+ * `menuOnly`: listed in the phone menu but not in the desktop capsule. Used for
+ * «الرئيسية» since /booklets and /answers joined (October 2026): eight links
+ * no longer fit at 1280px, and on desktop the logo already goes home.
+ */
+export type NavItem = { href: string; label: string; menuOnly?: boolean }
 
 /**
  * Navigation state and the mobile menu.
@@ -57,7 +62,7 @@ export function HeaderNav({ items }: { items: NavItem[] }) {
         aria-label="التنقل الرئيسي"
         className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 rounded border border-white/[0.08] bg-white/[0.04] p-1 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] xl:flex"
       >
-        {items.map((item) => {
+        {items.filter((item) => !item.menuOnly).map((item) => {
           const active = isActive(item.href)
           return (
             <Link
@@ -67,7 +72,7 @@ export function HeaderNav({ items }: { items: NavItem[] }) {
               className={cn(
                 // whitespace-nowrap: with six items the capsule was breaking
                 // two-word labels onto a second line and growing to 2 rows.
-                'relative inline-flex items-center whitespace-nowrap rounded px-3 py-1.5 text-sm font-bold transition-colors duration-150',
+                'relative inline-flex items-center whitespace-nowrap rounded px-2.5 py-1.5 text-sm font-bold 2xl:px-3 transition-colors duration-150',
                 active
                   ? 'bg-white/[0.07] text-ink'
                   : 'text-ink-muted hover:bg-white/[0.07] hover:text-ink',
@@ -77,7 +82,7 @@ export function HeaderNav({ items }: { items: NavItem[] }) {
               {active && (
                 <span
                   aria-hidden="true"
-                  className="absolute inset-x-3 -bottom-px h-0.5 bg-gold"
+                  className="absolute inset-x-2.5 -bottom-px h-0.5 bg-gold 2xl:inset-x-3"
                 />
               )}
             </Link>

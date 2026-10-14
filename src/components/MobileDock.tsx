@@ -92,9 +92,6 @@ export function MobileDock() {
     return () => observers.forEach((observer) => observer.disconnect())
   }, [pathname])
 
-  // The confirmation page has already converted. Asking again there is noise.
-  if (pathname === '/thanks') return null
-
   const shown = pastHero && !formReached
 
   return (
@@ -108,7 +105,7 @@ export function MobileDock() {
     >
       <div className="flex items-center gap-2.5">
         <Link
-          href="/#start"
+          href="/platform"
           data-cta="dock"
           className="flex min-h-[3rem] flex-1 items-center justify-center rounded bg-gold px-5 text-base font-extrabold text-navy transition-[background-color,transform] duration-200 active:translate-y-px"
         >

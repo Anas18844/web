@@ -59,23 +59,23 @@ export function HomeworkIntro({
             <div>
               <p className="font-extrabold text-ink">اقرا ده قبل ما تبدأ</p>
               <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-                لو إنت <b className="text-ink">حاجز مع مستر أنس</b>، في آخر {paper} هيتطلب منك
-                رقم التليفون اللي حجزت بيه — عشان درجتك تتسجّل باسمك، ومايتكتبش عليك إنك
+                لو إنت <b className="text-ink">طالب مع مستر أنس</b>، في آخر {paper} هيتطلب منك
+                رقم تليفونك المسجّل عندنا — عشان درجتك تتسجّل باسمك، ومايتكتبش عليك إنك
                 ماحلّتش {paper}.
               </p>
               <p className="mt-3 text-sm leading-relaxed text-ink-muted">
-                ولو <b className="text-ink">لسه ماحجزتش</b>، احجز دلوقتي قبل ما تبدأ عشان
-                درجة النهاردة تتحسبلك.
+                ولو <b className="text-ink">لسه مش مشترك</b>، اشترك على المنصة عشان
+                المحاضرات والواجبات الجاية تتحسبلك.
               </p>
             </div>
           </div>
 
           <Link
-            href="/#start"
+            href="/platform"
             data-cta="homework_intro"
             className="mt-4 inline-flex min-h-[2.75rem] w-full items-center justify-center rounded bg-gold px-5 text-sm font-extrabold text-navy transition-colors duration-200 hover:bg-gold-deep hover:text-ink"
           >
-            احجز دلوقتي
+            اشترك على المنصة
           </Link>
         </div>
 

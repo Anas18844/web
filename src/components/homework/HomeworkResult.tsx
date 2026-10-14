@@ -103,7 +103,7 @@ export function HomeworkResult({
 
           {recorded.requested && recorded.saved && !recorded.matchedStudent && (
             <Note tone="warn">
-              اتسجّلت الدرجة، بس الرقم ده مش موجود عندنا كحجز. لو إنت طالب فعلاً، كلّم
+              اتسجّلت الدرجة، بس الرقم ده مش مسجّل عندنا. لو إنت طالب فعلاً، كلّم
               مستر أنس على الواتساب عشان يربط الرقم بحسابك.
             </Note>
           )}

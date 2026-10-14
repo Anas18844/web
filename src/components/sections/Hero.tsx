@@ -96,20 +96,19 @@ export function Hero() {
               {/* The main action leans toward the cursor — spring physics on
                   the element the page is pointing at. */}
               <Magnetic>
-                <ButtonLink href="/#start" data-cta="hero" className="px-8 text-lg">
+                <ButtonLink href="/platform" data-cta="hero" className="px-8 text-lg">
                   {home.hero.primaryCta}
                 </ButtonLink>
               </Magnetic>
-              {/* Second action since the online platform opened (September
-                  2026): the owner asked for it here. Secondary styling keeps
-                  booking the first thing the eye lands on. */}
+              {/* Booking came off the site in October 2026: the platform is
+                  the main action now, and the free booklets the second. */}
               <ButtonLink
-                href="/platform"
+                href="/booklets"
                 variant="secondary"
-                data-cta="hero-platform"
+                data-cta="hero-booklets"
                 className="px-8 text-lg"
               >
-                {home.hero.platformCta}
+                {home.hero.booksCta}
               </ButtonLink>
             </div>
           </HeroIntro>

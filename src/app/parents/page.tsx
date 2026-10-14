@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import { Section, SectionHeading } from '@/components/ui/Section'
 import { PageHero } from '@/components/ui/PageHero'
-import { Capture } from '@/components/sections/Capture'
+import { StartBand } from '@/components/sections/StartBand'
 import { JsonLd } from '@/components/JsonLd'
 import { pageGraph } from '@/lib/schema-org'
 import { parents } from '@/content/copy'
@@ -120,7 +120,7 @@ export default function ParentsPage() {
         </div>
       </Section>
 
-      <Capture intent="parent" pageContext="parents" />
+      <StartBand pageContext="parents" />
     </>
   )
 }

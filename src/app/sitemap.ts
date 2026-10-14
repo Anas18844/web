@@ -80,6 +80,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${site.url}/booklets`,
+      lastModified: new Date('2026-10-15'),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${site.url}/answers`,
+      lastModified: new Date('2026-10-15'),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
       url: `${site.url}/platform`,
       lastModified: new Date('2026-09-28'),
       changeFrequency: 'monthly',

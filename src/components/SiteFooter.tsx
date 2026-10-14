@@ -30,6 +30,8 @@ const link =
 const PAGES = [
   { href: '/lessons/first-sec', label: common.nav.firstSec },
   { href: '/lessons/second-bacc', label: common.nav.secondBacc },
+  { href: '/booklets', label: common.nav.booklets },
+  { href: '/answers', label: common.nav.answers },
   { href: '/summary', label: common.nav.summary },
   { href: '/homework', label: common.nav.homework },
   { href: '/exam', label: common.nav.exam },

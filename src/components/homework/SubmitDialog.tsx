@@ -70,11 +70,11 @@ export function SubmitDialog({
           </p>
         )}
 
-        {/* ── Booked student ───────────────────────────────────────────── */}
+        {/* ── Enrolled student ───────────────────────────────────────────── */}
         <div className="mt-5 rounded border border-gold/40 bg-gold/[0.07] p-4">
-          <p className="font-extrabold text-ink">أنا حاجز مع مستر أنس</p>
+          <p className="font-extrabold text-ink">أنا طالب مع مستر أنس</p>
           <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">
-            اكتب رقم التليفون اللي حجزت بيه، عشان الدرجة تتسجّل باسمك ومايتكتبش عليك إنك
+            اكتب رقم تليفونك المسجّل عندنا، عشان الدرجة تتسجّل باسمك ومايتكتبش عليك إنك
             ماحلّتش {paper}.
           </p>
 
@@ -98,7 +98,7 @@ export function SubmitDialog({
               }}
               placeholder="01xxxxxxxxx"
               autoComplete="tel"
-              aria-label="رقم التليفون اللي حجزت بيه"
+              aria-label="رقم تليفونك المسجّل عندنا"
               className={`${field} text-start`}
             />
           </div>
@@ -121,7 +121,7 @@ export function SubmitDialog({
 
         {/* ── Everyone else ────────────────────────────────────────────── */}
         <div className="mt-4 border-t border-navy-line pt-4">
-          <p className="text-sm font-bold text-ink">متابع من يوتيوب ومش حاجز؟</p>
+          <p className="text-sm font-bold text-ink">متابع من يوتيوب ومش مشترك؟</p>
           <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">
             اتفضل شوف درجتك والإجابات الصحيحة على طول. مش هنسجّل أي بيانات.
           </p>
@@ -136,11 +136,11 @@ export function SubmitDialog({
           </button>
 
           <Link
-            href="/#start"
+            href="/platform"
             data-cta="homework_submit"
             className="mt-3 block text-center text-xs font-bold text-gold transition-colors duration-200 hover:text-ink"
           >
-            أو احجز دلوقتي عشان الواجب الجاي يتحسبلك
+            أو اشترك على المنصة عشان الواجب الجاي يتحسبلك
           </Link>
         </div>
 

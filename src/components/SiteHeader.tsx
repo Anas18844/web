@@ -11,9 +11,11 @@ import { site } from '@/content/site'
  * enrolled yet or for a parent.
  */
 const NAV: NavItem[] = [
-  { href: '/', label: common.nav.home },
+  { href: '/', label: common.nav.home, menuOnly: true },
   { href: '/lessons/first-sec', label: common.nav.firstSec },
   { href: '/lessons/second-bacc', label: common.nav.secondBacc },
+  { href: '/booklets', label: common.nav.booklets },
+  { href: '/answers', label: common.nav.answers },
   { href: '/knowledge', label: common.nav.knowledge },
   { href: '/about', label: common.nav.about },
   { href: '/parents', label: common.nav.parents },
@@ -70,7 +72,7 @@ export function SiteHeader() {
 
           {/* RTL end — physical LEFT: the primary action. */}
           <Link
-            href="/#start"
+            href="/platform"
             data-cta="header"
             className="shrink-0 rounded bg-gold px-4 py-2 text-sm font-extrabold text-navy transition-[background-color,color,box-shadow,transform] duration-200 hover:bg-gold-deep hover:text-ink hover:shadow-[0_0_24px_-6px_rgba(203,163,82,0.8)] active:translate-y-px sm:px-5"
           >

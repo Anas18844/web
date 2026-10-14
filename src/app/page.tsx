@@ -8,7 +8,7 @@ import { System } from '@/components/sections/System'
 import { Outcome } from '@/components/sections/Outcome'
 import { KnowledgeTeaser } from '@/components/sections/KnowledgeTeaser'
 import { ParentBridge } from '@/components/sections/ParentBridge'
-import { Capture } from '@/components/sections/Capture'
+import { StartBand } from '@/components/sections/StartBand'
 
 /**
  * The home page answers, in order: "who is teaching me?", "is this for me?",
@@ -22,6 +22,9 @@ import { Capture } from '@/components/sections/Capture'
  * September 2026: the full platform-details video went in straight under the
  * hero, at the owner's request — the teacher explaining his own system answers
  * "how does it hold me?" before any card does.
+ *
+ * October 2026: the booking form came off the site (students sign up on Code
+ * Up), so the page now closes on where to start instead of a form.
  */
 export default function HomePage() {
   return (
@@ -35,7 +38,7 @@ export default function HomePage() {
       <Outcome />
       <KnowledgeTeaser />
       <ParentBridge />
-      <Capture intent="curriculum" pageContext="home" seam="fromLight" />
+      <StartBand pageContext="home" seam="fromLight" />
     </>
   )
 }

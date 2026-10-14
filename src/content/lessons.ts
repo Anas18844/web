@@ -225,6 +225,15 @@ export const LESSONS: readonly Lesson[] = [
     blurb: 'الوحدة كاملة، شرح وحل كتاب المدرسة.',
     youtubeId: 'ROqnYtA1Mrk',
   },
+  {
+    slug: 'unit-3',
+    grade: 'first_sec',
+    n: 3,
+    eyebrow: 'الوحدة الثالثة',
+    title: 'أمن المعلومات',
+    blurb: 'الوحدة كاملة، شرح وحل كتاب المدرسة.',
+    youtubeId: 'nBJ6XlyYYjo',
+  },
 ]
 
 export function lessonsFor(grade: Grade): readonly Lesson[] {
