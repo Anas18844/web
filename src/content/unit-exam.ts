@@ -4,9 +4,14 @@
  * Plan: mr-anas-hq/brain/plans/2026-10-online-unit-exam/plan.md
  *
  * Every time here is an absolute instant with its offset written out. Egypt is
- * on daylight-saving time (UTC+3) until the last Thursday of October, so the
- * exam night of Friday 9 October 2026 is +03:00. The server decides with these;
- * the browser only displays them.
+ * on daylight-saving time (UTC+3) until the last Thursday of October, so both
+ * exam nights are +03:00. The server decides with these; the browser only
+ * displays them.
+ *
+ * First sitting: Fri 9 Oct 20:00 → last start Sat 10 Oct 16:00 → closed 18:00.
+ * Retake (owner, 2026-10-15), same paper and same rules, open to anyone:
+ * Fri 16 Oct 20:00 → last start Sat 17 Oct 16:00 → closed 18:00. A number that
+ * already has an attempt gets that attempt back, not a new one.
  */
 export const UNIT_EXAM = {
   slug: 'unit-1',
@@ -15,12 +20,12 @@ export const UNIT_EXAM = {
   grade: 'الصف الثاني بكالوريا · البرمجة والذكاء الاصطناعي',
 
   /** The exam opens — the countdown on the page runs to this moment. */
-  opensAt: '2026-10-09T20:00:00+03:00',
+  opensAt: '2026-10-16T20:00:00+03:00',
   /** Last moment a student may START, so everyone gets the full two hours. */
-  lastStartAt: '2026-10-10T16:00:00+03:00',
+  lastStartAt: '2026-10-17T16:00:00+03:00',
   /** Nothing is accepted after this — same instant as the site announcement
    *  (SECOND_BACC_COMPREHENSIVE_EXAM.endsAt). lastStartAt + minutes must not pass it. */
-  closesAt: '2026-10-10T18:00:00+03:00',
+  closesAt: '2026-10-17T18:00:00+03:00',
 
   minutes: 120,
   questions: 45,
