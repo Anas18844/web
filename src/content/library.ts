@@ -121,13 +121,31 @@ export const ANSWER_KEYS: readonly LibraryItem[] = [
     url: LESSONS.find((l) => l.slug === 'unit-1-review')?.answerKeyUrl,
     meta: 'الوحدة الأولى',
   },
+  // Units 2–4: built 2026-10-15 in mr-anas-hq (templates/ministry-eval), hosted
+  // here because there is no Drive access from the build machine.
   {
     id: 'second-bacc-unit-2-assessments',
     grade: 'second_bacc',
     title: 'حل كتاب التقييمات — الوحدة الثانية',
-    blurb: 'نموذج إجابة تقييمات الوزارة للوحدة الثانية — الأمن السيبراني.',
-    url: undefined,
-    meta: 'الوحدة الثانية',
+    blurb: 'نموذج إجابة الأداءات والتقييمات للوحدة الثانية — الأمن السيبراني، الدروس التلاتة.',
+    url: '/files/answers/second-bacc/unit-2.pdf',
+    meta: 'الوحدة الثانية · ٢٩ صفحة',
+  },
+  {
+    id: 'second-bacc-unit-3-assessments',
+    grade: 'second_bacc',
+    title: 'حل كتاب التقييمات — الوحدة الثالثة',
+    blurb: 'نموذج إجابة الأداءات والتقييمات للوحدة الثالثة — تطبيقات الويب، الدروس التلاتة.',
+    url: '/files/answers/second-bacc/unit-3.pdf',
+    meta: 'الوحدة الثالثة · ٢٦ صفحة',
+  },
+  {
+    id: 'second-bacc-unit-4-assessments',
+    grade: 'second_bacc',
+    title: 'حل كتاب التقييمات — الوحدة الرابعة',
+    blurb: 'نموذج إجابة الأداءات والتقييمات للوحدة الرابعة — تصميم الويب والوسائط، الدروس الأربعة.',
+    url: '/files/answers/second-bacc/unit-4.pdf',
+    meta: 'الوحدة الرابعة · ٤٠ صفحة',
   },
 
   // أولى ثانوي — the ministry's weekly assessments, term 1
