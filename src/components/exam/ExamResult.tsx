@@ -12,6 +12,9 @@ export type ExamMarked = {
     mcqTotal: number
     trueFalse: number
     trueFalseTotal: number
+    /** Absent in results from before the «اكتب المصطلح» section existed. */
+    terms?: number
+    termsTotal?: number
     blanks: number
     blanksTotal: number
     essay: number
@@ -22,6 +25,7 @@ export type ExamMarked = {
   }
   mcq: { id: number; chosen: number | null; answer: number; correct: boolean }[]
   trueFalse: { id: number; chosen: boolean | null; answer: boolean; correct: boolean }[]
+  terms?: { id: number; answer: string; correct: boolean }[]
   blanks: { id: number; answer: string; correct: boolean }[]
   essay: {
     id: number
@@ -61,6 +65,7 @@ export function ExamResult({
 
   const wrongMcq = marked.mcq.filter((d) => !d.correct)
   const wrongTf = marked.trueFalse.filter((d) => !d.correct)
+  const wrongTerms = (marked.terms ?? []).filter((d) => !d.correct)
   const wrongBlanks = marked.blanks.filter((d) => !d.correct)
   const partialEssay = marked.essay.filter((d) => d.earned < d.marks)
 
@@ -92,7 +97,12 @@ export function ExamResult({
       {/* ── Section by section ──────────────────────────────────────────── */}
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <Row label="اختيار من متعدد" got={score.mcq} of={score.mcqTotal} />
-        <Row label="صح وخطأ" got={score.trueFalse} of={score.trueFalseTotal} />
+        {score.trueFalseTotal > 0 && (
+          <Row label="صح وخطأ" got={score.trueFalse} of={score.trueFalseTotal} />
+        )}
+        {(score.termsTotal ?? 0) > 0 && (
+          <Row label="اكتب المصطلح" got={score.terms ?? 0} of={score.termsTotal ?? 0} />
+        )}
         <Row label="أكمل" got={score.blanks} of={score.blanksTotal} />
         <Row label="مقالي" got={score.essay} of={score.essayTotal} />
       </div>
@@ -107,7 +117,8 @@ export function ExamResult({
       )}
 
       {/* ── What went wrong ─────────────────────────────────────────────── */}
-      {wrongMcq.length + wrongTf.length + wrongBlanks.length + partialEssay.length === 0 ? (
+      {wrongMcq.length + wrongTf.length + wrongTerms.length + wrongBlanks.length + partialEssay.length ===
+      0 ? (
         <p className="mt-6 rounded border border-gold/40 bg-gold/[0.07] p-5 text-center font-bold text-ink">
           إجابة كاملة من غير أي غلطة 👏
         </p>
@@ -127,6 +138,12 @@ export function ExamResult({
             {wrongTf.map((d) => (
               <Wrong key={`t${d.id}`} label={`صح وخطأ — عبارة ${ar(d.id)}`}>
                 الإجابة الصحيحة: <b className="text-ink">{d.answer ? '○ صح' : '× خطأ'}</b>
+              </Wrong>
+            ))}
+
+            {wrongTerms.map((d) => (
+              <Wrong key={'r' + d.id} label={'المصطلح — سؤال ' + ar(d.id)}>
+                الإجابة الصحيحة: <b className="text-ink">{d.answer}</b>
               </Wrong>
             ))}
 

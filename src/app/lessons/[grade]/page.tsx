@@ -13,8 +13,12 @@ import {
   gradesWithLessons,
   lessonsFor,
   stepsFor,
+  unitLabel,
+  UNITS,
   type Lesson,
 } from '@/content/lessons'
+import { KIND_LABEL, unitItems } from '@/content/library'
+import type { Grade } from '@/content/site'
 import { toArabicDigits } from '@/lib/arabic'
 
 const ar = (n: number) => toArabicDigits(n)
@@ -72,13 +76,7 @@ export default async function GradeLessonsPage({ params }: { params: Promise<Par
           </div>
         )}
 
-        <InteractiveStrip lessons={lessons} />
-
-        <ul data-reveal-stagger className="grid gap-5 lg:grid-cols-2">
-          {lessons.map((lesson) => (
-            <LessonCard key={lesson.slug} lesson={lesson} gradeSlug={gradeSlug} />
-          ))}
-        </ul>
+        <ByUnit lessons={lessons} grade={grade} gradeSlug={gradeSlug} />
 
         {/* The other grade, for the student who landed on the wrong one. */}
         <OtherGrade current={gradeSlug} />
@@ -179,6 +177,107 @@ function LessonCard({ lesson, gradeSlug }: { lesson: Lesson; gradeSlug: string }
         </div>
       </Link>
     </li>
+  )
+}
+
+/**
+ * The lessons grouped by unit (owner, 2026-10-15), and the practical apart.
+ *
+ * A grade whose units are one video each (first-sec today) stays a flat grid:
+ * a heading over every single card would only add scrolling. The moment a unit
+ * holds more than one lesson, or there is a practical, the page groups.
+ */
+function ByUnit({ lessons, grade, gradeSlug }: { lessons: readonly Lesson[]; grade: Grade; gradeSlug: string }) {
+  const units = UNITS[grade]
+    .map((u) => ({ ...u, lessons: lessons.filter((l) => l.unit === u.n) }))
+    .filter((u) => u.lessons.length > 0)
+  const practicals = lessons.filter((l) => l.kind === 'practical')
+  const loose = lessons.filter((l) => l.unit === undefined && l.kind !== 'practical')
+  const grouped = practicals.length > 0 || units.some((u) => u.lessons.length > 1)
+
+  if (!grouped) {
+    return <Cards lessons={lessons} gradeSlug={gradeSlug} />
+  }
+
+  const jumps = [
+    ...units.map((u) => ({ href: `#unit-${u.n}`, label: unitLabel(u.n) })),
+    ...(practicals.length ? [{ href: '#practical', label: 'العملي · كيريو' }] : []),
+  ]
+
+  return (
+    <>
+      {/* Jump to a unit: the page is long, and a student wants one unit. */}
+      <nav aria-label="الوحدات" className="mb-10 flex flex-wrap gap-2">
+        {jumps.map((j) => (
+          <a
+            key={j.href}
+            href={j.href}
+            className="rounded border border-navy-line bg-navy-soft/30 px-4 py-2 text-sm font-bold text-ink-muted transition-colors duration-200 hover:border-gold/50 hover:text-gold"
+          >
+            {j.label}
+          </a>
+        ))}
+      </nav>
+
+      {units.map((u) => {
+        const extras = unitItems(grade, u.n).filter((i) => i.url)
+        return (
+          <section key={u.n} id={`unit-${u.n}`} className="mb-14 scroll-mt-24">
+            <header className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-navy-line pb-4">
+              <div>
+                <p className="text-sm font-bold text-gold">{unitLabel(u.n)}</p>
+                <h2 className="mt-1 text-title font-extrabold text-ink">{u.title}</h2>
+                <p className="mt-1 text-sm text-ink-faint">
+                  {ar(u.lessons.length)} {u.lessons.length > 10 || u.lessons.length < 3 ? 'درس' : 'دروس'}
+                </p>
+              </div>
+              {extras.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {extras.map((i) => (
+                    <a
+                      key={i.id}
+                      href={i.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded border border-gold/40 bg-gold/[0.06] px-3 py-1.5 text-xs font-bold text-gold transition-colors duration-200 hover:bg-gold hover:text-navy"
+                    >
+                      {KIND_LABEL[i.kind]} PDF
+                    </a>
+                  ))}
+                </div>
+              )}
+            </header>
+            <InteractiveStrip lessons={u.lessons} />
+            <Cards lessons={u.lessons} gradeSlug={gradeSlug} />
+          </section>
+        )
+      })}
+
+      {loose.length > 0 && <Cards lessons={loose} gradeSlug={gradeSlug} />}
+
+      {practicals.length > 0 && (
+        <section id="practical" className="mb-14 scroll-mt-24">
+          <header className="mb-6 border-b border-navy-line pb-4">
+            <p className="text-sm font-bold text-gold">العملي</p>
+            <h2 className="mt-1 text-title font-extrabold text-ink">منصة كيريو · Qureo</h2>
+            <p className="mt-1 max-w-prose text-sm leading-relaxed text-ink-muted">
+              الجزء العملي ماشي جنب الوحدات مش جوّاها: مراجعات منصة كيريو، وبنوك على نمط توفاس، وملازمها.
+            </p>
+          </header>
+          <Cards lessons={practicals} gradeSlug={gradeSlug} />
+        </section>
+      )}
+    </>
+  )
+}
+
+function Cards({ lessons, gradeSlug }: { lessons: readonly Lesson[]; gradeSlug: string }) {
+  return (
+    <ul data-reveal-stagger className="grid gap-5 lg:grid-cols-2">
+      {lessons.map((lesson) => (
+        <LessonCard key={lesson.slug} lesson={lesson} gradeSlug={gradeSlug} />
+      ))}
+    </ul>
   )
 }
 

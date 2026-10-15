@@ -14,7 +14,11 @@ const nextConfig = {
    * whatever ranking the URL earned passes to the home page instead of dying.
    */
   async redirects() {
-    return [{ source: '/courses', destination: '/', permanent: true }]
+    return [
+      { source: '/courses', destination: '/', permanent: true },
+      // حل التقييمات moved inside الملازم, unit by unit (2026-10-15).
+      { source: '/answers', destination: '/booklets', permanent: true },
+    ]
   },
 
   /**

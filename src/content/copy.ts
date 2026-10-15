@@ -555,8 +555,7 @@ export const common = {
     knowledge: 'مركز المعرفة',
     about: 'مين مستر أنس',
     parents: 'لولي الأمر',
-    booklets: 'الملازم',
-    answers: 'حل التقييمات',
+    booklets: 'الملازم والحلول',
     start: 'اشترك في المنصة',
 
     /** Kept for the old index pages, which are still reachable by link. */

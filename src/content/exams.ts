@@ -72,6 +72,18 @@ export type ExamEssay = {
   rubric: string
 }
 
+/**
+ * اكتب المصطلح — a definition or a situation; the student writes the term.
+ * One mark each, marked on meaning like a gap. From the 2026-09-27 paper
+ * format on, this section replaces ○/× (week 4 is the first such paper).
+ */
+export type ExamTerm = {
+  id: number
+  q: string
+  /** ⚠️ Never leaves the server before submission. */
+  answer: string
+}
+
 /** Which of an exam's equivalent papers a student sits. */
 export type ExamForm = 'A' | 'B'
 
@@ -79,6 +91,7 @@ export type ExamForm = 'A' | 'B'
 export type ExamContent = {
   mcq: readonly ExamMcq[]
   trueFalse: readonly ExamTrueFalse[]
+  terms?: readonly ExamTerm[]
   blanks: ExamBlanks
   essay: readonly ExamEssay[]
 }
@@ -99,6 +112,8 @@ export type Exam = {
   requiresHomework: string
   mcq: readonly ExamMcq[]
   trueFalse: readonly ExamTrueFalse[]
+  /** The «اكتب المصطلح» section, on papers that use it instead of ○/×. */
+  terms?: readonly ExamTerm[]
   blanks: ExamBlanks
   essay: readonly ExamEssay[]
   /**
@@ -728,7 +743,140 @@ const WEEK_3: Exam = {
   },
 }
 
-export const EXAMS: readonly Exam[] = [WEEK_1, WEEK_2, WEEK_3]
+/**
+ * Week 4 — lesson 1-4, the AI ethics lecture. Built from the paper's bank
+ * (mr-anas-hq: curriculum/second-bacc/u1-it-and-society/l04-ai-ethics/bank/
+ * exam-week-04.bank.yaml), same order and same wording.
+ *
+ * The first paper on the 2026-09-27 format: «اكتب المصطلح» replaces ○/×, so
+ * `trueFalse` is empty and section 2 is the four `terms`.
+ */
+const WEEK_4: Exam = {
+  slug: 'second-bacc-week-4',
+  grade: 'second_bacc',
+  week: 'الأسبوع الرابع',
+  title: 'امتحان الأسبوع الرابع',
+  lesson: 'الدرس الرابع — القضايا الأخلاقية المتعلقة بالذكاء الاصطناعي',
+  minutes: 20,
+  passMark: 10,
+  requiresHomework: 'second-bacc-lecture-4',
+
+  mcq: [
+    {
+      id: 1,
+      q: 'نمط في مخرجات الذكاء الاصطناعي قد يؤدي إلى نتائج غير عادلة أو ضارة، وينشأ من البيانات أو التصميم يسمى:',
+      options: ['الذكاء الاصطناعي القابل للتفسير (XAI)', 'التحيز الخوارزمي', 'الشفافية المطلقة', 'حماية الخصوصية'],
+      answer: 1,
+    },
+    {
+      id: 2,
+      q: 'أي من الخيارات التالية يُعد سببًا غير مناسب أو غير صحيح لنشوء التحيز الخوارزمي؟',
+      options: [
+        'بيانات التدريب متحيزة',
+        'انعكاس نزعات تمييزية سابقة في البيانات',
+        'سرعة معالجة الحاسوب بطيئة',
+        'وجود بيانات غير كافية عن سمات معينة',
+      ],
+      answer: 2,
+      emphasis: ['غير مناسب أو غير صحيح'],
+    },
+    {
+      id: 3,
+      q: 'الأمثلة التي يتعلم منها نظام الذكاء الاصطناعي أنماطه قبل استخدامه وتؤثر بشكل مباشر على جودة مخرجاته تسمى:',
+      options: ['بيانات التدريب', 'خوارزميات التشفير', 'الأجهزة الطرفية', 'الذاكرة العشوائية'],
+      answer: 0,
+    },
+    {
+      id: 4,
+      q: 'نظام أو تقنية تجمع كميات كبيرة من بيانات السلوك عبر الإنترنت وتسمح بتتبع الأفراد في الأماكن العامة تثير قضايا تتعلق بـ:',
+      options: ['سرعة المعالجة الحاسوبية', 'كفاءة الذاكرة المركزية', 'قانون مور', 'حماية الخصوصية'],
+      answer: 3,
+    },
+    {
+      id: 5,
+      q: 'إتاحة معلومات واضحة ومناسبة عن النظام واستخدامه وعملية اتخاذ القرار وحدوده يعد تعريفًا دقيقًا لمبدأ:',
+      options: ['العدالة', 'الشفافية', 'المساءلة', 'حماية الخصوصية'],
+      answer: 1,
+    },
+    {
+      id: 6,
+      q: 'شركة تريد أن تتأكد قبل تشغيل نظام التوظيف الجديد أنه لا يظلم فئة معينة من المتقدّمين. ما أنسب خطوة؟',
+      options: [
+        'حذف خانة النوع من بيانات التدريب فقط',
+        'زيادة سرعة معالجة طلبات المتقدّمين',
+        'اختبار نتائجه على فئات مختلفة منهم',
+        'إخفاء طريقة عمل النظام عن المتقدّمين',
+      ],
+      answer: 2,
+    },
+    {
+      id: 7,
+      q: 'أراد طبيب أن يعرف العوامل التي بنى عليها نظامٌ ترتيبه لأولوية المرضى. ماذا يحتاج؟',
+      options: [
+        'الذكاء الاصطناعي القابل للتفسير (XAI)',
+        'المساءلة لتحديد مَن سيُحاسَب على الأخطاء',
+        'حماية خصوصية بيانات المرضى داخل المستشفى',
+        'بيانات تدريب أكثر عن المرضى السابقين',
+      ],
+      answer: 0,
+    },
+    {
+      id: 8,
+      q: 'أي مهمة من هذه يبرع فيها الذكاء الاصطناعي داخل مدرسة؟',
+      options: [
+        'إصدار قرار نهائي بفصل طالب مخالف',
+        'الحكم على أخلاق الطلاب من صورتهم',
+        'ضمان عدالة كل الدرجات دون أي مراجعة',
+        'اكتشاف الأخطاء الشائعة في الإجابات',
+      ],
+      answer: 3,
+    },
+  ],
+
+  trueFalse: [],
+
+  terms: [
+    { id: 9, q: 'جمع وتحليل كميات كبيرة من بيانات سلوك الأفراد عبر الإنترنت.', answer: 'الجمع الجماعي للبيانات الشخصية' },
+    {
+      id: 10,
+      q: 'في نظام قروض، المطوّر يختبر النموذج، والبنك يراجع قراراته، والموظف يتحقق من ناتجه؛ هذا التحديد لأدوار الأطراف وواجباتها.',
+      answer: 'المسؤولية',
+    },
+    {
+      id: 11,
+      q: 'أطباء لا يستطيعون معرفة كيف وصل نظام ذكاء اصطناعي إلى تشخيص مريض، فيصعب عليهم تقييمه واكتشاف أخطائه.',
+      answer: 'مشكلة الصندوق الأسود',
+    },
+    { id: 12, q: 'روبوت دردشة أعطى طالبًا اسم كتاب ومؤلفه، والاثنان لا وجود لهما، بصياغة مقنعة.', answer: 'الهلوسة' },
+  ],
+
+  blanks: {
+    id: 13,
+    title: 'أكمل ما يلي',
+    marks: 6,
+    marksPerBlank: 2,
+    segments: [
+      'كاميرات في محطة مترو تتعرّف على وجوه المارّة وتتتبّعهم تمسّ مبدأ',
+      '. ونظام توظيف يستبعد المتقدّمين من حيّ معيّن دون سبب وجيه يخالف مبدأ',
+      '. ولمّا يقع خطأ ولا تُعرف الجهة التي تُحاسَب عليه، يغيب مبدأ',
+      '.',
+    ],
+    answers: ['حماية الخصوصية', 'العدالة', 'المساءلة'],
+  },
+
+  essay: [
+    {
+      id: 14,
+      q: 'ناقش أسباب التحيز الخوارزمي وكيف يمكن أن ينشأ من الاختيار غير المناسب للمتغيرات، أو استخدام متغير بديل يمثل بشكل غير مباشر سمة محمية.',
+      marks: 2,
+      model:
+        'أسبابه: بيانات تدريب متحيزة أو غير كافية، وطريقة بناء النظام وتصميمه. والمتغير البديل يبدو محايدًا لكنه يمثّل السمة المحمية بشكل غير مباشر، فيصل النظام إلى التمييز نفسه حتى لو حُذفت السمة.',
+      rubric: 'درجة لسببين من أسباب التحيز · درجة لشرح المتغير البديل.',
+    },
+  ],
+}
+
+export const EXAMS: readonly Exam[] = [WEEK_1, WEEK_2, WEEK_3, WEEK_4]
 
 export function findExam(slug: string): Exam | undefined {
   return EXAMS.find((e) => e.slug === slug)
@@ -738,11 +886,12 @@ export function examsFor(grade: Exam['grade']): readonly Exam[] {
   return EXAMS.filter((e) => e.grade === grade)
 }
 
-/** MCQ 8 + true/false 4 + blanks 6 + essay 2 = 20. */
+/** MCQ 8 + true/false (or terms) 4 + blanks 6 + essay 2 = 20. */
 export function totalMarks(exam: Exam): number {
   return (
     exam.mcq.length +
     exam.trueFalse.length +
+    (exam.terms?.length ?? 0) +
     exam.blanks.marks +
     exam.essay.reduce((t, e) => t + e.marks, 0)
   )
@@ -789,6 +938,7 @@ export type PublicExam = {
   form?: ExamForm
   mcq: readonly Omit<ExamMcq, 'answer'>[]
   trueFalse: readonly Omit<ExamTrueFalse, 'answer'>[]
+  terms: readonly Omit<ExamTerm, 'answer'>[]
   blanks: Omit<ExamBlanks, 'answers'> & { gaps: number }
   /**
    * No `rubric` either. It reads like marking guidance but it is half the
@@ -809,6 +959,7 @@ export function toPublic(exam: Exam, form?: ExamForm): PublicExam {
     ...(form ? { form } : {}),
     mcq: exam.mcq.map(({ answer: _answer, ...rest }) => rest),
     trueFalse: exam.trueFalse.map(({ answer: _answer, ...rest }) => rest),
+    terms: (exam.terms ?? []).map(({ answer: _answer, ...rest }) => rest),
     blanks: (() => {
       const { answers, ...rest } = exam.blanks
       return { ...rest, gaps: answers.length }

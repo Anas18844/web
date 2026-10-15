@@ -29,6 +29,11 @@ export type Lesson = {
   grade: Grade
   /** Position in the course, shown as the step number. */
   n: number
+  /**
+   * The unit (الوحدة) it belongs to — the grade page is grouped by it. Absent
+   * on a practical: Qureo runs beside the units, not inside one.
+   */
+  unit?: number
   /** «المحاضرة الأولى» — what the teacher calls it. */
   eyebrow: string
   /** What the lesson is actually about, in the student's words. */
@@ -126,6 +131,7 @@ export const LESSONS: readonly Lesson[] = [
   {
     slug: 'lecture-1',
     grade: 'second_bacc',
+    unit: 1,
     n: 1,
     eyebrow: 'المحاضرة الأولى',
     title: 'تطوّر تكنولوجيا المعلومات والتحوّل الاجتماعي',
@@ -140,6 +146,7 @@ export const LESSONS: readonly Lesson[] = [
   {
     slug: 'lecture-2',
     grade: 'second_bacc',
+    unit: 1,
     n: 2,
     eyebrow: 'المحاضرة الثانية',
     title: 'كيف يعمل الذكاء الاصطناعي',
@@ -154,6 +161,7 @@ export const LESSONS: readonly Lesson[] = [
   {
     slug: 'lecture-3',
     grade: 'second_bacc',
+    unit: 1,
     n: 3,
     eyebrow: 'المحاضرة الثالثة',
     title: 'الذكاء الاصطناعي في الحياة اليومية والصناعة',
@@ -169,6 +177,7 @@ export const LESSONS: readonly Lesson[] = [
   {
     slug: 'lecture-4',
     grade: 'second_bacc',
+    unit: 1,
     n: 4,
     eyebrow: 'المحاضرة الرابعة',
     title: 'القضايا الأخلاقية المتعلقة بالذكاء الاصطناعي',
@@ -177,13 +186,14 @@ export const LESSONS: readonly Lesson[] = [
     youtubeId: 'HMLv05wfJj4',
     summarySlug: 'second-bacc-lecture-4',
     homeworkSlug: 'second-bacc-lecture-4',
+    examSlug: 'second-bacc-week-4',
     bookletUrl:
       'https://drive.google.com/file/d/1M2cpmseXqaBWJnYex0Pmo46V77bM7yJx/view?usp=drive_link',
-    // Exam paper lands with the Tuesday lesson.
   },
   {
     slug: 'unit-1-review',
     grade: 'second_bacc',
+    unit: 1,
     // Between lecture 4 and lecture 5 in course order; not a week number.
     n: 4.5,
     kind: 'review',
@@ -218,6 +228,7 @@ export const LESSONS: readonly Lesson[] = [
   {
     slug: 'lecture-5',
     grade: 'second_bacc',
+    unit: 2,
     n: 5,
     kind: 'codeup',
     eyebrow: 'المحاضرة الخامسة · الدرس ٢-١',
@@ -229,6 +240,7 @@ export const LESSONS: readonly Lesson[] = [
   {
     slug: 'lecture-6',
     grade: 'second_bacc',
+    unit: 2,
     n: 6,
     kind: 'codeup',
     eyebrow: 'المحاضرة السادسة · الدرس ٢-٢',
@@ -240,6 +252,7 @@ export const LESSONS: readonly Lesson[] = [
   {
     slug: 'lecture-7',
     grade: 'second_bacc',
+    unit: 2,
     n: 7,
     kind: 'codeup',
     eyebrow: 'المحاضرة السابعة · الدرس ٢-٣',
@@ -253,6 +266,7 @@ export const LESSONS: readonly Lesson[] = [
   {
     slug: 'unit-1',
     grade: 'first_sec',
+    unit: 1,
     n: 1,
     eyebrow: 'الوحدة الأولى',
     title: 'ما هي المعلومات؟',
@@ -262,6 +276,7 @@ export const LESSONS: readonly Lesson[] = [
   {
     slug: 'unit-2',
     grade: 'first_sec',
+    unit: 2,
     n: 2,
     eyebrow: 'الوحدة الثانية',
     title: 'القوانين والحقوق في مجتمع المعلومات',
@@ -272,6 +287,7 @@ export const LESSONS: readonly Lesson[] = [
   {
     slug: 'unit-3',
     grade: 'first_sec',
+    unit: 3,
     n: 3,
     eyebrow: 'الوحدة الثالثة',
     title: 'أمن المعلومات',
@@ -280,6 +296,31 @@ export const LESSONS: readonly Lesson[] = [
     bookletUrl: '/files/booklets/first-sec-unit-3.pdf',
   },
 ]
+
+/**
+ * The units of each grade's first term, in book order. A unit with no lesson
+ * on the site yet still has a name here: the booklets page lists its answer key.
+ */
+export const UNITS: Record<Grade, readonly { n: number; title: string }[]> = {
+  second_bacc: [
+    { n: 1, title: 'تكنولوجيا المعلومات والمجتمع' },
+    { n: 2, title: 'الأمن السيبراني' },
+    { n: 3, title: 'تطبيقات الويب' },
+    { n: 4, title: 'تصميم الويب والوسائط' },
+  ],
+  first_sec: [
+    { n: 1, title: 'ما هي المعلومات؟' },
+    { n: 2, title: 'القوانين والحقوق في مجتمع المعلومات' },
+    { n: 3, title: 'أمن المعلومات' },
+  ],
+}
+
+const ORDINAL = ['', 'الأولى', 'الثانية', 'الثالثة', 'الرابعة', 'الخامسة', 'السادسة', 'السابعة']
+
+/** «الوحدة الثانية» */
+export function unitLabel(n: number): string {
+  return `الوحدة ${ORDINAL[n] ?? n}`
+}
 
 export function lessonsFor(grade: Grade): readonly Lesson[] {
   return LESSONS.filter((l) => l.grade === grade).sort((a, b) => a.n - b.n)

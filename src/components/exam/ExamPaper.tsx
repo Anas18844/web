@@ -34,6 +34,7 @@ export function ExamPaper({
   const [name, setName] = useState(studentName ?? '')
   const [mcq, setMcq] = useState<Record<number, number>>({})
   const [trueFalse, setTrueFalse] = useState<Record<number, boolean>>({})
+  const [terms, setTerms] = useState<Record<number, string>>({})
   const [blanks, setBlanks] = useState<Record<number, string>>({})
   const [essay, setEssay] = useState<Record<number, string>>({})
 
@@ -50,11 +51,12 @@ export function ExamPaper({
   const answered = useMemo(() => {
     const gaps = Object.values(blanks).filter((v) => v.trim()).length
     const essays = Object.values(essay).filter((v) => v.trim()).length
-    return Object.keys(mcq).length + Object.keys(trueFalse).length + gaps + essays
-  }, [mcq, trueFalse, blanks, essay])
+    const written = Object.values(terms).filter((v) => v.trim()).length
+    return Object.keys(mcq).length + Object.keys(trueFalse).length + written + gaps + essays
+  }, [mcq, trueFalse, terms, blanks, essay])
 
   const totalQuestions =
-    exam.mcq.length + exam.trueFalse.length + exam.blanks.gaps + exam.essay.length
+    exam.mcq.length + exam.trueFalse.length + exam.terms.length + exam.blanks.gaps + exam.essay.length
 
   async function submit() {
     if (sending) return
@@ -71,6 +73,7 @@ export function ExamPaper({
           name: name.trim() || undefined,
           mcq: Object.fromEntries(Object.entries(mcq)),
           trueFalse: Object.fromEntries(Object.entries(trueFalse)),
+          terms: Object.fromEntries(Object.entries(terms)),
           blanks: Object.fromEntries(Object.entries(blanks)),
           essay: Object.fromEntries(Object.entries(essay)),
         }),
@@ -187,7 +190,33 @@ export function ExamPaper({
         </ol>
       </Section>
 
+      {/* ── 2 · اكتب المصطلح — on papers that use it instead of ○/× ──────── */}
+      {exam.terms.length > 0 && (
+        <Section n={2} title="اكتب المصطلح العلمي الدال على كل عبارة" marks={exam.terms.length}>
+          <ol className="grid gap-3">
+            {exam.terms.map((q) => (
+              <li key={q.id} className="card p-4">
+                <div className="flex gap-3">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm bg-gold/15 font-mono text-sm font-extrabold text-gold">
+                    {ar(q.id)}
+                  </span>
+                  <p className="text-body leading-relaxed text-ink">{q.q}</p>
+                </div>
+                <input
+                  aria-label={'المصطلح — سؤال ' + q.id}
+                  value={terms[q.id] ?? ''}
+                  onChange={(e) => setTerms((p) => ({ ...p, [q.id]: e.target.value }))}
+                  placeholder="المصطلح…"
+                  className="mt-3 w-full rounded border border-navy-line bg-navy px-4 py-2.5 text-base font-bold text-gold placeholder:font-normal placeholder:text-ink-faint/70 focus:border-gold focus:outline-none sm:w-80"
+                />
+              </li>
+            ))}
+          </ol>
+        </Section>
+      )}
+
       {/* ── 2 · ○ / × ───────────────────────────────────────────────────── */}
+      {exam.trueFalse.length > 0 && (
       <Section
         n={2}
         title="ضع ○ أمام العبارة الصحيحة و × أمام الخاطئة"
@@ -225,6 +254,7 @@ export function ExamPaper({
           ))}
         </ul>
       </Section>
+      )}
 
       {/* ── 3 · Gaps and written answers ────────────────────────────────── */}
       <Section

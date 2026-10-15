@@ -35,11 +35,13 @@ export const assets = {
   // the syllabus itself (binary, a neural net, the encryption flow, a JS
   // condition), in the chalk of the chapter-board dividers. Same framing as the
   // old photo — the teacher stands where he stood — so every crop still holds.
+  // v2 (owner, same day): the photo is keyed from the original green-screen
+  // shot and pasted at 1:1, never scaled, so it is as sharp as the old hero.
   hero: {
-    src: '/images/hero-chalk.webp',
+    src: '/images/hero-chalk-v2.webp',
     alt: 'مستر أنس أحمد قدام سبورة عليها أفكار من المنهج',
-    width: 2752,
-    height: 1536,
+    width: 1376,
+    height: 768,
   } as ImageAsset | null,
 
   // ---------------------------------------------------------------------------

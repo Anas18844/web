@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 
 /**
  * `menuOnly`: listed in the phone menu but not in the desktop capsule. Used for
- * «الرئيسية» since /booklets and /answers joined (October 2026): eight links
+ * «الرئيسية» since the booklets page joined (October 2026): eight links
  * no longer fit at 1280px, and on desktop the logo already goes home.
  */
 export type NavItem = { href: string; label: string; menuOnly?: boolean }

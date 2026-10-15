@@ -29,6 +29,7 @@ const schema = z.object({
   name: z.string().trim().max(120).optional(),
   mcq: z.record(z.string(), z.number().int().min(0).max(10)),
   trueFalse: z.record(z.string(), z.boolean()),
+  terms: z.record(z.string(), z.string().max(200)).optional().default({}),
   blanks: z.record(z.string(), z.string().max(200)),
   essay: z.record(z.string(), z.string().max(1500)),
 })
@@ -49,6 +50,12 @@ const schema = z.object({
  * than nothing.
  */
 const BLANK_ID_OFFSET = 1000
+const TERM_ID_OFFSET = 2000
+
+/** «اكتب المصطلح»: the definition is the question, one term is the answer. */
+function termPrompt(q: string): string {
+  return `اكتب المصطلح العلمي الدال على العبارة: «${q}» — المطلوب مصطلح واحد، وأي صياغة أو مرادف صحيح يُقبل.`
+}
 
 /** The instruction a gap needs and an essay does not. */
 function blankPrompt(index: number): string {
@@ -66,7 +73,7 @@ export async function POST(request: Request) {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ ok: false, error: 'BAD_INPUT' }, { status: 400 })
 
-  const { pass, attemptKey, name, mcq, trueFalse, blanks, essay } = parsed.data
+  const { pass, attemptKey, name, mcq, trueFalse, terms, blanks, essay } = parsed.data
 
   // ── The pass, not the request, says who this is ───────────────────────────
   const secret = deriveSecret(process.env.DASHBOARD_SESSION_SECRET, resolveConfig().key)
@@ -154,7 +161,14 @@ export async function POST(request: Request) {
   const tfScore = tfDetail.filter((d) => d.correct).length
 
   // ── Gaps and written answers, marked together in one call ────────────────
+  const examTerms = exam.terms ?? []
   const graded = await gradeEssays([
+    ...examTerms.map((q) => ({
+      n: TERM_ID_OFFSET + q.id,
+      q: termPrompt(q.q),
+      model: q.answer,
+      student: (terms[String(q.id)] || '').trim(),
+    })),
     ...exam.blanks.answers.map((model, i) => ({
       n: BLANK_ID_OFFSET + i,
       q: blankPrompt(i),
@@ -185,6 +199,20 @@ export async function POST(request: Request) {
   })
   const blanksScore = blanksDetail.filter((d) => d.correct).length * exam.blanks.marksPerBlank
 
+  // All-or-nothing, one mark each, like a gap.
+  const termsDetail = examTerms.map((q) => {
+    const student = (terms[String(q.id)] || '').trim()
+    const r = graded.results.find((x) => x.n === TERM_ID_OFFSET + q.id)
+    return {
+      id: q.id,
+      type: 'term' as const,
+      answer: q.answer,
+      match: r?.match ?? 0,
+      correct: Boolean(student) && (r?.match ?? 0) >= PASS_THRESHOLD,
+    }
+  })
+  const termsScore = termsDetail.filter((d) => d.correct).length
+
   const essayDetail = exam.essay.map((q) => {
     const r = graded.results.find((x) => x.n === q.id)
     /**
@@ -209,7 +237,7 @@ export async function POST(request: Request) {
   })
   const essayScore = essayDetail.reduce((t, d) => t + d.earned, 0)
 
-  const total = mcqScore + tfScore + blanksScore + essayScore
+  const total = mcqScore + tfScore + termsScore + blanksScore + essayScore
   const marks = totalMarks(exam)
   const passed = total >= exam.passMark
 
@@ -226,8 +254,13 @@ export async function POST(request: Request) {
         homework_id: claims.homeworkId,
         mcq_score: mcqScore,
         mcq_total: exam.mcq.length,
-        truefalse_score: tfScore,
-        truefalse_total: exam.trueFalse.length,
+        /*
+         * Section 2 of the paper. A paper has ○/× OR «اكتب المصطلح», never
+         * both, so the terms share these two columns rather than needing a
+         * migration; `detail` says which kind each row is.
+         */
+        truefalse_score: tfScore + termsScore,
+        truefalse_total: exam.trueFalse.length + examTerms.length,
         blanks_score: blanksScore,
         blanks_total: exam.blanks.marks,
         essay_score: essayScore,
@@ -238,6 +271,7 @@ export async function POST(request: Request) {
         detail: [
           ...mcqDetail.map(({ id, type, correct }) => ({ id, type, correct })),
           ...tfDetail.map(({ id, type, correct }) => ({ id, type, correct })),
+          ...termsDetail.map(({ id, type, match, correct }) => ({ id, type, match, correct })),
           ...blanksDetail.map(({ id, type, match, correct }) => ({ id, type, match, correct })),
           ...essayDetail.map(({ id, type, match, earned, marks: m }) => ({
             id,
@@ -266,6 +300,8 @@ export async function POST(request: Request) {
       mcqTotal: exam.mcq.length,
       trueFalse: tfScore,
       trueFalseTotal: exam.trueFalse.length,
+      terms: termsScore,
+      termsTotal: examTerms.length,
       blanks: blanksScore,
       blanksTotal: exam.blanks.marks,
       essay: essayScore,
@@ -277,6 +313,7 @@ export async function POST(request: Request) {
     // Returned only now, after the student has committed to their answers.
     mcq: mcqDetail,
     trueFalse: tfDetail,
+    terms: termsDetail,
     blanks: blanksDetail,
     essay: essayDetail,
     grader: { source: graded.source, error: graded.error },

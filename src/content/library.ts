@@ -27,6 +27,10 @@ export type LibraryItem = {
   url?: string
   /** «٦٤ صفحة», «الوحدة كاملة» — a fact, not an adjective. */
   meta?: string
+  /** The unit it belongs to. Absent: the practical, or a weekly sheet. */
+  unit?: number
+  /** What it is, for the label on the row: شرح · تدريبات · حل التقييمات … */
+  kind: 'explain' | 'practice' | 'answers' | 'lecture' | 'practical' | 'weekly'
 }
 
 // ── الملازم ──────────────────────────────────────────────────────────────────
@@ -35,6 +39,7 @@ export type LibraryItem = {
 export const BOOKLETS: readonly LibraryItem[] = [
   {
     id: 'second-bacc-unit-2-practice',
+    unit: 2, kind: 'practice',
     grade: 'second_bacc',
     title: 'كتاب تدريبات الوحدة الثانية — الأمن السيبراني',
     blurb: 'تدريبات كل درس: اختيار من متعدد ومقالي ورسومات، ومقارنات وصح وخطأ، وأسئلة مستويات عليا، ومراجعة مستمرة على الوحدة الأولى.',
@@ -43,6 +48,7 @@ export const BOOKLETS: readonly LibraryItem[] = [
   },
   {
     id: 'second-bacc-unit-2',
+    unit: 2, kind: 'explain',
     grade: 'second_bacc',
     title: 'ملزمة شرح الوحدة الثانية — الأمن السيبراني',
     blurb: 'الوحدة الثانية كاملة بترتيب الشرح: التشفير والمصادقة، وتصميم أمن الشبكات، والاستجابة للحوادث وإدارة المخاطر.',
@@ -53,6 +59,7 @@ export const BOOKLETS: readonly LibraryItem[] = [
   },
   {
     id: 'second-bacc-unit-1',
+    unit: 1, kind: 'explain',
     grade: 'second_bacc',
     title: 'ملزمة الوحدة الأولى كاملة — تكنولوجيا المعلومات والمجتمع',
     blurb: 'الدروس الأربعة في ملزمة واحدة — للمذاكرة على الورق ومن غير نت.',
@@ -61,6 +68,7 @@ export const BOOKLETS: readonly LibraryItem[] = [
   },
   {
     id: 'second-bacc-practical-1',
+    kind: 'practical',
     grade: 'second_bacc',
     title: 'ملزمة العملي — مراجعة كيريو JavaScript',
     blurb: 'الـ٣٠ فصل بترتيب الفيديو، وبنك توفاس، ونموذج الإجابة.',
@@ -72,6 +80,7 @@ export const BOOKLETS: readonly LibraryItem[] = [
   // and a QR to the unit's video. Built in mr-anas-hq, curriculum/first-sec/<unit>/booklet.
   {
     id: 'first-sec-unit-3',
+    unit: 3, kind: 'explain',
     grade: 'first_sec',
     title: 'ملزمة الوحدة الثالثة — أمن المعلومات',
     blurb: 'ملخص بسيط للدروس الخمسة صفحة لكل درس، و٤٠ سؤال (٣٠ اختيار من متعدد و١٠ صح أو خطأ) بالإجابات، وكود يفتح فيديو الشرح.',
@@ -80,6 +89,7 @@ export const BOOKLETS: readonly LibraryItem[] = [
   },
   {
     id: 'first-sec-unit-2',
+    unit: 2, kind: 'explain',
     grade: 'first_sec',
     title: 'ملزمة الوحدة الثانية — القوانين والحقوق في مجتمع المعلومات',
     blurb: 'ملخص بسيط للدروس التلاتة صفحة لكل درس، و٤٠ سؤال (٣٠ اختيار من متعدد و١٠ صح أو خطأ) بالإجابات، وكود يفتح فيديو الشرح.',
@@ -98,6 +108,8 @@ export function lectureBooklets(grade: Grade): LibraryItem[] {
       title: `${l.eyebrow} — ${l.title}`,
       blurb: l.blurb,
       url: l.bookletUrl,
+      unit: l.unit,
+      kind: 'lecture' as const,
     }))
 }
 
@@ -115,6 +127,7 @@ export const ANSWER_KEYS: readonly LibraryItem[] = [
   // تانية بكالوريا
   {
     id: 'second-bacc-unit-1-assessments',
+    unit: 1, kind: 'answers',
     grade: 'second_bacc',
     title: 'حل كتاب التقييمات — الوحدة الأولى',
     blurb: 'نموذج إجابة كل أسئلة كتاب تقييمات الوزارة للوحدة الأولى، مع سبب كل إجابة.',
@@ -125,6 +138,7 @@ export const ANSWER_KEYS: readonly LibraryItem[] = [
   // here because there is no Drive access from the build machine.
   {
     id: 'second-bacc-unit-2-assessments',
+    unit: 2, kind: 'answers',
     grade: 'second_bacc',
     title: 'حل كتاب التقييمات — الوحدة الثانية',
     blurb: 'نموذج إجابة الأداءات والتقييمات للوحدة الثانية — الأمن السيبراني، الدروس التلاتة.',
@@ -133,6 +147,7 @@ export const ANSWER_KEYS: readonly LibraryItem[] = [
   },
   {
     id: 'second-bacc-unit-3-assessments',
+    unit: 3, kind: 'answers',
     grade: 'second_bacc',
     title: 'حل كتاب التقييمات — الوحدة الثالثة',
     blurb: 'نموذج إجابة الأداءات والتقييمات للوحدة الثالثة — تطبيقات الويب، الدروس التلاتة.',
@@ -141,6 +156,7 @@ export const ANSWER_KEYS: readonly LibraryItem[] = [
   },
   {
     id: 'second-bacc-unit-4-assessments',
+    unit: 4, kind: 'answers',
     grade: 'second_bacc',
     title: 'حل كتاب التقييمات — الوحدة الرابعة',
     blurb: 'نموذج إجابة الأداءات والتقييمات للوحدة الرابعة — تصميم الويب والوسائط، الدروس الأربعة.',
@@ -151,6 +167,7 @@ export const ANSWER_KEYS: readonly LibraryItem[] = [
   // أولى ثانوي — the ministry's weekly assessments, term 1
   {
     id: 'first-sec-week-1',
+    kind: 'weekly',
     grade: 'first_sec',
     title: 'حل التقييم الأسبوعي — الأسبوع الأول',
     blurb: 'المعلومات والوسائط، وأخلاقيات المعلومات، والبيانات الشخصية.',
@@ -159,6 +176,7 @@ export const ANSWER_KEYS: readonly LibraryItem[] = [
   },
   {
     id: 'first-sec-week-2',
+    kind: 'weekly',
     grade: 'first_sec',
     title: 'حل التقييم الأسبوعي — الأسبوع الثاني',
     blurb: 'الملكية الفكرية، واستخدام المعلومات، وتهديدات أمن المعلومات.',
@@ -167,6 +185,7 @@ export const ANSWER_KEYS: readonly LibraryItem[] = [
   },
   {
     id: 'first-sec-week-3',
+    kind: 'weekly',
     grade: 'first_sec',
     title: 'حل التقييم الأسبوعي — الأسبوع الثالث',
     blurb: 'أمن المعلومات وتقنياته، والنظام الثنائي وكمية البيانات.',
@@ -175,6 +194,7 @@ export const ANSWER_KEYS: readonly LibraryItem[] = [
   },
   {
     id: 'first-sec-week-4',
+    kind: 'weekly',
     grade: 'first_sec',
     title: 'حل التقييم الأسبوعي — الأسبوع الرابع',
     blurb: 'النظام السادس عشر، والتمثيل الرقمي للأحرف.',
@@ -185,4 +205,22 @@ export const ANSWER_KEYS: readonly LibraryItem[] = [
 
 export function itemsFor(list: readonly LibraryItem[], grade: Grade): LibraryItem[] {
   return list.filter((i) => i.grade === grade)
+}
+
+const KIND_ORDER: LibraryItem['kind'][] = ['explain', 'practice', 'answers', 'lecture', 'practical', 'weekly']
+
+/** Everything of one grade and one unit: the booklet, the practice book, then the answer key. */
+export function unitItems(grade: Grade, unit: number): LibraryItem[] {
+  return [...BOOKLETS, ...ANSWER_KEYS]
+    .filter((i) => i.grade === grade && i.unit === unit)
+    .sort((a, b) => KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind))
+}
+
+export const KIND_LABEL: Record<LibraryItem['kind'], string> = {
+  explain: 'ملزمة الشرح',
+  practice: 'كتاب التدريبات',
+  answers: 'حل التقييمات',
+  lecture: 'ملزمة المحاضرة',
+  practical: 'العملي',
+  weekly: 'تقييم أسبوعي',
 }
