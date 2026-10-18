@@ -49,8 +49,19 @@ export const SECOND_BACC_MOVED_TO_CODE_UP: Announcement = {
   cta: 'اعرف إزاي تشترك في منصة كود أب',
 }
 
+/** Unit-1 results are downloaded from the site, not sent on WhatsApp (owner, 2026-10-18). */
+export const SECOND_BACC_UNIT_1_RESULTS: Announcement = {
+  short: 'نتيجة الامتحان الشامل للوحدة الأولى نزلت: اكتب الرقم اللي امتحنت بيه ونزّل تقريرك · ادخل من هنا',
+  title: 'نتيجة الامتحان الشامل للوحدة الأولى',
+  body: 'التقرير فيه تصحيح كل سؤال وسببه، والدروس اللي محتاجة مراجعة، وخطة مذاكرة لمدة ٧ أيام.',
+  href: '/results',
+  cta: 'اعرف نتيجتك',
+  endsAt: '2026-11-15T23:59:00+02:00',
+}
+
 /** Top bar, in order. Expired ones hide themselves. */
 export const SITE_NOTICES: readonly Announcement[] = [
+  SECOND_BACC_UNIT_1_RESULTS,
   SECOND_BACC_MOVED_TO_CODE_UP,
   SECOND_BACC_COMPREHENSIVE_EXAM,
 ]
