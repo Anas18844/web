@@ -15,6 +15,9 @@ export const dynamic = 'force-dynamic'
  */
 const Body = z.object({ phone: z.string().max(30) })
 
+/** Same line as MIN_ANSWERS in mr-anas-hq …/r04-unit-1-exam/grading/common.py. */
+const MIN_ANSWERS = 30
+
 const fail = (reason: string, message: string, status = 400) =>
   NextResponse.json({ ok: false, reason, message }, { status })
 
@@ -39,6 +42,23 @@ export async function POST(req: Request) {
     .map((a) => ({ token: resultToken(a.id), key: resultKey(a.id) }))
     .filter((r) => RESULT_TOKENS.has(r.token))
   if (results.length === 0) {
+    // Fewer than 30 answers = an abandoned attempt, never graded (owner, 2026-10-15).
+    // Telling those students «the result is coming» would have them wait forever.
+    let most = 0
+    for (const a of attempts) {
+      const { count } = await getSupabaseAdmin()
+        .from('unit_exam_answers')
+        .select('attempt_id', { count: 'exact', head: true })
+        .eq('attempt_id', a.id)
+      most = Math.max(most, count ?? 0)
+    }
+    if (most < MIN_ANSWERS) {
+      return fail(
+        'not_counted',
+        'محاولتك اتقفلت قبل ما تحل كفاية أسئلة، فمتحسبتش. لو عندك سؤال كلّمنا على واتساب.',
+        404,
+      )
+    }
     return fail('pending', 'امتحانك وصلنا ✅ والنتيجة لسه بتتجهز. ارجع للصفحة دي تاني قريب.', 404)
   }
   return NextResponse.json({ ok: true, results }, { headers: { 'Cache-Control': 'no-store' } })
