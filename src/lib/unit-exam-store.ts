@@ -85,6 +85,22 @@ function must<T>(r: { data: T; error: { message: string } | null }): T {
   return r.data
 }
 
+/**
+ * Every row of a whole-room query. PostgREST caps a response at 1000 rows
+ * whatever `.limit()` says, and the room is ≈100 × 46 answers: without paging,
+ * the students who came last (the retake) showed «٠/٤٦» on the monitor.
+ */
+async function allRows<T>(
+  page: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>,
+): Promise<T[]> {
+  const out: T[] = []
+  for (let from = 0; ; from += 1000) {
+    const rows = must(await page(from, from + 999)) ?? []
+    out.push(...rows)
+    if (rows.length < 1000) return out
+  }
+}
+
 const supabaseStore: UnitExamStore = {
   async getPaper(slug) {
     const r = await db().from('unit_exam_papers').select('paper').eq('slug', slug).maybeSingle()
@@ -140,18 +156,22 @@ const supabaseStore: UnitExamStore = {
     // One query for the whole room (≈100 students × 46 rows), not one per student.
     const ids = (await this.listAttempts(slug)).map((a) => a.id)
     if (!ids.length) return {}
-    const r = await db().from('unit_exam_answers').select('attempt_id').in('attempt_id', ids).limit(20000)
+    const rows = await allRows<{ attempt_id: string }>((from, to) =>
+      db().from('unit_exam_answers').select('attempt_id').in('attempt_id', ids).order('attempt_id').order('question_id').range(from, to),
+    )
     const out: Record<string, number> = {}
-    for (const row of (must(r) ?? []) as { attempt_id: string }[]) out[row.attempt_id] = (out[row.attempt_id] ?? 0) + 1
+    for (const row of rows) out[row.attempt_id] = (out[row.attempt_id] ?? 0) + 1
     return out
   },
   async eventCounts(slug) {
     const attempts = await this.listAttempts(slug)
     const ids = attempts.map((a) => a.id)
     if (!ids.length) return {}
-    const r = await db().from('unit_exam_events').select('attempt_id, type').in('attempt_id', ids)
+    const rows = await allRows<{ attempt_id: string; type: string }>((from, to) =>
+      db().from('unit_exam_events').select('attempt_id, type').in('attempt_id', ids).order('id').range(from, to),
+    )
     const out: Record<string, Record<string, number>> = {}
-    for (const e of (must(r) ?? []) as { attempt_id: string; type: string }[]) {
+    for (const e of rows) {
       out[e.attempt_id] ??= {}
       out[e.attempt_id][e.type] = (out[e.attempt_id][e.type] ?? 0) + 1
     }
