@@ -7,6 +7,8 @@ type Offer = 'self' | 'friend' | 'full' | null
 type ResultFile = { kind: string; label: string; name: string; path: string }
 type Meta = { first: string; score: number; of: number; offer: Offer; files: ResultFile[] }
 type Opened = Meta & { key: CryptoKey }
+/** A center student's paper result (migration 012). Only their own row. */
+type Center = { first: string; score: number; of: number; rank: number; tied: boolean; top: boolean }
 
 const BASE = '/files/results/unit-1/'
 const ar = (n: number) => n.toLocaleString('ar-EG')
@@ -33,12 +35,14 @@ export function ResultsLookup() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [found, setFound] = useState<Opened[]>([])
+  const [center, setCenter] = useState<Center | null>(null)
   const [downloading, setDownloading] = useState('')
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
     setFound([])
+    setCenter(null)
     setBusy(true)
     try {
       const res = await fetch('/api/results', {
@@ -58,6 +62,7 @@ export function ResultsLookup() {
         opened.push({ ...meta, key })
       }
       setFound(opened)
+      setCenter(body.center ?? null)
     } catch {
       setError('النت فصل أو حصلت مشكلة. جرّب تاني.')
     } finally {
@@ -102,7 +107,7 @@ export function ResultsLookup() {
             onChange={(e) => setPhone(e.target.value)}
           />
           <p className="mt-1.5 text-xs text-ink-muted">
-            ولي الأمر يكتب رقم الطالب نفسه، وهيلاقي تقرير ولي الأمر جنب تقرير الطالب.
+            طلاب السنتر: اكتب نفس الرقم اللي كتبته في ورقة الامتحان. وولي الأمر يكتب رقم الطالب نفسه.
           </p>
         </div>
         {error && (
@@ -118,6 +123,8 @@ export function ResultsLookup() {
           {busy ? 'بندوّر…' : 'اعرض نتيجتي'}
         </button>
       </form>
+
+      {center && <CenterCard r={center} />}
 
       {found.map((r, i) => (
         <section key={i} className="rounded border border-gold/40 bg-gold/5 p-5" aria-live="polite">
@@ -151,6 +158,39 @@ export function ResultsLookup() {
         </section>
       ))}
     </div>
+  )
+}
+
+/** Score and rank of a center student; the top ten hear about their certificate. */
+function CenterCard({ r }: { r: Center }) {
+  return (
+    <section className="rounded border border-gold/40 bg-gold/5 p-5" aria-live="polite">
+      <p className="text-lg font-extrabold text-ink">أهلًا يا {r.first} 👋</p>
+      <p className="mt-2 text-body text-ink-muted">
+        درجتك في الامتحان الشامل للوحدة الأولى:{' '}
+        <span className="text-xl font-extrabold text-gold">
+          {ar(r.score)} من {ar(r.of)}
+        </span>
+      </p>
+      <p className="mt-2 text-body text-ink-muted">
+        ترتيبك على طلاب السنتر:{' '}
+        <span className="whitespace-nowrap text-xl font-extrabold text-gold">المركز {ar(r.rank)}</span>
+        {r.tied && <span className="text-sm"> (مكرر مع زميل بنفس الدرجة)</span>}
+      </p>
+
+      {r.top && (
+        <div className="mt-5 rounded border-2 border-gold bg-navy-deep p-4">
+          <p className="font-extrabold text-gold">🏆 مبروك، من العشرة الأوائل!</p>
+          <p className="mt-2 text-sm font-bold leading-relaxed text-ink">
+            ليك شهادة تقدير وجايزة، وهتستلمهم في السنتر.
+          </p>
+        </div>
+      )}
+
+      <p className="mt-4 rounded border border-navy-line bg-navy-deep px-4 py-3 text-sm leading-relaxed text-ink-muted">
+        📄 تقرير الأداء بتاعك (أخطاءك وشرح كل غلطة وتراجع إيه) هينزل هنا في نفس الصفحة قريب، وهتفتحه بنفس الرقم.
+      </p>
+    </section>
   )
 }
 

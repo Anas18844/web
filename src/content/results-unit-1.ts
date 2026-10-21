@@ -41,7 +41,6 @@ export const RESULT_TOKENS: ReadonlySet<string> = new Set([
   '6b78b36a7d71879eb97387d3',
   '6d34bd32811c2d62d5feb8d0',
   '6d46797eb50eea52dd49e8be',
-  '6d61a2bda462ad5ab126cf88',
   '6e47fb14a4497854961a248c',
   '77c02dc8cd22637444336d42',
   '7d059bf80a81a451a4b13f27',

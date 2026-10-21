@@ -4,7 +4,7 @@ import { ResultsLookup } from '@/components/results/ResultsLookup'
 
 export const metadata: Metadata = {
   title: 'نتيجة الامتحان الشامل',
-  description: 'نتيجة الامتحان الشامل للوحدة الأولى، تانية بكالوريا: اكتب الرقم اللي امتحنت بيه ونزّل تقريرك PDF.',
+  description: 'نتيجة الامتحان الشامل للوحدة الأولى، تانية بكالوريا: اكتب الرقم اللي امتحنت بيه، أونلاين أو في السنتر.',
   alternates: { canonical: '/results' },
   robots: { index: false },
 }
@@ -20,7 +20,7 @@ export default function ResultsPage() {
             <p className="text-sm font-bold text-gold">تانية بكالوريا</p>
             <h1 className="mt-2 text-title font-extrabold text-ink">نتيجة الامتحان الشامل</h1>
             <p className="mt-2 text-body text-ink-muted">
-              الوحدة الأولى. اكتب نفس الرقم اللي امتحنت بيه، وهتلاقي تقريرك جاهز للتحميل.
+              الوحدة الأولى. اكتب نفس الرقم اللي امتحنت بيه، أونلاين أو في ورقة امتحان السنتر.
             </p>
             <div className="mt-7">
               <ResultsLookup />
