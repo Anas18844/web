@@ -1,0 +1,1470 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Image Processing Labs 2-3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f5f1; --card:#ffffff; --ink:#1d1d1b; --muted:#6b6a64; --line:#e3e1da;
+  --accent:#2f5bd3; --accent-soft:#e8eefc; --ok:#1f8a4c; --ok-soft:#e3f4ea;
+  --bad:#c23b2e; --bad-soft:#fbe7e4; --warn:#a86a00; --warn-soft:#fdf1d8;
+  --code-bg:#f1f0eb;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141413; --card:#1e1e1c; --ink:#ecebe6; --muted:#9b9a93; --line:#33322e;
+    --accent:#7d9ef5; --accent-soft:#232c45; --ok:#5cc98a; --ok-soft:#1b3326;
+    --bad:#f07b6e; --bad-soft:#3a201d; --warn:#e7b04a; --warn-soft:#3a2f17;
+    --code-bg:#262623;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141413; --card:#1e1e1c; --ink:#ecebe6; --muted:#9b9a93; --line:#33322e;
+  --accent:#7d9ef5; --accent-soft:#232c45; --ok:#5cc98a; --ok-soft:#1b3326;
+  --bad:#f07b6e; --bad-soft:#3a201d; --warn:#e7b04a; --warn-soft:#3a2f17;
+  --code-bg:#262623;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;line-height:1.85;font-size:17px}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px 80px}
+header{padding:28px 0 8px}
+h1{font-size:1.6rem;margin:0 0 4px}
+.sub{color:var(--muted);margin:0}
+nav.tabs{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:6px;padding:12px 0;border-bottom:1px solid var(--line);margin-bottom:20px;flex-wrap:wrap}
+nav.tabs button{font:inherit;font-size:.95rem;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:6px 14px;border-radius:999px;cursor:pointer}
+nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+section.tab{display:none}
+section.tab.on{display:block}
+h2{font-size:1.3rem;margin:36px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--line)}
+h3{font-size:1.08rem;margin:24px 0 6px}
+.big{background:var(--accent-soft);border-radius:10px;padding:12px 16px;margin:12px 0}
+.trap{background:var(--warn-soft);border-inline-start:4px solid var(--warn);border-radius:8px;padding:10px 14px;margin:12px 0}
+.trap b:first-child{color:var(--warn)}
+code,.en{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.86em;direction:ltr;unicode-bidi:isolate}
+code{background:var(--code-bg);padding:1px 6px;border-radius:5px}
+pre{direction:ltr;text-align:left;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:.84rem;line-height:1.6;margin:10px 0}
+pre .c{color:var(--muted)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:right;vertical-align:top}
+th{background:var(--code-bg)}
+td code{white-space:nowrap}
+ul{padding-inline-start:22px}
+li{margin:4px 0}
+.exam{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 18px;margin:16px 0}
+.exam h3{margin-top:6px}
+
+/* quiz */
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0 18px}
+.bar select,.bar button{font:inherit;font-size:.9rem;padding:5px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.score{margin-inline-start:auto;font-weight:700}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:14px 0}
+.q .meta{display:flex;gap:6px;margin-bottom:6px;font-size:.78rem}
+.tag{padding:1px 9px;border-radius:999px;background:var(--code-bg);color:var(--muted)}
+.tag.l1{background:var(--ok-soft);color:var(--ok)}
+.tag.l2{background:var(--warn-soft);color:var(--warn)}
+.tag.l3{background:var(--bad-soft);color:var(--bad)}
+.q .stem{font-weight:600;margin-bottom:8px}
+.opts{display:grid;gap:7px}
+.opt{text-align:start;font:inherit;font-size:.95rem;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt.right{background:var(--ok-soft);border-color:var(--ok)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.ex{display:none;margin-top:10px;padding:10px 12px;border-radius:8px;background:var(--accent-soft);font-size:.93rem}
+.q.done .ex{display:block}
+details.essay{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:12px 0}
+details.essay summary{cursor:pointer;font-weight:600}
+details.essay textarea{width:100%;min-height:110px;margin:10px 0;font:inherit;font-size:.95rem;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+details.essay .ans{display:none;background:var(--ok-soft);border-radius:8px;padding:10px 14px;margin-top:8px}
+details.essay .ans.show{display:block}
+details.essay button{font:inherit;font-size:.9rem;padding:4px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.themebtn{float:left;font:inherit;font-size:.85rem;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:3px 10px;cursor:pointer}
+.roadmap{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.roadmap span{font-size:.82rem;padding:3px 10px;border-radius:999px;background:var(--card);border:1px solid var(--line)}
+.analogy{background:var(--accent-soft);border-inline-start:4px solid var(--accent);border-radius:8px;padding:10px 14px;margin:12px 0}
+.lab{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:16px 0}
+.lab h4{margin:0 0 8px;font-size:1rem;color:var(--accent)}
+.lab .ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.lab input[type=range]{width:200px;max-width:100%}
+.lab input[type=text],.lab input[type=number],.lab select{font:inherit;font-size:.9rem;padding:4px 8px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:110px}
+.lab input[type=text]{font-family:"JetBrains Mono",monospace;width:220px}
+.lab button,.presets button{font:inherit;font-size:.85rem;padding:4px 10px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0;direction:ltr;justify-content:flex-end}
+.presets button.on{border-color:var(--accent);background:var(--accent-soft)}
+.lab canvas{display:block;width:100%;max-width:320px;height:auto;border-radius:8px;border:1px solid var(--line);margin:8px 0;image-rendering:pixelated;cursor:crosshair}
+.ltr{direction:ltr;text-align:left}
+#sqN{direction:ltr;unicode-bidi:isolate}
+.out{white-space:pre;font-family:"JetBrains Mono",monospace;font-size:.84rem;background:var(--code-bg);padding:8px 12px;border-radius:8px;direction:ltr;text-align:left;min-height:2.2em;overflow-x:auto}
+.note{margin-top:8px;font-size:.95rem}
+.hint{font-size:.9rem;color:var(--muted);margin:8px 0 0}
+.cap{font-size:.78rem;color:var(--muted);margin-bottom:3px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:8px}
+table.mat{display:inline-table;width:auto;border-collapse:separate;border-spacing:3px;font-family:"JetBrains Mono",monospace;margin:4px 0;vertical-align:middle}
+table.mat td{width:50px;height:42px;text-align:center;vertical-align:middle;border-radius:6px;border:2px solid var(--line);font-weight:600;cursor:pointer;padding:0;transition:opacity .2s}
+table.mat td small{display:block;font-size:.62rem;color:var(--muted);font-weight:400;line-height:1}
+table.mat td.hl{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+table.mat td.dim{opacity:.3}
+table.mat th{background:none;border:none;color:var(--muted);font-weight:400;text-align:center;font-size:.75rem;padding:0 2px}
+table.mat td.yes{background:var(--ok-soft);color:var(--ok)}
+table.mat td.no{background:var(--bad-soft);color:var(--bad)}
+table.mat.res td{height:30px;cursor:default}
+.mulrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.mulrow .op{font-family:"JetBrains Mono",monospace;font-size:1.3rem;font-weight:700}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-inline-end:4px;border:1px solid var(--line)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:8px 0}
+.card{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg)}
+.card.bad{border-color:var(--bad);background:var(--bad-soft)}
+.card.good{border-color:var(--ok)}
+.card.strike .big2{text-decoration:line-through;opacity:.6}
+.big2{font-size:1.4rem;font-family:"JetBrains Mono",monospace;display:block}
+.sw{height:30px;border-radius:6px;border:1px solid var(--line);margin:6px 0}
+.sw.sm{height:20px;width:50px;margin:0}
+.meter{margin:10px 0;direction:ltr}
+.mbar{position:relative;height:14px;border-radius:7px;background:linear-gradient(to right,#000,#fff);border:1px solid var(--line)}
+.mbar span{position:absolute;top:-5px;width:4px;height:22px;background:var(--accent);border-radius:2px;transform:translateX(-2px);transition:left .2s}
+.mbar span.over{background:var(--bad)}
+.mlab{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted)}
+.mini{background:var(--card);border:1px dashed var(--accent);border-radius:12px;padding:12px 16px;margin:16px 0}
+.mini .stem{font-weight:600;margin-bottom:8px}
+.mini .ex{display:none;margin-top:10px;padding:10px 12px;border-radius:8px;background:var(--accent-soft);font-size:.93rem}
+.mini .again{margin-inline-start:8px;font:inherit;font-size:.8rem;padding:2px 8px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.codes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px}
+.code{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.code h4{margin:0;font-size:.98rem}
+.sp{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:12px 0}
+.sp .stem{font-weight:600;margin:4px 0 8px}
+.sp .sbtn{font:inherit;font-size:.88rem;padding:5px 12px;border-radius:8px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--ink);cursor:pointer}
+.sp .sbtn:disabled{opacity:.6;cursor:default}
+.steps{margin:10px 0 0}
+.steps li{display:none;padding:4px 0}
+.steps li.on{display:list-item;animation:fade .3s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.ans-in{font:inherit;font-family:"JetBrains Mono",monospace;padding:5px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:160px}
+.ans-in.right{border-color:var(--ok);background:var(--ok-soft)}
+.ans-in.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.chk{font:inherit;font-size:.9rem;padding:5px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+table.laws td:nth-child(3){font-size:.9rem}
+#cvLvW input{width:70px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <button class="themebtn" id="themeBtn">🌓</button>
+  <h1>معالجة الصور: Lab 2 + Lab 3</h1>
+  <p class="sub">Fundamentals · Intensity Transformations · Spatial Filtering (Gonzalez &amp; Woods, MATLAB)</p>
+</header>
+
+<nav class="tabs">
+  <button data-t="lab2" class="on">① شرح Lab 2</button>
+  <button data-t="dc">⭐ Data Classes والتحويل</button>
+  <button data-t="lab3">② شرح Lab 3</button>
+  <button data-t="traps">③ الفخاخ</button>
+  <button data-t="mcq">④ اختيار من متعدد</button>
+  <button data-t="essay">⑤ أسئلة مقالي</button>
+</nav>
+
+<!-- ================= LAB 2 ================= -->
+<section class="tab on" id="lab2">
+<div class="big"><b>الفكرة كلها في سطر:</b> الصورة جوه MATLAB مجرد <b>جدول أرقام (matrix)</b>. كل خانة = <b>pixel</b> = رقم بيقول قد إيه المكان ده فاتح. وكل اللاب ده بيعلّمك: إزاي تقرا الجدول، تعدّل فيه، وتتجنب الأخطاء.</div>
+
+<div class="roadmap">
+  <span>① الصورة أرقام</span><span>② فين البكسل</span><span>③ نوع الرقم</span><span>④ فخ الـ 255</span><span>⑤ التحويل</span><span>⑥ العرض</span><span>⑦ Vectors كـ index</span><span>⑧ Operators</span><span>⑨ من غير loops</span>
+</div>
+
+<!-- ===== 1 ===== -->
+<h2>① إزاي المنظر بيبقى أرقام؟</h2>
+<div class="analogy">تخيل إنك بتعمل لوحة <b>موزاييك</b> لوش حد:<br>
+<b>1.</b> الأول تقسم اللوحة لمربعات. كل ما المربعات <b>أكتر وأصغر</b> الوش يبان أوضح. ده اسمه <b>Sampling</b>، وهو اللي بيحدد <b>حجم الصورة M × N</b>.<br>
+<b>2.</b> بعدين كل مربع تلوّنه بدرجة رمادي من <b>علبة ألوان</b> فيها عدد محدود من الدرجات. كل ما الدرجات أكتر الانتقال يبقى ناعم. ده اسمه <b>Quantization</b>، وهو اللي بيحدد <b>عدد المستويات (gray levels)</b>.</div>
+
+<div class="lab" id="w-sq">
+  <h4>🧪 جرّب بنفسك: Sampling و Quantization</h4>
+  <div class="ctl">
+    <label>Sampling (عدد المربعات): <b id="sqN"></b></label>
+    <input type="range" id="sqNs" min="0" max="6" value="6">
+  </div>
+  <div class="ctl">
+    <label>Quantization (عدد الدرجات): <b id="sqL"></b></label>
+    <input type="range" id="sqLs" min="0" max="7" value="7">
+  </div>
+  <canvas id="sqC" width="320" height="320"></canvas>
+  <div class="out" id="sqInfo">حرّك الماوس على الصورة تشوف قيمة البكسل</div>
+  <p class="hint">👈 جرّب: خلي الدرجات 256 وقلّل المربعات لـ 8 → الصورة بقت <b>بلوكات</b> (sampling قليل). رجّع المربعات 256 وخلي الدرجات 2 → الصورة بقت <b>أبيض وأسود بس</b> (quantization قليل).</p>
+</div>
+<p>أشهر رقم: <b>8 bits = 2⁸ = 256 درجة</b> من 0 (أسود) لـ 255 (أبيض). ولو 16 bits يبقى 65,536 درجة.</p>
+<div class="mini" data-m="m1"></div>
+
+<!-- ===== 2 ===== -->
+<h2>② الصورة = جدول Excel. البكسل فين؟</h2>
+<div class="analogy">زي الـ Excel بالظبط: كل خانة ليها <b>رقم صف</b> و<b>رقم عمود</b>. في MATLAB دايمًا بتكتب <b>الصف الأول وبعدين العمود</b>: <code>f(row, col)</code>. والعد بيبدأ من <b>1</b> مش من 0.</div>
+<p>دي صورة صغيرة 3×3. لون كل خانة = قيمتها (0 أسود، 255 أبيض):</p>
+<pre>f = uint8([255 255 0; 0 128 255; 64 32 200]);</pre>
+
+<div class="lab" id="w-idx">
+  <h4>🧪 مستكشف الـ Indexing: دوس على أمر، أو اكتب أمرك</h4>
+  <div class="presets" id="idxP"></div>
+  <div class="ctl ltr"><code>&gt;&gt;</code> <input type="text" id="idxIn" value="f(2,3)" spellcheck="false"> <button id="idxGo">Run</button></div>
+  <div class="two">
+    <div><div class="cap">الصورة f (المتظلل = اللي اتاخد)</div><div class="ltr" id="idxM"></div></div>
+    <div><div class="cap">اللي MATLAB هيطبعه</div><div class="out" id="idxO"></div></div>
+  </div>
+  <div class="note" id="idxE"></div>
+  <p class="hint">💡 تقدر كمان تدوس على أي خانة في الجدول تعرف اسمها.</p>
+</div>
+
+<table>
+<tr><th>الكتابة</th><th>معناها بالبلدي</th></tr>
+<tr><td><code>f(2,3)</code></td><td>صف 2 ↓ ، عمود 3 →</td></tr>
+<tr><td><code>:</code> لوحدها</td><td>"كله". <code>f(:,2)</code> = كل الصفوف في العمود 2</td></tr>
+<tr><td><code>a:b</code></td><td>من a لـ b. <code>2:3</code> = 2, 3</td></tr>
+<tr><td><code>a:s:b</code></td><td>من a لـ b بخطوة s. <code>1:2:5</code> = 1, 3, 5</td></tr>
+<tr><td><code>end</code></td><td>آخر رقم في الاتجاه ده</td></tr>
+<tr><td><code>f > 100</code></td><td>سؤال لكل بكسل: "إنت أكبر من 100؟" والإجابة 1 أو 0 = <b>logical mask</b></td></tr>
+<tr><td><code>f(f > 100) = 255</code></td><td>"كل اللي أكبر من 100 خليه أبيض"</td></tr>
+</table>
+<p><b>أنواع الصور:</b> <b>grayscale</b> = جدول واحد M×N · <b>binary</b> = جدول 0 و 1 (<code>logical</code>) · <b>RGB</b> = 3 جداول فوق بعض M×N×3 (أحمر وأخضر وأزرق) · <b>indexed</b> = جدول أرقام + <b>colormap</b>، والرقم هنا "رقم اللون في القايمة" مش إضاءة: <code>[f, map] = imread('image.gif')</code>.</p>
+<div class="mini" data-m="m2"></div>
+<div class="mini" data-m="m3"></div>
+
+<!-- ===== 3 ===== -->
+<h2>③ نوع الرقم (Data class) = حجم الكوباية</h2>
+<div class="analogy">كل بكسل محطوط في "كوباية". الكوباية بتحدد <b>أكبر وأصغر رقم</b> يتشال فيها، و<b>المساحة</b> اللي بتاخدها في الذاكرة:<br>
+🥛 <code>uint8</code> = كوباية صغيرة: من 0 لـ 255 بس، وبتاخد <b>1 byte</b>. ودي اللي الصور بتتخزن بيها عادةً.<br>
+🪣 <code>double</code> = جردل ضخم: أي رقم بكسور وسالب، بس بياخد <b>8 bytes</b>. وMATLAB بيحسب بيه.<br>
+🔘 <code>logical</code> = مفتاح: 1 أو 0 بس (نتيجة أي مقارنة).</div>
+<table>
+<tr><th>Class</th><th>المدى</th><th>Bytes</th></tr>
+<tr><td><code>uint8</code></td><td>0 … 255</td><td>1</td></tr>
+<tr><td><code>uint16</code></td><td>0 … 65535 (صور طبية وفلكية)</td><td>2</td></tr>
+<tr><td><code>int8</code></td><td>-128 … 127</td><td>1</td></tr>
+<tr><td><code>single</code></td><td>كسور، ≈ ±1e38</td><td>4</td></tr>
+<tr><td><code>double</code></td><td>كسور، ≈ ±1e308</td><td>8</td></tr>
+<tr><td><code>logical</code></td><td>true / false</td><td>1</td></tr>
+<tr><td><code>char</code></td><td>حروف</td><td>2</td></tr>
+</table>
+
+<div class="lab" id="w-mem">
+  <h4>🧪 حاسبة الذاكرة: rows × columns × bytes</h4>
+  <div class="ctl ltr">
+    rows <input type="number" id="memR" value="1024" min="1">
+    × cols <input type="number" id="memC" value="1024" min="1">
+    <select id="memT"><option value="1">uint8 (1)</option><option value="2">uint16 (2)</option><option value="4">single (4)</option><option value="8">double (8)</option><option value="1">logical (1)</option></select>
+    <label><input type="checkbox" id="memRGB"> RGB (×3)</label>
+  </div>
+  <div class="out" id="memO"></div>
+  <p class="hint">👈 جرّب 512 × 512 مرة uint8 ومرة double. لاحظ إن الـ double دايمًا <b>8 أضعاف</b>.</p>
+</div>
+<p><code>size(f)</code> بيقولك الأبعاد بس (<code>[M, N] = size(f)</code>، و <code>size(f,1)</code> = الصفوف، و <code>size(f,2)</code> = الأعمدة). أما <code>whos f</code> فبيقولك الأبعاد + الـ bytes + الـ class.</p>
+<div class="mini" data-m="m4"></div>
+
+<!-- ===== 4 ===== -->
+<h2>④ فخ الـ 255 (The uint8 trap)</h2>
+<div class="analogy">الكوباية الصغيرة (<code>uint8</code>) لو صبّيت فيها أكتر من 255، <b>الزيادة بتدلق</b> وتفضل مليانة لحد الحافة: 255. ولو شِلت منها أكتر من اللي فيها، تفضل <b>فاضية: 0</b>. وعمرها ما "تلف" وتبدأ من الأول. الحكاية دي اسمها <b>Saturation</b>.</div>
+
+<div class="lab" id="w-u8">
+  <h4>🧪 آلة حاسبة: uint8 ضد double</h4>
+  <div class="ctl ltr">
+    a = <input type="number" id="u8a" value="200">
+    <select id="u8op"><option>+</option><option>-</option><option>*</option><option>/</option></select>
+    b = <input type="number" id="u8b" value="100">
+  </div>
+  <div class="cards" id="u8O"></div>
+  <div class="meter"><div class="mbar"><span id="u8mark"></span></div><div class="mlab ltr"><span>0</span><span>255</span></div></div>
+  <div class="note" id="u8E"></div>
+  <p class="hint">👈 جرّب: 200 + 100 ، 50 − 100 ، 5 / 2 ، 100 × 3</p>
+</div>
+<div class="mini" data-m="m5"></div>
+
+<!-- ===== 5 ===== -->
+<h2>⑤ التحويل بين الأنواع: أهم جزء</h2>
+<div class="analogy">فيه نوعين من التحويل، وده سر اللاب كله:<br>
+📦 <b>تغيير الكوباية بس</b>: <code>double(f)</code> و <code>uint8(x)</code>. الرقم زي ما هو: 200 تفضل 200.<br>
+📐 <b>تغيير الوحدة</b>: الدوال اللي بتبدأ بـ <code>im2…</code>. زي ما تحوّل درجة من 255 لـ <b>نسبة من 1</b>: 200 من 255 = 0.78.<br>
+القاعدة: <b>uint8 صورته من 0 لـ 255 · double صورته من 0 لـ 1</b>.</div>
+
+<div class="lab" id="w-conv">
+  <h4>🧪 بكسل واحد، وكل التحويلات عليه. وشوف imshow هيعرضه إزاي</h4>
+  <div class="ctl">قيمة البكسل في f (uint8): <b id="cvV"></b> <input type="range" id="cvS" min="0" max="255" value="200"></div>
+  <div class="cards" id="cvO"></div>
+  <p class="hint">👈 لاحظ الكارتين الحمر: <code>imshow(double(f))</code> بيطلّع كله أبيض، و <code>uint8(im2double(f))</code> بيطلّع كله أسود تقريبًا. ودول أشهر غلطتين.</p>
+</div>
+
+<h3>mat2gray: "مدّ الأرقام على المسطرة من 0 لـ 1"</h3>
+<p>بتاخد أي أرقام (حتى سالبة أو أكبر من 1) وتخلّي <b>أصغر رقم = 0</b> و<b>أكبر رقم = 1</b> والباقي بالنسبة. المعادلة: <code>(value − min) / (max − min)</code>.</p>
+<div class="lab" id="w-m2g">
+  <h4>🧪 اكتب أرقام وشوف mat2gray بيعمل فيها إيه</h4>
+  <div class="ctl ltr">values: <input type="text" id="m2gIn" value="-0.5 0.5 0.75 1" style="width:240px"></div>
+  <div id="m2gO"></div>
+</div>
+<div class="trap"><b>الوصفة الآمنة لأي حساب:</b><br>
+<code>g = im2double(f);</code> ← حوّل لـ double<br>
+<code>r = ... احسب ...;</code> ← النتيجة ممكن تطلع سالبة أو أكبر من 1، عادي<br>
+<code>out = im2uint8(mat2gray(r));</code> ← مدّها لـ 0..1، ورجّعها 0..255<br>
+وفي الآخر: <code>im2bw(f, level)</code> بيحوّل لـ binary بـ threshold، والـ level من 0 لـ 1 (default 0.5).</div>
+<div class="mini" data-m="m6"></div>
+<div class="mini" data-m="m7"></div>
+
+<!-- ===== 6 ===== -->
+<h2>⑥ العرض والقراءة والحفظ</h2>
+<div class="analogy"><code>imshow</code> بـ range زي <b>النضارة</b>: بتخليك تشوف الصورة بـ contrast أعلى، بس <b>الصورة نفسها (الأرقام) ما بتتغيرش</b>. عشان تغيّر الأرقام فعلًا لازم <code>mat2gray</code> أو <code>imadjust</code>.</div>
+<div class="lab" id="w-show">
+  <h4>🧪 صورة باهتة (أرقامها كلها بين 90 و 170). جرّب طرق العرض</h4>
+  <div class="presets" id="shP"></div>
+  <div class="ctl ltr" id="shCtl">low <input type="range" id="shLo" min="0" max="255" value="100"> <b id="shLoV"></b> &nbsp; high <input type="range" id="shHi" min="0" max="255" value="160"> <b id="shHiV"></b></div>
+  <canvas id="shC" width="320" height="180"></canvas>
+  <div class="out" id="shO"></div>
+</div>
+<table>
+<tr><th>الأمر</th><th>بيعرض إزاي</th></tr>
+<tr><td><code>imshow(f)</code></td><td>المدى الكامل للنوع: 0..255 لـ uint8، و 0..1 لـ double</td></tr>
+<tr><td><code>imshow(f, [low high])</code></td><td>أي حاجة ≤ low سودا، وأي حاجة ≥ high بيضا، والنص بيتمد</td></tr>
+<tr><td><code>imshow(f, [])</code></td><td>أصغر رقم في الصورة أسود، وأكبر رقم أبيض</td></tr>
+</table>
+<p>الصورة الباهتة دي اسمها <b>low dynamic range</b>. الحل الدائم (بيغيّر الأرقام): <code>g = im2uint8(mat2gray(h))</code>.</p>
+
+<h3>القراءة والحفظ</h3>
+<pre>f = imread('chestxray.jpg');            <span class="c">% اقرا. الـ ; = ما تطبعش الأرقام</span>
+f = imread('C:\images\chestxray.jpg');  <span class="c">% لو الملف مش في الـ Current Directory</span>
+imshow(f), figure, imshow(f, [80 200])  <span class="c">% الكوما = 3 أوامر في سطر. figure = شباك جديد</span>
+K = imfinfo('chestxray.jpg');           <span class="c">% معلومات الملف: K.Width, K.Height</span>
+imwrite(f, 'out.tif')                   <span class="c">% الامتداد بيحدد الفورمات</span>
+imwrite(f, 'out.run1', 'tif')           <span class="c">% امتداد غريب؟ قوله الفورمات</span>
+imwrite(f, 'out.jpg', 'quality', 25)    <span class="c">% JPEG بس: 0..100</span>
+imtool(f)                               <span class="c">% أداة تفاعلية: قيمة البكسل تحت الماوس، zoom</span></pre>
+<ul>
+<li><b>JPEG</b> = <b>lossy</b> (بيرمي تفاصيل) وبيشتغل بمربعات 8×8. quality واطية = مربعات باينة (<b>blocking artefacts</b>). 100 = أحسن جودة وأكبر ملف. الأصل خزّنه <b>lossless</b> (TIFF/PNG).</li>
+<li><b>dpi</b> بيغيّر <b>حجم الورقة المطبوعة</b> بس، مش عدد البكسلات: <code>print -f1 -dtiff -r300 name</code>.</li>
+<li>من غير <code>figure</code>، الـ imshow الجديد بيكتب فوق القديم في نفس الشباك.</li>
+</ul>
+<div class="mini" data-m="m8"></div>
+
+<!-- ===== 7 ===== -->
+<h2>⑦ فخ صامت: Vectors كـ index (Example 2.5)</h2>
+<div class="analogy">لو قلت لـ MATLAB <code>H([1 2 3], [3 2 1])</code>، هو مش بيفهمها "زوج زوج". هو بيفهمها: <b>"هات الصفوف 1 و2 و3، وفي كل صف هات الأعمدة 3 و2 و1"</b>، فبيطلع <b>block 3×3</b>. ومش هيقولك error، وعشان كده اسمه فخ صامت.</div>
+<div class="lab" id="w-sub">
+  <h4>🧪 H(r, c) ضد sub2ind</h4>
+  <pre>H = [1 2 3; 4 5 6; 7 8 9];   r = [1 2 3];   c = [3 2 1];</pre>
+  <div class="presets" id="subP"></div>
+  <div class="two">
+    <div><div class="cap">H</div><div class="ltr" id="subM"></div></div>
+    <div><div class="cap">النتيجة</div><div class="out" id="subO"></div></div>
+  </div>
+  <div class="note" id="subE"></div>
+</div>
+<div class="mini" data-m="m9"></div>
+
+<!-- ===== 8 ===== -->
+<h2>⑧ Operators: النقطة بتفرق</h2>
+<div class="analogy"><code>.*</code> (بنقطة) = <b>"كل خانة في نظيرتها"</b>، وهو ده اللي بتحتاجه مع الصور.<br>
+<code>*</code> (من غير نقطة) = <b>ضرب مصفوفات</b> بتاع الجبر الخطي: صف × عمود.<br>
+ونفس الحكاية: <code>.^</code> و <code>^</code>، و <code>./</code> و <code>/</code>.</div>
+<div class="lab" id="w-mul">
+  <h4>🧪 A .* B ضد A * B: دوس على أي خانة في النتيجة تشوف اتحسبت إزاي</h4>
+  <div class="presets" id="mulP"></div>
+  <div class="ltr mulrow" id="mulM"></div>
+  <div class="out" id="mulO">دوس على خانة في النتيجة</div>
+</div>
+
+<h3>all و any: بيشتغلوا عمود عمود</h3>
+<div class="lab" id="w-all">
+  <h4>🧪 B = [0 -1 1; 0 0 2]. الأصفار متعلمة بالأحمر</h4>
+  <div class="presets" id="allP"></div>
+  <div class="ltr" id="allM"></div>
+  <div class="note" id="allE"></div>
+</div>
+
+<table>
+<tr><th>الرمز</th><th>معناه</th><th>امتى</th></tr>
+<tr><td><code>=</code></td><td>حط قيمة (assignment)</td><td><code>x = 5</code></td></tr>
+<tr><td><code>==</code></td><td>سؤال: متساويين؟ (1 أو 0)</td><td><code>f == 255</code></td></tr>
+<tr><td><code>&gt; &lt; &gt;= &lt;= ~=</code></td><td>مقارنات، والنتيجة <b>logical</b></td><td><code>~=</code> = لا يساوي</td></tr>
+<tr><td><code>&amp;  |  ~</code></td><td>و / أو / مش، على <b>مصفوفات</b> خانة خانة</td><td>masks: <code>f&gt;50 &amp; f&lt;200</code></td></tr>
+<tr><td><code>&amp;&amp;  ||</code></td><td>و / أو على <b>رقم واحد بس</b> (short-circuit)</td><td>جوه <code>if</code> و <code>while</code>. على مصفوفة = <b>error</b></td></tr>
+</table>
+<p>أي رقم مش صفر = true. <code>xor(A,B)</code> = 1 بس لو واحد true والتاني لأ. ودوال <b>is…</b> (<code>isempty, isequal, islogical, isnumeric…</code>) بترد بـ 1 أو 0.</p>
+<p><b>Example 2.7:</b> دمج صورتين uint8 بـ <code>0.5*f + 0.5*g</code> بيقرّب كل نص لوحده. أما <code>imlincomb(0.5, f, 0.5, g)</code> فبيحسب الكل ويقرّب <b>مرة واحدة</b> بس.</p>
+<div class="mini" data-m="m10"></div>
+<div class="mini" data-m="m11"></div>
+
+<!-- ===== 9 ===== -->
+<h2>⑨ من غير Loops (Vectorization) والـ Functions</h2>
+<div class="analogy">الـ loop زي إنك تلوّن الحيطة <b>بفرشة أسنان، بكسل بكسل</b>. والـ vectorization زي إنك <b>ترشها كلها مرة واحدة</b>. نفس النتيجة، بس أسرع حوالي <b>220 مرة</b> (Example 2.13).</div>
+<div class="lab" id="w-mesh">
+  <h4>🧪 meshgrid: بيدّي كل بكسل "عنوانه"</h4>
+  <pre>[X, Y] = meshgrid(1:N, 1:M);    % هنا M = 3 صفوف ، N = 4 أعمدة</pre>
+  <div class="ltr mulrow" id="meshM"></div>
+  <p class="hint"><b>X</b> = رقم <b>العمود</b> بتاع كل خانة (بيزيد ناحية اليمين). <b>Y</b> = رقم <b>الصف</b> (بيزيد لتحت). والاتنين حجمهم M × N. وبعدها تحسب الصورة كلها في سطر: <code>f = sin(X/4 + Y/4); g = f &gt; 0.5;</code></p>
+</div>
+<h3>Loops و if (لما تحتاجهم)</h3>
+<pre>if AI > 100            <span class="c">% اختار فرع</span>
+    g = im2uint8(mat2gray(f));
+elseif AI == 100
+    g = f;
+else
+    g = im2uint8(f);
+end
+for index = 1:5        <span class="c">% عدد لفات معروف</span>
+    imwrite(g, sprintf('patient10_run%02d.tif', index));   <span class="c">% → patient10_run01.tif ...</span>
+end</pre>
+<ul>
+<li><code>while</code> = كرر لحد ما الشرط يبقى غلط. <code>break</code> = اخرج من الـ loop. <code>continue</code> = نط للفة الجاية.</li>
+<li><code>%02d</code> = رقم صحيح، يتكمل بأصفار لحد رقمين (3 → 03).</li>
+<li>السلايد كاتب <code>end_</code> لأن <code>end</code> كلمة محجوزة (<b>reserved word</b>).</li>
+</ul>
+<h3>اكتب function بنفسك</h3>
+<pre>function [AI, dm, AIrows, AIcols] = image_stats(f)   <span class="c">% outputs = name(inputs)</span>
+%IMAGE_STATS average intensity...    <span class="c">← H1 line: بتظهر في help</span>
+dm     = size(f);
+AI     = mean2(f);       <span class="c">% متوسط الصورة كلها = رقم واحد</span>
+AIrows = mean(f, 2);     <span class="c">% متوسط كل صف (عمود فيه M رقم)</span>
+AIcols = mean(f, 1);     <span class="c">% متوسط كل عمود (صف فيه N رقم)</span></pre>
+<ul>
+<li>اسم الملف لازم = اسم الـ function: <code>image_stats.m</code>.</li>
+<li><code>nargin</code> / <code>nargout</code> = عدد الـ inputs والـ outputs اللي اتبعتت فعلًا.</li>
+<li><b>Cell array</b> <code>C = {f, 'area'}</code> = صندوق فيه حاجات مختلفة. <code>C{1}</code> = اللي جوه الخانة (الصورة نفسها)، و <code>C(1)</code> = الخانة نفسها كـ cell.</li>
+<li><b>Structure</b> <code>s.AI = mean2(f)</code> = قيم ليها أسماء.</li>
+</ul>
+<div class="mini" data-m="m12"></div>
+
+<div class="exam"><h3>ممكن ييجي في الامتحان (Lab 2)</h3>
+<ol>
+<li>الفرق بين <b>Sampling</b> (الحجم) و <b>Quantization</b> (الدرجات).</li>
+<li><code>double</code> vs <code>im2double</code>، و <code>uint8</code> vs <code>im2uint8</code>، و <code>mat2gray</code> بمثال رقمي.</li>
+<li>فخ uint8: <b>saturation</b> (255 و 0) مش wrap، والوصفة الآمنة.</li>
+<li>Indexing على مصفوفة 3×3، والـ masks، و <code>H(r,c)</code> vs <code>sub2ind</code>.</li>
+<li><code>*</code> vs <code>.*</code>، و <code>&amp;</code> vs <code>&amp;&amp;</code>، و <code>all/any</code> عمود عمود، وحساب الذاكرة.</li>
+</ol></div>
+</section>
+
+<!-- ================= DATA CLASSES ================= -->
+<section class="tab" id="dc">
+<div class="big"><b>⭐ ده الجزء اللي الدكتور قال عليه ضروري.</b> هنا كل حاجة عن الـ <b>data classes</b>، والتحويل بينها، والقوانين اللي بتحسب بيها الناتج، والأكواد البسيطة. وفي الآخر مسائل محلولة، وتدريب بمستويات.</div>
+<div class="roadmap"><span>① الأنواع</span><span>② خريطة التحويل</span><span>③ القوانين</span><span>④ المحوّل التفاعلي</span><span>⑤ الأكواد البسيطة</span><span>⑥ مسائل محلولة</span><span>⑦ تدريب</span></div>
+
+<h2>① الأنواع: كل نوع بيشيل إيه؟</h2>
+<div class="analogy">الـ <b>class</b> بيحدد حاجتين: <b>المدى</b> (أصغر وأكبر رقم ينفع يتشال) و<b>المساحة</b> (كام byte لكل بكسل). وكمان بيحدد <b>"الأبيض" عند كام</b>: في uint8 الأبيض = 255، وفي double الأبيض = 1.</div>
+<table>
+<tr><th>Class</th><th>المدى</th><th>Bytes</th><th>الأسود</th><th>الأبيض</th><th>بيُستخدم في</th></tr>
+<tr><td><code>uint8</code></td><td>0 … 255 (أعداد صحيحة)</td><td>1</td><td>0</td><td>255</td><td>تخزين الصور (الافتراضي من imread)</td></tr>
+<tr><td><code>uint16</code></td><td>0 … 65535</td><td>2</td><td>0</td><td>65535</td><td>صور طبية وفلكية</td></tr>
+<tr><td><code>int8</code></td><td>-128 … 127</td><td>1</td><td></td><td></td><td>أعداد صحيحة فيها سالب</td></tr>
+<tr><td><code>int16</code></td><td>-32768 … 32767</td><td>2</td><td></td><td></td><td></td></tr>
+<tr><td><code>single</code></td><td>كسور، ≈ ±1e38</td><td>4</td><td>0</td><td>1</td><td></td></tr>
+<tr><td><code>double</code></td><td>كسور، ≈ ±1e308</td><td>8</td><td>0</td><td>1</td><td>الحسابات (الـ default لأي رقم بتكتبه)</td></tr>
+<tr><td><code>logical</code></td><td>0 أو 1</td><td>1</td><td>0</td><td>1</td><td>binary images، masks، نتيجة المقارنات</td></tr>
+<tr><td><code>char</code></td><td>حروف</td><td>2</td><td></td><td></td><td>نصوص</td></tr>
+</table>
+<p>أول 8 classes في Table 2.3 <b>numeric</b>، والتاسع <b>char</b>، والعاشر <b>logical</b>. عشان تعرف الـ class بتاع أي متغير: <code>class(f)</code> أو <code>whos f</code>.</p>
+
+<h2>② خريطة التحويل (احفظها كصورة)</h2>
+<div class="lab"><div class="ltr" style="overflow-x:auto">
+<svg viewBox="0 0 560 320" width="100%" style="max-width:560px;font-family:'JetBrains Mono',monospace" role="img" aria-label="conversion map">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker>
+  <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--warn)"/></marker></defs>
+  <g style="fill:var(--card);stroke:var(--line);stroke-width:2">
+    <rect x="20" y="30" width="170" height="70" rx="12" style="stroke:var(--ink)"/>
+    <rect x="370" y="30" width="170" height="70" rx="12" style="stroke:var(--ok)"/>
+    <rect x="20" y="220" width="170" height="70" rx="12" style="stroke:var(--warn)"/>
+    <rect x="370" y="220" width="170" height="70" rx="12"/>
+  </g>
+  <g style="fill:var(--ink);font-size:15px;font-weight:700" text-anchor="middle">
+    <text x="105" y="60">uint8</text><text x="455" y="60">double</text><text x="105" y="250">double</text><text x="455" y="250">logical</text>
+  </g>
+  <g style="fill:var(--muted);font-size:12px" text-anchor="middle">
+    <text x="105" y="82">0 … 255</text><text x="455" y="82">0 … 1   ✔ OK image</text><text x="105" y="272">0 … 255  ⚠ imshow = white</text><text x="455" y="272">0 / 1</text>
+  </g>
+  <g style="stroke:var(--accent);stroke-width:2;fill:none">
+    <line x1="192" y1="52" x2="366" y2="52" marker-end="url(#ah)"/>
+    <line x1="368" y1="80" x2="194" y2="80" marker-end="url(#ah)"/>
+    <line x1="80" y1="102" x2="80" y2="216" marker-end="url(#ah)" style="stroke:var(--warn)"/>
+    <line x1="130" y1="218" x2="130" y2="104" marker-end="url(#ah)" style="stroke:var(--warn)"/>
+    <line x1="192" y1="230" x2="372" y2="104" marker-end="url(#ah)"/>
+    <line x1="455" y1="102" x2="455" y2="216" marker-end="url(#ah)"/>
+  </g>
+  <g style="font-size:12px;fill:var(--accent);font-weight:600" text-anchor="middle">
+    <text x="280" y="44">im2double  (÷255)</text>
+    <text x="280" y="98">im2uint8  (×255)</text>
+    <text x="300" y="185">mat2gray</text>
+    <text x="510" y="165">im2bw</text><text x="510" y="181">f &gt; T</text>
+  </g>
+  <g style="font-size:12px;fill:var(--warn);font-weight:600">
+    <text x="12" y="165" text-anchor="start">double()</text>
+    <text x="140" y="165" text-anchor="start">uint8()</text>
+  </g>
+</svg></div>
+<p class="hint">🔵 الأسهم الزرقا = <b>بتعمل rescale</b> (بتغيّر الوحدة). 🟠 الأسهم البرتقاني = <b>بتغيّر الكوباية بس</b> والرقم زي ما هو. والـ <code>im2bw</code> بتشتغل كمان على uint8 على طول.</p></div>
+
+<div class="trap"><b>القاعدة الذهبية:</b> الدالة اللي اسمها بيبدأ بـ <code>im2…</code> بتفهم إن ده <b>صورة</b>، فبتحافظ على "الأسود أسود والأبيض أبيض" وبتغيّر الأرقام. أما الدالة اللي اسمها بس اسم الـ class (<code>double</code>، <code>uint8</code>) فبتنقل <b>الرقم زي ما هو</b> وما تعرفش حاجة عن الصور.</div>
+
+<h2>③ القوانين (Formulas)</h2>
+<p>دي اللي بتحل بيها أي مسألة. اكتبها في ورقة واحفظها:</p>
+<table class="laws">
+<tr><th>#</th><th>الأمر</th><th>القانون</th><th>مثال</th></tr>
+<tr><td>1</td><td>عدد المستويات</td><td><code>L = 2^bits</code>، وأكبر قيمة = <code>2^bits − 1</code></td><td>8 bits → 256 مستوى، أكبر قيمة 255</td></tr>
+<tr><td>2</td><td>الذاكرة</td><td><code>bytes = M × N × (bytes per pixel)</code>، و×3 لو RGB</td><td>512×512 uint8 = 262,144</td></tr>
+<tr><td>3</td><td><code>double(f)</code></td><td><code>g = f</code> (نفس الرقم)</td><td>200 → 200</td></tr>
+<tr><td>4</td><td><code>im2double(f)</code></td><td>uint8: <code>g = f / 255</code> · uint16: <code>g = f / 65535</code> · double: من غير تغيير</td><td>51 → 0.2</td></tr>
+<tr><td>5</td><td><code>uint8(x)</code></td><td><code>g = clip( round(x), 0, 255 )</code></td><td>3.5 → 4 · −20 → 0 · 300 → 255</td></tr>
+<tr><td>6</td><td><code>im2uint8(x)</code> (x double)</td><td><code>g = round( clip(x, 0, 1) × 255 )</code></td><td>0.5 → 128 · 1.3 → 255 · −0.2 → 0</td></tr>
+<tr><td>7</td><td><code>mat2gray(x)</code></td><td><code>g = (x − min) / (max − min)</code> → double من 0 لـ 1</td><td>[2 4 6] → [0 0.5 1]</td></tr>
+<tr><td>8</td><td><code>im2bw(f, level)</code></td><td>1 لو <code>f &gt; level × 255</code> (uint8)، أو <code>f &gt; level</code> (double). default level = 0.5</td><td>uint8: 128 → 1 · 127 → 0</td></tr>
+<tr><td>9</td><td>حساب uint8</td><td><code>result = clip( round(a op b), 0, 255 )</code> وبيتحسب <b>خطوة خطوة من الشمال لليمين</b></td><td>200+100 → 255 · 50−100 → 0</td></tr>
+<tr><td>10</td><td><code>logical(x)</code></td><td>أي رقم ≠ 0 → 1، والصفر → 0</td><td>[0 3 −1] → [0 1 1]</td></tr>
+<tr><td>11</td><td>Negative</td><td>uint8: <code>255 − f</code> · double: <code>1 − g</code> · أو <code>imcomplement(f)</code></td><td>30 → 225 · 0.3 → 0.7</td></tr>
+<tr><td>12</td><td><code>imshow(f, [low high])</code></td><td>اللي بيظهر = <code>(f − low) / (high − low)</code>، وبيتقص لـ 0..1 (عرض بس)</td><td>[80 200]: 140 → 0.5 رمادي</td></tr>
+<tr><td>13</td><td><code>int8(x)</code></td><td><code>clip( round(x), −128, 127 )</code></td><td>200 → 127</td></tr>
+<tr><td>14</td><td><code>im2uint16(f)</code> (f uint8)</td><td><code>g = f × 257</code> (لأن 65535 / 255 = 257)</td><td>200 → 51400</td></tr>
+</table>
+
+<h3>قواعد الـ class في الحسابات (فخاخ)</h3>
+<table>
+<tr><th>العملية</th><th>نتيجتها</th><th>مثال</th></tr>
+<tr><td>uint8 مع double</td><td><b>uint8</b> (ويحصل saturation)</td><td><code>uint8(200) + 100</code> = 255 · <code>uint8(100) + 0.6</code> = 101</td></tr>
+<tr><td>uint8 مع uint8</td><td>uint8</td><td><code>uint8(5)/uint8(2)</code> = 3 (2.5 → 3)</td></tr>
+<tr><td>uint8 مع uint16 (أو int8)</td><td><b>Error</b>: لازم نفس الـ class أو double</td><td><code>uint8(10) + uint16(10)</code> → error</td></tr>
+<tr><td>logical مع logical</td><td><b>double</b></td><td><code>true + true</code> = 2 (double)</td></tr>
+<tr><td>مقارنة (<code>&gt; == …</code>)</td><td><b>logical</b></td><td><code>class(f &gt; 50)</code> = 'logical'</td></tr>
+<tr><td><code>sum</code>، <code>mean</code>، <code>mean2</code> على uint8</td><td><b>double</b> (ما بيحصلش saturation)</td><td><code>sum(uint8([200 100]))</code> = 300</td></tr>
+</table>
+<div class="trap"><b>الترتيب مهم في uint8:</b> <code>a = uint8(100); a − 150 + 100</code><br>
+الخطوة 1: 100 − 150 = −50 → <b>0</b> (saturation)<br>
+الخطوة 2: 0 + 100 = <b>100</b><br>
+ولو double: 100 − 150 + 100 = <b>50</b>. يعني الإجابتين مختلفين!</div>
+
+<h2>④ المحوّل التفاعلي: اكتب أي أرقام وشوف الخطوات</h2>
+<div class="lab" id="w-cv2">
+  <h4>🧪 اختار نوع الـ input والدالة، وهيطلعلك الناتج + القانون + الخطوات</h4>
+  <div class="ctl ltr">
+    <select id="cvIn"><option>uint8</option><option>double</option><option>uint16</option><option>logical</option></select>
+    ( <input type="text" id="cvX" value="[200 100; 51 300]" style="width:200px"> )
+    → <select id="cvF">
+      <option>double</option><option selected>im2double</option><option>uint8</option><option>im2uint8</option>
+      <option>mat2gray</option><option>im2bw</option><option>logical</option><option>int8</option><option>uint16</option><option>im2uint16</option>
+    </select>
+    <span id="cvLvW">level <input type="number" id="cvLv" value="0.5" step="0.1" min="0" max="1" style="width:70px"></span>
+  </div>
+  <div class="presets" id="cvP"></div>
+  <div class="two">
+    <div><div class="cap">الـ input بعد ما اتحوّل للـ class اللي اخترته</div><div class="out" id="cvA"></div></div>
+    <div><div class="cap">الناتج</div><div class="out" id="cvB"></div></div>
+  </div>
+  <div class="note" id="cvLaw"></div>
+  <div class="out" id="cvSteps" style="margin-top:8px"></div>
+</div>
+
+<h2>⑤ الأكواد البسيطة (لازم تعرف كل سطر بيطلّع إيه)</h2>
+<div class="codes">
+<div class="code"><h4>1. اعرف نوع الصورة</h4><pre>f = imread('cameraman.tif');
+class(f)          <span class="c">% 'uint8'</span>
+whos f            <span class="c">% 256x256  65536 bytes  uint8</span>
+isa(f, 'uint8')   <span class="c">% 1 (true)</span></pre></div>
+
+<div class="code"><h4>2. التحويل الصح لـ double</h4><pre>g = im2double(f);   <span class="c">% 0..1  ✔ صورة سليمة</span>
+h = double(f);      <span class="c">% 0..255 ⚠</span>
+imshow(g)           <span class="c">% تمام</span>
+imshow(h)           <span class="c">% أبيض تقريبًا كله ✘</span>
+imshow(h, [])       <span class="c">% تمام (scale للعرض)</span>
+imshow(h / 255)     <span class="c">% تمام</span></pre></div>
+
+<div class="code"><h4>3. الرجوع لـ uint8</h4><pre>f2 = im2uint8(g);   <span class="c">% ✔ رجعت زي f</span>
+f3 = uint8(h);      <span class="c">% ✔ رجعت زي f (h كانت 0..255)</span>
+f4 = uint8(g);      <span class="c">% ✘ كله 0 أو 1 → صورة سودا</span></pre></div>
+
+<div class="code"><h4>4. الوصفة الآمنة لأي حساب</h4><pre>g   = im2double(f);       <span class="c">% 1) حوّل</span>
+r   = g * 1.5 - 0.2;      <span class="c">% 2) احسب (ممكن يطلع &lt;0 أو &gt;1)</span>
+out = im2uint8(mat2gray(r)); <span class="c">% 3) مدّ ورجّع</span></pre></div>
+
+<div class="code"><h4>5. تفتيح الصورة بـ 50</h4><pre>a = f + 50;                 <span class="c">% uint8: اللي فوق 205 يبقى 255</span>
+b = im2double(f) + 50/255;  <span class="c">% double: ممكن يعدي 1</span>
+b = im2uint8(b);            <span class="c">% im2uint8 بيقص اللي فوق 1</span></pre></div>
+
+<div class="code"><h4>6. متوسط صورتين</h4><pre>m1 = (f1 + f2) / 2;              <span class="c">% ✘ المجموع اتقص عند 255 الأول</span>
+m2 = uint8((double(f1) + double(f2)) / 2); <span class="c">% ✔</span>
+m3 = imlincomb(0.5, f1, 0.5, f2);  <span class="c">% ✔ وبيقرّب مرة واحدة</span></pre></div>
+
+<div class="code"><h4>7. Negative</h4><pre>n1 = 255 - f;              <span class="c">% uint8</span>
+n2 = 1 - im2double(f);     <span class="c">% double</span>
+n3 = imcomplement(f);      <span class="c">% أي class</span></pre></div>
+
+<div class="code"><h4>8. Binary (threshold)</h4><pre>bw1 = im2bw(f, 0.5);   <span class="c">% logical: f &gt; 127.5</span>
+bw2 = f &gt; 128;          <span class="c">% logical برضه</span>
+class(bw2)             <span class="c">% 'logical'</span>
+im2uint8(bw2)          <span class="c">% 0 و 255 (للحفظ)</span>
+double(bw2)            <span class="c">% 0 و 1</span></pre></div>
+
+<div class="code"><h4>9. Normalize ناتج حساب</h4><pre>x = [-0.5 0.5; 0.75 1];
+g = mat2gray(x)        <span class="c">% [0 0.6667; 0.8333 1]</span>
+</pre></div>
+
+<div class="code"><h4>10. حساب الذاكرة بالكود</h4><pre>[M, N] = size(f);
+bytes_u8  = M * N * 1;
+bytes_dbl = M * N * 8;   <span class="c">% 8 أضعاف</span></pre></div>
+</div>
+
+<h2>⑥ مسائل محلولة خطوة بخطوة</h2>
+<div class="solved" id="solved"></div>
+
+<h2>⑦ تدريب: من السهل للصعب</h2>
+<div class="bar">
+  <select id="dcLvl"><option value="0">كل المستويات</option><option value="1">سهل</option><option value="2">متوسط</option><option value="3">صعب</option></select>
+  <button id="dcReset">ابدأ من الأول</button>
+  <span class="score" id="dcScore"></span>
+</div>
+<div id="dcQs"></div>
+</section>
+
+<!-- ================= LAB 3 ================= -->
+<section class="tab" id="lab3">
+<div class="big"><b>الفكرة الكبيرة:</b> كل حاجة هنا هي <code>g(x,y) = T[f(x,y)]</code>. لو T بتبص على البكسل لوحده = <b>point operation</b> (contrast، gamma، histogram). لو بتبص على نافذة حواليه = <b>neighborhood / spatial filtering</b> (smoothing، median، sharpening).</div>
+
+<h2>1. Point vs Neighborhood operations</h2>
+<table>
+<tr><th></th><th>Point operation</th><th>Neighborhood (spatial) operation</th></tr>
+<tr><td>T بتقرا</td><td>البكسل نفسه بس</td><td>نافذة صغيرة حواليه (3×3، 5×5)</td></tr>
+<tr><td>أمثلة</td><td>negative، gamma، log، contrast stretch، <code>histeq</code></td><td><code>imfilter</code>، <code>medfilt2</code>، <code>colfilt</code>، <code>adapthisteq</code></td></tr>
+</table>
+
+<h2>2. imadjust: أداة الـ contrast</h2>
+<pre>g = imadjust(f, [low_in high_in], [low_out high_out], gamma);
+g = imadjust(f, stretchlim(f), []);    <span class="c">% limits أوتوماتيك</span>
+g = imadjust(f, [0 1], [1 0]);         <span class="c">% negative</span>
+g = imadjust(f, [ ], [ ], 0.5);        <span class="c">% gamma = 0.5</span>
+g = imadjust(f, [0.5 0.75], [0 1]);    <span class="c">% Ex 3.1: مدّ 0.5-0.75 على المدى كله</span></pre>
+<ul>
+  <li><b>4 inputs</b>: الصورة، input range، output range، gamma (الـ narration قالت 5، غلط).</li>
+  <li>الـ ranges دايمًا <b>كسور من 0 لـ 1</b> مهما كان الـ class. في uint8 الـ 0.5 = 127.5.</li>
+  <li><code>[ ]</code> = الـ default <code>[0 1]</code>.</li>
+  <li>اللي تحت low_in بيبقى low_out، واللي فوق high_in بيبقى high_out، والوسط بيتمد خطيًا (لو gamma = 1).</li>
+  <li><b>gamma &lt; 1</b> يفتّح الـ mid-tones (المنحنى بيتقوّس لفوق). <b>gamma &gt; 1</b> يغمّقها.</li>
+  <li><code>stretchlim(f)</code> بيلاقي الـ limits لوحده، وبيتجاهل أغمق 1% وأفتح 1% من البكسلات.</li>
+  <li>طرق تانية للـ negative: <code>imcomplement(f)</code>، أو <code>255 - f</code> لـ uint8. مثال: بكسل 64 → 191.</li>
+</ul>
+<h3>مثال محلول</h3>
+<p><code>imadjust(f, [0.5 0.75], [0 1])</code> على بكسل uint8 قيمته 160:</p>
+<pre>160/255 = 0.627          <span class="c">% نحوّله لكسر</span>
+(0.627 - 0.5) / (0.75 - 0.5) = 0.51   <span class="c">% مكانه جوه الـ input range</span>
+0.51 × 255 ≈ 130         <span class="c">% النتيجة</span>
+<span class="c">% وأي بكسل ≤ 127 يبقى 0 ، وأي بكسل ≥ 191 يبقى 255</span></pre>
+
+<h2>3. Log transform و Contrast stretching</h2>
+<pre>g = im2uint8(mat2gray(log(1 + im2double(f))));    <span class="c">% log transform</span>
+g = 1 ./ (1 + (m ./ (im2double(f) + eps)).^E);    <span class="c">% contrast stretching</span></pre>
+<ul>
+  <li><b>Log transform</b> بيضغط <b>dynamic range</b> كبير جدًا (زي Fourier spectrum من 0 لـ 1,500,000 → حوالي 0 لـ 6) عشان التفاصيل الغامقة تبان. <b>Inverse log</b> بيعمل العكس.</li>
+  <li>الـ <code>1 +</code> جوه الـ log عشان نتجنب <code>log(0)</code>.</li>
+  <li><code>log</code> في MATLAB = الطبيعي (ln). <code>log10</code> = أساس 10.</li>
+  <li><b>Contrast stretching</b> (S-curve): <code>m</code> = الـ threshold (بكسل قيمته m يطلع 0.5)، و <code>E</code> = الميل. E كبير جدًا → المنحنى يبقى step = <b>thresholding</b>.</li>
+  <li><code>eps</code> = رقم صغير جدًا عشان نمنع القسمة على صفر لما البكسل = 0.</li>
+  <li>دايمًا حوّل لـ double (<code>im2double</code>) قبل المعادلات دي، ورجّع بـ <code>im2uint8</code> أو <code>mat2gray</code>.</li>
+</ul>
+<div class="trap"><b>مش built-in:</b> <code>intrans</code> و <code>gscale</code> و <code>tofloat</code> ملفات M-file كاتبها الكتاب. لو MATLAB قال <i>Undefined function</i> يبقى مش على الـ path. أما <code>imadjust, stretchlim, imhist, histeq, adapthisteq, imfilter, fspecial, medfilt2, colfilt</code> فدول toolbox حقيقي.</div>
+
+<h2>4. Histograms</h2>
+<p><b>Histogram</b> = عدد البكسلات عند كل مستوى إضاءة: <code>h(r_k) = n_k</code>. لو قسمت على عدد البكسلات تطلع <b>probabilities</b>:</p>
+<pre>h = imhist(f);                 <span class="c">% counts</span>
+p = imhist(f) / numel(f);      <span class="c">% normalized histogram</span>
+bar(imhist(f)); stem(imhist(f));  <span class="c">% طرق رسم (Ex 3.4)</span></pre>
+<ul>
+  <li>صورة <b>غامقة</b>: الـ histogram متكوّم عند 0 (زي صورة Phobos).</li>
+  <li>صورة <b>low-contrast</b>: الـ histogram محشور في شريط ضيق.</li>
+  <li>الـ histogram بيقولك المشكلة قبل ما تلمس أي parameter.</li>
+</ul>
+<table>
+<tr><th>الطريقة</th><th>الأمر</th><th>بتعمل إيه</th></tr>
+<tr><td><b>Equalization</b></td><td><code>histeq(f, 256)</code></td><td>بتفرد الـ histogram ناحية <b>uniform</b> باستخدام الـ <b>cumulative distribution (CDF)</b>. أوتوماتيك. Point operation.</td></tr>
+<tr><td><b>Matching (Specification)</b></td><td><code>histeq(f, hspec)</code></td><td>تجبر الـ output يشبه histogram <b>أنت</b> مصممه. <code>hspec</code> = vector قيمة لكل مستوى (256 لـ uint8)، مش صورة.</td></tr>
+<tr><td><b>Local / CLAHE</b></td><td><code>adapthisteq(f)</code></td><td>tile by tile (default 8×8 tiles). <b>ClipLimit</b> (default 0.01) بيحدد قد إيه الـ contrast يزيد عشان الـ noise في المناطق المسطحة ما يتفجرش.</td></tr>
+</table>
+<div class="trap"><b>خلي بالك:</b> <code>histeq(f)</code> من غير رقم = <b>64 مستوى</b>. اكتب 256 لو عايز 8-bit كاملة. والـ equalization بيطلع histogram <b>تقريبًا</b> flat مش flat بالظبط، لأن المستويات discrete. ClipLimit أكبر = contrast أكتر و noise أكتر.</div>
+<p>ليه global equalization ممكن يبوّظ؟ لأنه بيكبّر الـ noise في المناطق المسطحة. الـ <code>adapthisteq</code> بيحل ده بالـ tiles والـ clip.</p>
+
+<h2>5. Spatial Filtering: الميكانيكا</h2>
+<p><b>Kernel</b> (أو <b>mask</b> أو filter) = مصفوفة أوزان صغيرة (3×3، 5×5). لكل بكسل:</p>
+<ol>
+  <li>حط الـ kernel فوق الجيران، والـ <b>origin (center)</b> فوق البكسل.</li>
+  <li>اضرب كل وزن في البكسل اللي تحته.</li>
+  <li>اجمع كله واكتب الناتج في الـ output.</li>
+  <li>زق بكسل وكرر.</li>
+</ol>
+<h3>Correlation vs Convolution</h3>
+<ul>
+  <li><b>Correlation</b>: الـ kernel زي ما هو. الناتج أعلى حاجة لما الـ kernel يطابق الصورة.</li>
+  <li><b>Convolution</b>: نلف الـ kernel <b>180°</b> الأول. دي العملية اللي ورا linear systems theory.</li>
+  <li><code>imfilter</code> بيعمل <b>correlation by default</b>. ضيف <code>'conv'</code> للـ convolution.</li>
+  <li>الـ <b>symmetric kernels</b> (average، Laplacian، Gaussian) بتدّي <b>نفس النتيجة</b> في الاتنين، وعشان كده الفرق ساعات مش باين.</li>
+</ul>
+<pre>g = imfilter(f, w);                       <span class="c">% correlation + zero padding</span>
+g = imfilter(f, w, 'replicate');          <span class="c">% border handling</span>
+g = imfilter(f, w, 'conv', 'symmetric');  <span class="c">% convolution</span>
+w = fspecial('average', [3 3]);           <span class="c">% ones(3)/9</span>
+w = fspecial('laplacian', 0.2);           <span class="c">% Laplacian</span>
+w = fspecial('sobel');                    <span class="c">% edges</span></pre>
+<h3>Padding (الحدود)</h3>
+<p>عند حرف الصورة الـ kernel محتاج بكسلات برا الصورة:</p>
+<table>
+<tr><th>الخيار</th><th>بيعمل إيه</th></tr>
+<tr><td>default (<b>zero padding</b>)</td><td>أصفار برا → <b>إطار غامق</b></td></tr>
+<tr><td><code>'replicate'</code></td><td>يكرر قيمة الحرف</td></tr>
+<tr><td><code>'symmetric'</code></td><td>مراية للصورة عند الحرف</td></tr>
+<tr><td><code>'circular'</code></td><td>يلف (كأن الصورة بتتكرر)</td></tr>
+</table>
+<p>الـ padding بيخلي الـ output <b>نفس حجم</b> الـ input.</p>
+<div class="trap"><b>Output class:</b> <code>imfilter</code> بيرجّع <b>نفس class</b> الـ input. لو f uint8 وعملت Laplacian أو Sobel، أي قيمة سالبة تتقص لـ 0 وأي حاجة فوق 255 تبقى 255. حوّل لـ double الأول (<code>im2double</code> أو <code>tofloat</code>) لما الـ kernel فيه أوزان سالبة.</div>
+<p><b>مجموع أوزان الـ kernel:</b> smoothing = <b>1</b> (الإضاءة العامة ما تتغيرش). derivative (Laplacian، Sobel) = <b>0</b> (المنطقة المسطحة تطلع 0).</p>
+<h3>مثال محلول: average 3×3</h3>
+<pre>neighborhood = [10 20 30; 40 50 60; 70 80 90]
+w = ones(3)/9
+output = (10+20+30+40+50+60+70+80+90)/9 = 450/9 = 50</pre>
+
+<h2>6. Smoothing و Median filter</h2>
+<ul>
+  <li><b>Averaging (box) filter</b>: بيشيل noise بس بيشيل تفاصيل كمان. kernel أكبر = blur أقوى (9×9 خفيف، 25×25 تقيل). ده الـ trade-off كله.</li>
+  <li><b>Weighted average</b>: السنتر وزنه أكبر → blur أقل لنفس إزالة الـ noise.</li>
+  <li><b>Median filter</b> = <b>nonlinear</b>: رتّب قيم الجيران وخد اللي في النص. بيشيل <b>salt-and-pepper (impulse) noise</b> ويحافظ على الـ edges. وعمره ما يطلع قيمة مش موجودة في الجيران.</li>
+</ul>
+<h3>مثال محلول</h3>
+<pre>الجيران:  3, 7, 200, 5, 6, 4, 8, 5, 9
+مترتبين:  3, 4, 5, 5, [6], 7, 8, 9, 200
+median  = 6
+average = 247/9 ≈ 27.4   <span class="c">← بكسل noise واحد (200) سحب المتوسط</span></pre>
+<p><b>ليه الـ median nonlinear؟</b> لأنه مش weighted sum للجيران، فمينفعش يتكتب kernel لـ <code>imfilter</code>.</p>
+<pre>g = medfilt2(f, [3 3]);                  <span class="c">% zero padding default</span>
+g = medfilt2(f, [3 3], 'symmetric');     <span class="c">% من غير إطار غامق</span>
+g = uint8(colfilt(f, [3 3], 'sliding', @median));          <span class="c">% Ex 3.9</span>
+s = colfilt(f, [5 5], 'sliding', @(x) std(x, 1, 1));       <span class="c">% local std</span></pre>
+<p><code>colfilt</code> بيطبّق <b>أي function</b> على كل neighborhood (<code>@median, @max, @std</code>). في <code>std(x,1,1)</code>: أول 1 = normalize بـ N، وتاني 1 = اشتغل على الأعمدة.</p>
+
+<h2>7. Sharpening</h2>
+<ul>
+  <li><b>Laplacian</b> (<b>second derivative</b>): بيرد على التغيير السريع: edges وتفاصيل دقيقة. المنطقة المسطحة = 0.</li>
+  <li><b>Gradient</b> (<b>first derivative</b>، زي <b>Sobel</b>): لاكتشاف الـ edges. Sobel = kernel أفقي + kernel رأسي، بيتجمعوا في <b>magnitude</b>.</li>
+</ul>
+<h3>Laplacian sharpening: قاعدة الإشارة</h3>
+<div class="trap"><b>Sign rule:</b> السنتر <b>سالب</b> (زي <code>fspecial('laplacian')</code> و <code>[0 1 0; 1 -4 1; 0 1 0]</code>) → <code>g = f − lap</code>. السنتر <b>موجب</b> → <code>g = f + lap</code>.</div>
+<pre>w   = fspecial('laplacian', 0);       <span class="c">% [0 1 0; 1 -4 1; 0 1 0]</span>
+lap = imfilter(im2double(f), w, 'replicate');
+g   = im2double(f) - lap;             <span class="c">% السنتر سالب → نطرح</span></pre>
+<p>مثال: جيران <code>[10 10 10; 10 50 10; 10 10 10]</code> مع <code>[0 1 0; 1 -4 1; 0 1 0]</code>: 10+10+10+10 − 4×50 = <b>−160</b>. في uint8 تبقى <b>0</b> (اتقصت)، في double تفضل −160. وبعدين g = 50 − (−160) = 210 → السنتر بقى أوضح.</p>
+<h3>Unsharp masking و Highboost</h3>
+<p>بيستخدموا <b>نسخة blurred</b> من الصورة (مش Laplacian):</p>
+<pre>blurred = imfilter(f, fspecial('average', 5), 'replicate');
+mask    = f - blurred;          <span class="c">% التفاصيل بس</span>
+g       = f + k * mask;         <span class="c">% k = 1 unsharp ، k > 1 highboost</span></pre>
+<p>المعادلة اللي تحفظها: <b>g = f + k·(f − blurred)</b>. زرار واحد (k) بيحركك من unsharp لـ highboost.</p>
+<p><b>Top-hat:</b> <code>SE = strel('disk',5,0); g = g - imopen(g, SE);</code> → الـ opening بيشيل الحاجات الفاتحة اللي أصغر من الـ disk، فلما نطرحه يفضل هي بس.</p>
+<p><b>Workflow نموذجي:</b> equalize ← smooth الـ noise ← sharpen التفاصيل ← clip للمدى. مفيش طريقة واحدة بتكسب دايمًا.</p>
+
+<h2>8. Fuzzy techniques (باختصار)</h2>
+<ul>
+  <li><b>Membership function μ</b>: بتقول البكسل "تابع قد إيه" لمجموعة (dark / gray / bright) بدل نعم/لا قاطعة.</li>
+  <li>العمليات: <b>union = max</b>، <b>intersection = min</b>، <b>complement = 1 − μ</b>.</li>
+  <li>input membership → <b>rules</b> → output membership، وكل rule بتشتغل بقوة (<b>firing strength</b>)، والنتايج تتجمع (<b>aggregation</b>)، و <b>defuzzification</b> بترجّعها رقم بكسل عادي (crisp).</li>
+  <li><code>intfuzz</code> (intensity transformation، Ex 3.15)، <code>fuzzfilt</code> (spatial filtering / boundary detection، Ex 3.16: يقارن السنتر بالـ 8 جيران). ميزته: بيشيل noise ويحافظ على الحدود.</li>
+</ul>
+
+<div class="exam"><h3>ممكن ييجي في الامتحان (Lab 3)</h3>
+<ol>
+<li><code>imadjust</code>: الـ 4 inputs، الـ ranges كسور، negative، وتأثير gamma &lt; 1 و &gt; 1.</li>
+<li><code>histeq(f,256)</code> vs <code>histeq(f,hspec)</code> vs <code>adapthisteq</code> (والـ default 64).</li>
+<li>ميكانيكا الـ filtering: correlation vs convolution، الـ padding، وحساب output بكسل بإيدك.</li>
+<li>Median vs average بمثال رقمي، وليه median nonlinear.</li>
+<li>Sharpening: sign rule للـ Laplacian، و unsharp/highboost، وفخ الـ uint8 مع imfilter.</li>
+</ol></div>
+</section>
+
+<!-- ================= TRAPS ================= -->
+<section class="tab" id="traps">
+<h2>الفخاخ الـ 15 في جدول واحد</h2>
+<table>
+<tr><th>#</th><th>الفخ</th><th>اللي بيحصل فعلًا</th></tr>
+<tr><td>1</td><td>uint8 arithmetic</td><td>200+100 = 255 و 50−100 = 0. <b>Saturation</b> من الناحيتين، عمرها ما بتلف.</td></tr>
+<tr><td>2</td><td><code>double(f)</code> vs <code>im2double(f)</code></td><td>الأول بيسيب 0..255، التاني بيقسم على 255.</td></tr>
+<tr><td>3</td><td>عرض صورة double</td><td><code>imshow</code> متوقع 0..1، وأي حاجة فوق 1 بيضا. استخدم <code>imshow(g,[])</code>.</td></tr>
+<tr><td>4</td><td><code>uint8(x)</code> vs <code>im2uint8(x)</code></td><td>الأول يقرّب ويقص بس، التاني يضرب في 255.</td></tr>
+<tr><td>5</td><td>Indexing</td><td>العد من 1، و (row, column). <code>f(0,0)</code> error.</td></tr>
+<tr><td>6</td><td><code>H(r,c)</code> بـ vectors</td><td>block كامل، مش زوج زوج. للأزواج: <code>sub2ind</code>.</td></tr>
+<tr><td>7</td><td><code>*</code> vs <code>.*</code></td><td>matrix product vs elementwise. ونفس الكلام <code>^</code> و <code>.^</code>.</td></tr>
+<tr><td>8</td><td><code>=</code>/<code>==</code> و <code>&amp;</code>/<code>&amp;&amp;</code></td><td><code>&amp;&amp;</code> لـ scalars بس، وبتدّي error على arrays.</td></tr>
+<tr><td>9</td><td><code>all</code> و <code>any</code></td><td>columnwise، والنتيجة row vector.</td></tr>
+<tr><td>10</td><td>imadjust ranges</td><td>كسور 0..1 دايمًا. <code>[ ]</code> = [0 1]. output [1 0] = negative.</td></tr>
+<tr><td>11</td><td>imfilter defaults</td><td>correlation، zero padding (إطار غامق)، ونفس class الـ input (السالب يتقص لـ 0 في uint8).</td></tr>
+<tr><td>12</td><td>إشارة الـ Laplacian</td><td>سنتر سالب: f − result. سنتر موجب: f + result.</td></tr>
+<tr><td>13</td><td>Unsharp masking</td><td>f ناقص نسخة <b>blurred</b>، مش Laplacian.</td></tr>
+<tr><td>14</td><td>histeq</td><td>default 64 مستوى. <code>histeq(f,hspec)</code> = matching مش equalization.</td></tr>
+<tr><td>15</td><td>histogram matching argument</td><td>التاني لازم <b>vector histogram</b>، مش صورة.</td></tr>
+</table>
+<h2>تصحيحات للسلايدز</h2>
+<ul>
+<li>سلايد "How big is the image": 1024 بكسل في الصف مش 8192.</li>
+<li>الـ narration قالت 50−100 بيدّي رقم كبير: غلط، MATLAB بيدّي 0.</li>
+<li>Example 2.5 في السلايد فيه r و c فيهم 4 على مصفوفة 3×3 (out of range). استخدم r=[1 2 3] و c=[3 2 1].</li>
+<li>Sharpening slide: <code>g = f + k*(f - imfilter(f,w))</code> صح بس لو w <b>smoothing</b> kernel.</li>
+<li>imadjust: 4 inputs مش 5.</li>
+</ul>
+</section>
+
+<!-- ================= MCQ ================= -->
+<section class="tab" id="mcq">
+<h2>اختيار من متعدد</h2>
+<p class="sub">اختار إجابة وهتشوف الصح والشرح على طول. تقدمك بيتحفظ في المتصفح.</p>
+<div class="bar">
+  <select id="fLvl"><option value="0">كل المستويات</option><option value="1">سهل</option><option value="2">متوسط</option><option value="3">صعب</option></select>
+  <select id="fLab"><option value="0">Lab 2 + Lab 3</option><option value="2">Lab 2</option><option value="3">Lab 3</option></select>
+  <select id="fState"><option value="all">الكل</option><option value="todo">اللي لسه</option><option value="wrong">اللي غلطت فيه</option></select>
+  <button id="retry">أعيد الغلط</button>
+  <button id="reset">ابدأ من الأول</button>
+  <span class="score" id="score"></span>
+</div>
+<div id="qs"></div>
+</section>
+
+<!-- ================= ESSAY ================= -->
+<section class="tab" id="essay">
+<h2>أسئلة مقالي (شكل الكويز)</h2>
+<p class="sub">اكتب إجابتك الأول في المربع، وبعدين افتح الإجابة النموذجية وقارن.</p>
+<div id="es"></div>
+</section>
+</div>
+
+<script>
+const Q = [
+// ---------- Level 1 ----------
+{l:1,b:2,q:"Sampling بيتحكم في إيه في الصورة الرقمية؟",o:["عدد درجات الرمادي","الحجم (عدد الصفوف والأعمدة)","نوع الفورمات","الـ data class"],a:1,e:"Sampling = digitize the coordinates → بيحدد M × N (SIZE). أما Quantization فبيحدد عدد المستويات (TONE)."},
+{l:1,b:2,q:"Quantization بـ 8 bits بيدّي كام مستوى رمادي؟",o:["8","128","256","65,536"],a:2,e:"2^8 = 256 مستوى (0..255). و 16 bits = 65,536."},
+{l:1,b:2,q:"في MATLAB، صورة حجمها M × N، الرقم M معناه:",o:["عدد الأعمدة","عدد الصفوف","عدد الـ bytes","أكبر قيمة بكسل"],a:1,e:"أول dimension = rows (رأسي)، تاني dimension = columns (أفقي)."},
+{l:1,b:2,q:"إيه اللي يحصل لو كتبت f(0,0)؟",o:["يرجع أول بكسل","يرجع 0","Error","يرجع آخر بكسل"],a:2,e:"MATLAB بيعد من 1. أول بكسل f(1,1)، و f(0,0) error."},
+{l:1,b:2,q:"الـ semicolon ; في آخر الأمر بتعمل إيه؟",o:["بتنهي البرنامج","بتخفي طباعة النتيجة","بتفصل صفوف المصفوفة بس","بتعمل comment"],a:1,e:"بتمنع طباعة النتيجة على الشاشة. (وجوه [] بتفصل الصفوف كمان، بس ده مش اللي بيعمله في آخر الأمر.)"},
+{l:1,b:2,q:"imshow(f, []) بتعرض الصورة إزاي؟",o:["أقل قيمة في الداتا أسود وأعلى قيمة أبيض","0 أسود و 255 أبيض دايمًا","بتعكس الصورة","بتعرضها binary"],a:0,e:"[] = scale to the data range: min → black, max → white. وده عرض بس، الداتا مبتتغيرش."},
+{l:1,b:2,q:"في imwrite لـ JPEG، quality = 100 معناها:",o:["أصغر ملف","lossless تمامًا","أحسن جودة وأكبر ملف","blocking artefacts"],a:2,e:"q من 0..100: 100 = أحسن جودة وأكبر حجم. JPEG بيفضل lossy."},
+{l:1,b:2,q:"الـ class اللي قيمه true/false بس ونتيجة أي مقارنة:",o:["uint8","logical","char","int8"],a:1,e:"logical: binary images و masks ونتيجة relational operators."},
+{l:1,b:2,q:"مدى الـ uint8:",o:["-128 … 127","0 … 1","0 … 255","0 … 65535"],a:2,e:"uint8 = 0..255 وbyte واحد. uint16 = 0..65535."},
+{l:1,b:3,q:"أنسب filter لإزالة salt-and-pepper noise من غير ما يبوّظ الـ edges:",o:["Average filter","Median filter","Laplacian","Sobel"],a:1,e:"Median (nonlinear) بياخد القيمة اللي في النص، فالبكسل الشاذ مبيأثرش. medfilt2."},
+{l:1,b:3,q:"imfilter بيعمل إيه by default؟",o:["Convolution","Correlation","Median","Histogram equalization"],a:1,e:"Correlation by default. ضيف 'conv' للـ convolution."},
+{l:1,b:3,q:"gamma < 1 في imadjust بيعمل إيه؟",o:["يغمّق الـ mid-tones","يفتّح الـ mid-tones","يعمل negative","مبيغيرش حاجة"],a:1,e:"gamma < 1 المنحنى بيتقوّس لفوق → يفتّح. gamma > 1 يغمّق."},
+{l:1,b:3,q:"الـ histogram بيعدّ إيه؟",o:["عدد الـ edges","عدد البكسلات عند كل مستوى إضاءة","عدد الألوان في الـ colormap","متوسط كل صف"],a:1,e:"h(r_k) = n_k: عدد البكسلات اللي قيمتها r_k."},
+{l:1,b:3,q:"أنهي واحدة دي point operation؟",o:["medfilt2","imfilter","Negative image","adapthisteq"],a:2,e:"الـ negative بيعتمد على البكسل نفسه بس. الباقي بيقرا neighborhood."},
+{l:1,b:3,q:"Convolution بتختلف عن correlation في إن:",o:["الـ kernel بيتلف 180° الأول","الـ kernel بيتربع","مفيش padding","بتشتغل على الـ histogram"],a:0,e:"Convolution = rotate the kernel by 180° ثم نفس الضرب والجمع."},
+
+// ---------- Level 2 ----------
+{l:2,b:2,q:"ناتج uint8(200) + uint8(100):",o:["300","44","255","error"],a:2,e:"Saturation عند 255. MATLAB مبيلفّش (no wrap) فمش 44."},
+{l:2,b:2,q:"ناتج uint8(50) - uint8(100):",o:["-50","206","0","50"],a:2,e:"Saturation من تحت عند 0. مش رقم كبير زي ما الـ narration قالت."},
+{l:2,b:2,q:"بكسل uint8 قيمته 200. إيه قيمته بعد im2double وبعد double؟",o:["0.7843 و 200","200 و 0.7843","1 و 200","0.7843 و 0.7843"],a:0,e:"im2double بيقسم على 255 → 0.7843. double من غير rescale → 200."},
+{l:2,b:2,q:"صورة 512 × 512 كـ double بتاخد كام byte؟",o:["262,144","524,288","2,097,152","8,388,608"],a:2,e:"512×512×8 = 2,097,152. (كـ uint8 = 262,144.)"},
+{l:2,b:2,c:"f = uint8([255 255 0; 0 128 255; 64 32 200]);",q:"f(:,2) بترجع إيه؟",o:["[0 128 255]","[255; 128; 32]","[255 255 0]","128"],a:1,e:"(:,2) = كل الصفوف، العمود 2 → column vector [255;128;32]. أما [0 128 255] فده f(2,:)."},
+{l:2,b:2,c:"f = uint8([255 255 0; 0 128 255; 64 32 200]);",q:"f(2:3, 1:2) بترجع إيه؟",o:["[255 255; 0 128]","[0 128; 64 32]","[128 255; 32 200]","[0 64; 128 32]"],a:1,e:"الصفوف 2-3 والأعمدة 1-2 → [0 128; 64 32]. ده الـ cropping."},
+{l:2,b:2,c:"f = uint8([255 255 0; 0 128 255; 64 32 200]);",q:"g = f > 100 بتطلع إيه؟",o:["uint8: [255 255 0; 0 128 255; 0 0 200]","logical: [1 1 0; 0 1 1; 0 0 1]","logical: [1 1 0; 0 0 1; 0 0 1]","double: نفس f"],a:1,e:"المقارنة بتطلع logical بنفس الحجم. 128 > 100 فهي 1."},
+{l:2,b:2,q:"f(1:2:end, :) بترجع إيه؟",o:["الصفين 1 و 2","الصفوف الفردية (1، 3، 5، …)","الأعمدة الفردية","آخر صفين"],a:1,e:"a:b:c = start:step:end → 1, 3, 5 … مع كل الأعمدة."},
+{l:2,b:2,q:"mat2gray([-0.5 0.5; 0.75 1]) القيمة اللي مكان 0.5 بتبقى:",o:["0.5","0.6667","0.75","0.3333"],a:1,e:"(0.5 − (−0.5)) / (1 − (−0.5)) = 1/1.5 = 0.6667."},
+{l:2,b:2,c:"B = [0 -1 1; 0 0 2];",q:"all(B) و any(B) بالترتيب:",o:["0 0 1 و 0 1 1","0 و 1","1 1 1 و 0 0 1","0 1 1 و 0 0 1"],a:0,e:"columnwise: all → عمود 3 بس مفيهوش صفر. any → عمود 1 كله أصفار."},
+{l:2,b:2,q:"A .* B بتعمل إيه؟",o:["Matrix multiplication","Elementwise multiplication","Transpose","Dot product يرجّع رقم واحد"],a:1,e:".* = array (elementwise). * = matrix product (rows × columns)."},
+{l:2,b:2,q:"الفرق بين size(f) و whos f:",o:["مفيش فرق","size بيدّي الأبعاد، whos بيدّي الأبعاد + bytes + class","whos بيدّي الأبعاد بس","size بيدّي الـ class"],a:1,e:"size = how many. whos = how many + bytes + what class."},
+{l:2,b:2,q:"ليه في السلايد اسم المتغير end_ مش end؟",o:["typo","لأن end كلمة محجوزة (reserved word)","عشان يبقى global","عشان الـ for تشتغل أسرع"],a:1,e:"end كلمة محجوزة في MATLAB (بتقفل البلوك وبتعني آخر index)."},
+{l:2,b:3,q:"imadjust(f, [0 1], [1 0]) على بكسل uint8 قيمته 64 يطلع:",o:["64","0","191","255"],a:2,e:"output range معكوس = negative → 255 − 64 = 191."},
+{l:2,b:3,q:"Median و average للجيران 3, 7, 200, 5, 6, 4, 8, 5, 9:",o:["5 و 27.4","6 و 27.4","6 و 6","200 و 27.4"],a:1,e:"مترتبين 3,4,5,5,6,7,8,9,200 → median 6. المجموع 247/9 ≈ 27.4."},
+{l:2,b:3,q:"histeq(f) من غير رقم تاني بيطلّع كام مستوى؟",o:["256","64","128","2"],a:1,e:"Default = 64. اكتب histeq(f,256) للـ 8-bit كاملة."},
+{l:2,b:3,q:"مجموع أوزان smoothing kernel ومجموع أوزان derivative kernel:",o:["0 و 1","1 و 0","1 و 1","9 و 0"],a:1,e:"Smoothing = 1 (الإضاءة العامة ثابتة). Derivative (Laplacian/Sobel) = 0 (المسطح يطلع 0)."},
+{l:2,b:3,q:"ليه imfilter(f, w) بيطلع إطار غامق حوالين الصورة؟",o:["عشان correlation","عشان zero padding default","عشان الـ kernel كبير","عشان uint8"],a:1,e:"Default padding = أصفار. استخدم 'replicate' أو 'symmetric' عشان تتجنبه."},
+{l:2,b:3,q:"adapthisteq بيختلف عن histeq في:",o:["بيشتغل tile by tile ومعاه ClipLimit","بيشتغل على RGB بس","بيعمل matching","مبيغيرش الـ contrast"],a:0,e:"CLAHE: local، default 8×8 tiles و ClipLimit 0.01 عشان الـ noise في المناطق المسطحة ما يتفجرش."},
+{l:2,b:3,q:"stretchlim(f) by default بيعمل إيه؟",o:["بيرجّع [0 1] دايمًا","بيلاقي الـ input limits ويتجاهل أغمق وأفتح 1%","بيعمل histogram equalization","بيعمل negative"],a:1,e:"بيحسب limits أوتوماتيك لـ imadjust وبيقص 1% من كل ناحية."},
+{l:2,b:3,q:"في g = f + k*(f − blurred)، لما k > 1 اسمها:",o:["Unsharp masking","Highboost filtering","Laplacian","Smoothing"],a:1,e:"k = 1 → unsharp. k > 1 → highboost."},
+{l:2,b:3,q:"ليه بنكتب log(1 + f) مش log(f)؟",o:["عشان نسرّع الحساب","عشان نتجنب log(0)","عشان نعمل negative","عشان الناتج يبقى uint8"],a:1,e:"log(0) = −Inf. الـ 1+ بيخلي أقل قيمة log(1) = 0."},
+{l:2,b:3,q:"Fuzzy union و intersection و complement:",o:["min / max / 1−μ","max / min / 1−μ","sum / product / −μ","max / min / μ²"],a:1,e:"Union = max، intersection = min، complement = 1 − μ."},
+
+// ---------- Level 3 ----------
+{l:3,b:2,c:"H = [1 2 3; 4 5 6; 7 8 9];\nr = [1 2 3];  c = [3 2 1];",q:"H(r, c) بيرجع إيه؟",o:["[3 5 7]","مصفوفة 3×3 (كل صف مع كل عمود)","[1 5 9]","error"],a:1,e:"Indexing بـ vectors بيرجّع block كامل: [3 2 1; 6 5 4; 9 8 7]. فخ صامت!"},
+{l:3,b:2,c:"H = [1 2 3; 4 5 6; 7 8 9];\nr = [1 2 3];  c = [3 2 1];",q:"عشان تجيب الأزواج (1,3) و (2,2) و (3,1) بس تكتب:",o:["H(r, c)","H(sub2ind(size(H), r, c))","H(r .* c)","diag(H)"],a:1,e:"sub2ind بيحوّل كل زوج (row,col) لـ linear index → [3 5 7]."},
+{l:3,b:2,q:"a = uint8(200); إيه ناتج a + 100 وإيه الـ class؟",o:["300 double","255 uint8","300 uint8","44 uint8"],a:1,e:"uint8 + double scalar = uint8 → saturates at 255."},
+{l:3,b:2,q:"a = uint8(200); b = uint8(100); إيه ناتج im2double(a) + im2double(b)؟",o:["300","1.1765","1","255"],a:1,e:"0.7843 + 0.3922 = 1.1765. ولو عرضتها بـ imshow هتطلع بيضا (أكبر من 1). عشان 300 لازم double()."},
+{l:3,b:2,q:"ناتج uint8(5) / uint8(2):",o:["2.5","2","3","error"],a:2,e:"Integer classes بتقرّب النتيجة: 2.5 → 3."},
+{l:3,b:2,q:"[X, Y] = meshgrid(1:N, 1:M). المصفوفة X فيها إيه؟",o:["رقم الصف لكل بكسل، وحجمها N×M","رقم العمود لكل بكسل، وحجمها M×N","رقم الصف لكل بكسل، وحجمها M×N","قيم الإضاءة"],a:1,e:"X = column number، Y = row number، والاتنين M × N."},
+{l:3,b:2,q:"if (A > 3 && B < 2) حيث A و B مصفوفات 2×3:",o:["بيشتغل عادي elementwise","Error لأن && للـ scalars بس","بيرجّع logical array","بيقارن أول عنصر بس"],a:1,e:"&& و || short-circuit لـ scalars بس، بيدّوا error على arrays. للـ arrays استخدم & و |."},
+{l:3,b:2,q:"دمج صورتين uint8 بـ imlincomb(0.5,f,0.5,g) أحسن من 0.5*f + 0.5*g لأن:",o:["أسرع بس","بيقرّب مرة واحدة في الآخر بدل تقريب كل نص","بيحوّل لـ double","بيعمل matching"],a:1,e:"في uint8 كل 0.5*f بيتقرّب لوحده (intermediate rounding). imlincomb بيحسب كله ويقرّب مرة."},
+{l:3,b:2,q:"C = {f, 'area'}. الفرق بين C{1} و C(1):",o:["مفيش فرق","C{1} المحتوى (الصورة)، C(1) cell فيها الصورة","C{1} error","C(1) المحتوى"],a:1,e:"الأقواس المعقوفة {} بتطلّع المحتوى. () بترجّع cell."},
+{l:3,b:2,q:"sprintf('patient10_run%02d.tif', 7) بيطلّع:",o:["patient10_run7.tif","patient10_run07.tif","patient10_run02.tif","patient10_run%07.tif"],a:1,e:"%02d = integer مكمّل بأصفار لرقمين → 07."},
+{l:3,b:2,q:"mean(f, 2) لصورة M × N بيرجّع:",o:["رقم واحد","row vector فيه N قيمة (قيمة لكل عمود)","column vector فيه M قيمة (قيمة لكل صف)","M × N"],a:2,e:"dim 2 = يمشي بالعرض → قيمة لكل صف. mean(f,1) قيمة لكل عمود. mean2 رقم واحد."},
+{l:3,b:3,c:"neighborhood = [10 10 10; 10 50 10; 10 10 10]\nw = [0 1 0; 1 -4 1; 0 1 0]   % f is uint8",q:"ناتج imfilter عند السنتر لو f uint8:",o:["-160","0","160","40"],a:1,e:"10+10+10+10 − 200 = −160. imfilter بيحافظ على uint8 فالسالب يتقص لـ 0. حوّل لـ double الأول."},
+{l:3,b:3,q:"عملت lap = imfilter(f, fspecial('laplacian')). تعمل sharpening إزاي؟",o:["g = f + lap","g = f − lap","g = lap − f","g = f .* lap"],a:1,e:"fspecial('laplacian') السنتر بتاعه سالب → g = f − lap. لو السنتر موجب → f + lap."},
+{l:3,b:3,q:"بكسل uint8 قيمته 160. imadjust(f, [0.5 0.75], [0 1]) يطلّعه تقريبًا:",o:["160","130","64","255"],a:1,e:"160/255 = 0.627 → (0.627−0.5)/0.25 = 0.51 → ×255 ≈ 130."},
+{l:3,b:3,q:"في contrast stretching g = 1./(1+(m./f).^E)، البكسل اللي قيمته = m يطلع:",o:["0","1","0.5","m"],a:2,e:"(m/m)^E = 1 → 1/(1+1) = 0.5. ولو E كبير جدًا المنحنى يبقى step = thresholding."},
+{l:3,b:3,q:"histeq(f, hspec) بتعمل إيه؟ وإيه hspec؟",o:["Equalization، و hspec صورة","Matching، و hspec vector histogram مطلوب","CLAHE، و hspec عدد tiles","Equalization لعدد hspec مستوى"],a:1,e:"Histogram matching (specification). hspec = vector قيمة لكل مستوى، مش صورة."},
+{l:3,b:3,q:"kernel symmetric زي average. correlation و convolution هيدّوا:",o:["نتايج معكوسة","نفس النتيجة","convolution أغمق","correlation error"],a:1,e:"اللفة 180° مبتغيرش kernel متماثل، فالنتيجة واحدة."},
+{l:3,b:3,q:"ليه الـ median filter اسمه nonlinear؟",o:["عشان بطيء","عشان مش weighted sum للجيران فمينفعش يتكتب kernel لـ imfilter","عشان بيشتغل على RGB","عشان بيستخدم log"],a:1,e:"Linear filter = weighted sum. الـ median = ترتيب واختيار، مش جمع موزون."},
+{l:3,b:3,q:"أنهي function دي مش built-in في الـ toolbox (من الكتاب)؟",o:["imadjust","intrans","medfilt2","adapthisteq"],a:1,e:"intrans و gscale و tofloat M-files من الكتاب. لو مش على الـ path → Undefined function."},
+{l:3,b:3,q:"g = f − imopen(f, strel('disk',5,0)) بيطلّع إيه؟",o:["الصورة blurred","الأجسام الفاتحة الصغيرة اللي أصغر من الـ disk بس","negative","الـ edges بالـ Sobel"],a:1,e:"ده top-hat: الـ opening بيشيل الأجسام الفاتحة الأصغر من الـ SE، فالطرح يسيبها هي."},
+{l:3,b:3,q:"زودت الـ ClipLimit في adapthisteq. المتوقع:",o:["contrast أقل و noise أقل","contrast أكتر و noise أكتر","الصورة تبقى binary","مفيش تأثير"],a:1,e:"ClipLimit أكبر = مسموح بـ contrast enhancement أكتر في كل tile، ومعاه noise أكتر."},
+{l:3,b:3,q:"في colfilt(f,[5 5],'sliding',@(x) std(x,1,1)) الـ 1 الأولى والتانية معناهم:",o:["حجم الـ kernel","normalize بـ N، والشغل على الأعمدة","zero padding مرتين","عدد الـ tiles"],a:1,e:"std(x, flag, dim): flag = 1 → normalize بـ N. dim = 1 → down the columns (colfilt بيحط كل neighborhood في عمود)."}
+];
+
+const E = [
+{q:"اشرح الفرق بين Sampling و Quantization، وإيه اللي بيتحكم فيه كل واحد.",a:"<b>Sampling</b> = digitizing the coordinates: نقسم المنظر لشبكة M rows × N columns، وده بيحدد <b>size / spatial resolution</b>.<br><b>Quantization</b> = digitizing the amplitude: كل قيمة إضاءة تتحول لرقم صحيح (8 bits = 256 levels، 0 أسود و 255 أبيض)، وده بيحدد <b>tone / gray-level resolution</b>.<br>النتيجة: f(x,y) تبقى matrix، كل عنصر pixel."},
+{q:"قارن بين double(f) و im2double(f)، وبين uint8(x) و im2uint8(x). ادّي مثال رقمي.",a:"<code>double(f)</code>: يغيّر الـ class بس، 200 تفضل 200.<br><code>im2double(f)</code>: يعمل rescale (÷255)، 200 → 0.7843.<br><code>uint8(x)</code>: يقرّب ويقص لـ 0..255، فـ 0.78 → 1.<br><code>im2uint8(x)</code>: يضرب في 255 (ويقص برا 0..1)، فـ 0.78 → 199.<br>والقاعدة: الدوال اللي اسمها im2… بتعمل rescale، والتانية لأ."},
+{q:"إيه هو uint8 trap؟ وإزاي تحسب 200 + 100 صح؟ واكتب الوصفة الآمنة.",a:"uint8 بيشيل 0..255 بس، وأي ناتج برا المدى بيحصله <b>saturation</b> (مش wrap): 200+100 = 255، و 50−100 = 0.<br>عشان 300: <code>double(a) + double(b)</code> (مش im2double لأنها هتدّي 1.18).<br>الوصفة: <code>g = im2double(f);</code> → احسب → <code>g = im2uint8(mat2gray(result));</code><br>ولو عرضت double من غير scaling: <code>imshow(g, [])</code>."},
+{q:"لـ f = uint8([255 255 0; 0 128 255; 64 32 200])، اكتب ناتج: f(2,3) و f(:,2) و f(2:3,1:2) و f > 100، وإيه اللي يتغير بعد f(f>100)=255.",a:"f(2,3) = 255<br>f(:,2) = [255; 128; 32]<br>f(2:3,1:2) = [0 128; 64 32]<br>f > 100 = logical [1 1 0; 0 1 1; 0 0 1]<br>بعد f(f>100)=255: الـ 128 والـ 200 يبقوا 255، والباقي زي ما هو."},
+{q:"اشرح ميكانيكا الـ linear spatial filtering، والفرق بين correlation و convolution، وخيارات الـ padding في imfilter.",a:"<b>Kernel</b> صغير (3×3) نحطه فوق الجيران والـ origin فوق البكسل، نضرب كل وزن في البكسل اللي تحته ونجمع ونكتب الناتج، ونزق ونكرر.<br><b>Correlation</b>: الـ kernel زي ما هو. <b>Convolution</b>: نلفه 180° الأول. imfilter = correlation by default، و 'conv' للـ convolution. الـ symmetric kernels بتدّي نفس النتيجة.<br><b>Padding</b>: default zeros (إطار غامق)، 'replicate' يكرر الحرف، 'symmetric' مراية، 'circular' يلف. الـ output نفس حجم الـ input ونفس الـ class."},
+{q:"قارن بين average filter و median filter مع مثال رقمي، وليه الـ median nonlinear؟",a:"<b>Average</b>: weighted sum (ones(3)/9)، بيشيل noise بس بيعمل blur للـ edges، وkernel أكبر = blur أقوى.<br><b>Median</b>: نرتب الجيران وناخد اللي في النص. ممتاز لـ <b>salt-and-pepper</b> ومحافظ على الـ edges.<br>مثال: 3,7,200,5,6,4,8,5,9 → مترتبين 3,4,5,5,<b>6</b>,7,8,9,200 → median 6، average ≈ 27.4 (البكسل 200 سحبه).<br><b>Nonlinear</b> لأنه مش weighted sum فمينفعش يتكتب kernel. الكود: <code>medfilt2(f,[3 3],'symmetric')</code>."},
+{q:"قارن بين histeq(f,256) و histeq(f,hspec) و adapthisteq(f).",a:"<b>Equalization</b> <code>histeq(f,256)</code>: point operation بتستخدم الـ CDF عشان تفرد الـ histogram ناحية uniform (تقريبًا مش بالظبط لأن المستويات discrete). من غير 256 الـ default 64.<br><b>Matching</b> <code>histeq(f,hspec)</code>: الـ output يشبه histogram مطلوب، و hspec vector مش صورة.<br><b>CLAHE</b> <code>adapthisteq(f)</code>: local، tiles 8×8، و ClipLimit 0.01 بيمنع تفجير الـ noise في المناطق المسطحة اللي global equalization ممكن يعمله."},
+{q:"اشرح imadjust بالـ parameters بتاعته، وإزاي تعمل negative وتأثير gamma. وإيه وظيفة stretchlim؟",a:"<code>g = imadjust(f, [low_in high_in], [low_out high_out], gamma)</code>: 4 inputs، والـ ranges كسور 0..1 مهما كان الـ class، و [] = [0 1].<br>Negative: <code>imadjust(f,[0 1],[1 0])</code> (64 → 191)، أو <code>imcomplement(f)</code>.<br>gamma &lt; 1 يفتّح الـ mid-tones، gamma &gt; 1 يغمّقها.<br><code>stretchlim(f)</code> يحسب input limits أوتوماتيك ويتجاهل 1% من كل ناحية: <code>imadjust(f, stretchlim(f), [])</code>."},
+{q:"اشرح Laplacian sharpening وقاعدة الإشارة، وليه لازم تحوّل لـ double الأول. واشرح unsharp masking و highboost.",a:"<b>Laplacian</b> = second derivative، بيطلّع 0 في المسطح ورد قوي عند الـ edges. مجموع أوزانه 0.<br><b>Sign rule</b>: سنتر سالب (fspecial('laplacian')) → g = f − lap. سنتر موجب → g = f + lap.<br>imfilter بيحافظ على class الـ input، فلو uint8 القيم السالبة تتقص لـ 0 والتفاصيل تضيع → <code>im2double</code> الأول.<br><b>Unsharp/Highboost</b>: <code>mask = f − blurred</code>، <code>g = f + k·mask</code>. k = 1 unsharp، k &gt; 1 highboost. بيستخدم blurred copy مش Laplacian."},
+{q:"اكتب كود MATLAB: يقرا صورة، يحوّلها لـ double، يعمل sharpening بالـ Laplacian من غير إطار غامق، يعرض الأصل والنتيجة، ويحفظ النتيجة PNG.",a:"<pre>f   = imread('moon.tif');\nfd  = im2double(f);\nw   = fspecial('laplacian', 0);      % center = -4\nlap = imfilter(fd, w, 'replicate');  % no dark border\ng   = fd - lap;                      % center negative → subtract\nimshow(f), figure, imshow(g)\nimwrite(im2uint8(g), 'sharp.png')    % im2uint8 clips to 0..1 first</pre>"},
+{q:"وضّح الفرق بين point operation و neighborhood operation بالمعادلة وأمثلة من الـ toolbox.",a:"المعادلة: <code>g(x,y) = T[f(x,y)]</code>.<br><b>Point</b>: T بتشوف البكسل نفسه بس: negative، gamma، log، contrast stretching، <code>imadjust</code>، <code>histeq</code>.<br><b>Neighborhood</b>: T بتقرا window حوالين البكسل: <code>imfilter</code>، <code>medfilt2</code>، <code>colfilt</code>، <code>adapthisteq</code>."},
+{q:"ليه الـ vectorization مهم؟ واكتب كود يولّد sinusoidal image وأعمل لها threshold من غير loops، واشرح X و Y.",a:"loop على كل بكسل أبطأ بكتير (Ex 2.13 حوالي 220×). العملية على الـ array كله مرة واحدة أسرع.<br><pre>[X, Y] = meshgrid(1:N, 1:M);\nf = sin(X/4 + Y/4);\ng = f > 0.5;   % logical image</pre>X فيها رقم العمود لكل بكسل، و Y رقم الصف، والاتنين M×N."}
+];
+
+const KEY = "ip-lab23-v1";
+let st = {};
+try { st = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { st = {}; }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch(e) {} };
+const lvlName = {1:"سهل",2:"متوسط",3:"صعب"};
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+function render(){
+  const fl = +document.getElementById("fLvl").value, fb = +document.getElementById("fLab").value, fs = document.getElementById("fState").value;
+  const box = document.getElementById("qs"); box.innerHTML = "";
+  let n = 0;
+  Q.forEach((q,i)=>{
+    if (fl && q.l !== fl) return;
+    if (fb && q.b !== fb) return;
+    const ans = st[i];
+    if (fs === "todo" && ans !== undefined) return;
+    if (fs === "wrong" && (ans === undefined || ans === q.a)) return;
+    n++;
+    const d = document.createElement("div");
+    d.className = "q" + (ans !== undefined ? " done" : "");
+    d.innerHTML = `<div class="meta"><span class="tag l${q.l}">${lvlName[q.l]}</span><span class="tag">Lab ${q.b}</span><span class="tag">#${i+1}</span></div>`
+      + `<div class="stem">${esc(q.q)}</div>` + (q.c ? `<pre>${esc(q.c)}</pre>` : "")
+      + `<div class="opts">${q.o.map((o,j)=>`<button class="opt" data-j="${j}">${esc(o)}</button>`).join("")}</div>`
+      + `<div class="ex"><b>${ans===q.a?"✔ صح.":"✘ الصح: "+esc(q.o[q.a])+"."}</b> ${esc(q.e)}</div>`;
+    const btns = d.querySelectorAll(".opt");
+    if (ans !== undefined){
+      btns.forEach(b=>{ b.disabled = true; const j=+b.dataset.j; if (j===q.a) b.classList.add("right"); else if (j===ans) b.classList.add("wrong"); });
+    } else {
+      btns.forEach(b=>b.onclick=()=>{ st[i] = +b.dataset.j; save(); const y = window.scrollY; render(); window.scrollTo(0,y); });
+    }
+    box.appendChild(d);
+  });
+  if (!n) box.innerHTML = '<p class="sub">مفيش أسئلة هنا. غيّر الفلتر.</p>';
+  const done = Object.keys(st).length, ok = Object.keys(st).filter(k=>st[k]===Q[k].a).length;
+  document.getElementById("score").textContent = `✔ ${ok} / ${done} محلول · ${Q.length} سؤال`;
+}
+["fLvl","fLab","fState"].forEach(id=>document.getElementById(id).onchange=render);
+document.getElementById("reset").onclick=()=>{ st = {}; save(); render(); };
+document.getElementById("retry").onclick=()=>{ Object.keys(st).forEach(k=>{ if (st[k]!==Q[k].a) delete st[k]; }); save(); document.getElementById("fState").value="todo"; render(); };
+render();
+
+const es = document.getElementById("es");
+E.forEach((x,i)=>{
+  const d = document.createElement("details"); d.className="essay";
+  d.innerHTML = `<summary>س${i+1}: ${x.q}</summary><textarea placeholder="اكتب إجابتك هنا..."></textarea><button>اعرض الإجابة النموذجية</button><div class="ans">${x.a}</div>`;
+  const ta = d.querySelector("textarea"), k = KEY+"-e"+i;
+  try { ta.value = localStorage.getItem(k) || ""; } catch(e) {}
+  ta.oninput = ()=>{ try { localStorage.setItem(k, ta.value); } catch(e) {} };
+  d.querySelector("button").onclick = ()=> d.querySelector(".ans").classList.toggle("show");
+  es.appendChild(d);
+});
+
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav.tabs button").forEach(x=>x.classList.toggle("on", x===b));
+  document.querySelectorAll("section.tab").forEach(s=>s.classList.toggle("on", s.id===b.dataset.t));
+  window.scrollTo(0,0);
+});
+document.getElementById("themeBtn").onclick=()=>{
+  const r = document.documentElement, dark = r.dataset.theme ? r.dataset.theme==="dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  r.dataset.theme = dark ? "light" : "dark";
+};
+</script>
+<script>
+/* ===== Lab 2 interactive widgets ===== */
+(function(){
+const $ = id => document.getElementById(id);
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const gray = v => { v = clamp(Math.round(v),0,255); return `rgb(${v},${v},${v})`; };
+const ink = v => v > 140 ? "#111" : "#fff";
+const fmtN = x => Number.isInteger(x) ? String(x) : (+x.toFixed(4)).toString();
+
+// matrix renderer: M = 2D array; opt.hl = Set("i,j"); opt.img = color as gray; opt.bad = Set for red
+function mat(M, opt = {}){
+  const hl = opt.hl || new Set(), bad = opt.bad || new Set();
+  let h = '<table class="mat"><tr><th></th>' + M[0].map((_,j)=>`<th>${j+1}</th>`).join("") + "</tr>";
+  M.forEach((row,i)=>{
+    h += `<tr><th>${i+1}</th>` + row.map((v,j)=>{
+      const k = i+","+j, on = hl.has(k);
+      const st = opt.img ? `background:${gray(v)};color:${ink(v)}` : (bad.has(k) ? "background:var(--bad-soft);color:var(--bad)" : "");
+      return `<td data-i="${i}" data-j="${j}" class="${on?"hl":""} ${opt.dim && hl.size && !on ? "dim":""}" style="${st}">${opt.fmt ? opt.fmt(v) : fmtN(v)}</td>`;
+    }).join("") + "</tr>";
+  });
+  return h + "</table>";
+}
+function matText(M){ // MATLAB-like print
+  const w = Math.max(...M.flat().map(v=>fmtN(v).length)) + 3;
+  return M.map(r=>r.map(v=>fmtN(v).padStart(w)).join("")).join("\n");
+}
+function presets(el, list, fn){
+  el.innerHTML = list.map((p,i)=>`<button data-i="${i}"><code>${p.c}</code></button>`).join("");
+  el.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    el.querySelectorAll("button").forEach(x=>x.classList.toggle("on", x===b));
+    fn(list[+b.dataset.i]);
+  });
+  el.querySelector("button").click();
+}
+
+/* --- 1. sampling & quantization --- */
+function scene(x,y){
+  let v = 0.15 + 0.55*y;
+  const d = Math.hypot(x-.5, y-.5);
+  if (d < .36){
+    v = 0.92 - 0.6*d;
+    if (Math.hypot(x-.37,y-.4) < .055 || Math.hypot(x-.63,y-.4) < .055) v = 0.06;
+    if (y > .55 && d > .17 && d < .23) v = 0.12;
+  }
+  return clamp(v,0,1);
+}
+const NS = [4,8,16,32,64,128,256], LS = [2,4,8,16,32,64,128,256];
+const sqC = $("sqC"), sqX = sqC.getContext("2d");
+let sqGrid = null;
+function drawSQ(){
+  const n = NS[+$("sqNs").value], L = LS[+$("sqLs").value], W = sqC.width;
+  $("sqN").textContent = `${n} × ${n} pixel`;
+  $("sqL").textContent = `${L} درجة (${Math.log2(L)} bit)`;
+  sqGrid = [];
+  for (let i=0;i<n;i++){ sqGrid.push([]);
+    for (let j=0;j<n;j++){
+      const v = scene((j+.5)/n,(i+.5)/n), q = Math.round(v*(L-1))/(L-1), p = Math.round(q*255);
+      sqGrid[i].push(p);
+      sqX.fillStyle = gray(p);
+      const x0 = Math.floor(j*W/n), y0 = Math.floor(i*W/n);
+      sqX.fillRect(x0, y0, Math.floor((j+1)*W/n)-x0, Math.floor((i+1)*W/n)-y0);
+    }}
+  $("sqInfo").textContent = `M × N = ${n} × ${n} = ${(n*n).toLocaleString()} pixels  ·  ${L} gray levels\nحرّك الماوس على الصورة تشوف قيمة البكسل`;
+}
+sqC.onmousemove = e => {
+  const r = sqC.getBoundingClientRect(), n = sqGrid.length;
+  const j = clamp(Math.floor((e.clientX-r.left)/r.width*n),0,n-1), i = clamp(Math.floor((e.clientY-r.top)/r.height*n),0,n-1);
+  $("sqInfo").textContent = `f(${i+1}, ${j+1}) = ${sqGrid[i][j]}     ← صف ${i+1} ، عمود ${j+1}\nM × N = ${n} × ${n}`;
+};
+$("sqNs").oninput = drawSQ; $("sqLs").oninput = drawSQ; drawSQ();
+
+/* --- 2. indexing explorer --- */
+const F = [[255,255,0],[0,128,255],[64,32,200]];
+function parseIdx(s, n){
+  s = s.trim();
+  if (s === ":") return [...Array(n).keys()].map(i=>i+1);
+  const num = t => { t = t.trim().replace(/end/g, n); if (!/^\d+([+-]\d+)?$/.test(t)) throw "bad"; return Function(`return ${t}`)(); };
+  const p = s.split(":");
+  let out;
+  if (p.length === 1) out = [num(p[0])];
+  else { const a = num(p[0]), st = p.length===3 ? num(p[1]) : 1, b = num(p[p.length-1]); out = []; for (let k=a;k<=b;k+=st) out.push(k); }
+  out.forEach(k=>{ if (k < 1) throw "zero"; if (k > n) throw "big"; });
+  return out;
+}
+const idxNotes = {
+  "f(2,3)":"الرقم الأول = الصف (رأسي ↓)، والتاني = العمود (أفقي →). صف 2 عمود 3 = 255.",
+  "f(:,2)":"الـ : مكان الصف = \"كل الصفوف\". فخدنا العمود 2 كله، والنتيجة <b>column vector</b> (واقف).",
+  "f(2,:)":"الصف 2 كله، والنتيجة <b>row vector</b> (نايم).",
+  "f(2:3,1:2)":"صفوف 2 و3، وأعمدة 1 و2 = <b>subimage</b>. وده بالظبط الـ <b>cropping</b>.",
+  "f(end,end)":"end = آخر رقم. هنا end = 3، فده f(3,3) = 200.",
+  "f(1:2:end,:)":"1:2:end = 1, 3 (من 1 بخطوة 2). يعني الصفوف الفردية.",
+  "f(0,0)":"MATLAB بيعد من 1. مفيش صف رقم 0، فده <b>error</b>.",
+  "f>100":"المقارنة بتسأل كل بكسل لوحده، والنتيجة جدول <b>logical</b> بنفس الحجم: 1 = أيوه، 0 = لأ. ده الـ <b>mask</b>.",
+  "f(f>100)=255":"استخدمنا الـ mask عشان نختار البكسلات. كل اللي أكبر من 100 بقى 255. الـ 128 والـ 200 اتغيروا، والـ 255 كانت 255 أصلًا."
+};
+function runIdx(src){
+  const s = src.replace(/\s+/g,""), key = s;
+  let hl = new Set(), out = "", M = F, note = idxNotes[key] || "";
+  try{
+    let m;
+    if ((m = s.match(/^f\((.+)\)=(\d+)$/)) && /^f(>=|<=|==|~=|>|<)\d+$/.test(m[1])){
+      const [, op, k] = m[1].match(/^f(>=|<=|==|~=|>|<)(\d+)$/);
+      const t = cmp(op, +k);
+      M = F.map((r,i)=>r.map((v,j)=>{ if (t(v)) { hl.add(i+","+j); return clamp(+m[2],0,255); } return v; }));
+      out = "f =\n" + matText(M);
+      if (!note) note = "البكسلات المتظللة هي اللي الشرط كان صح عليها، واتغيرت.";
+    } else if ((m = s.match(/^f(>=|<=|==|~=|>|<)(\d+)$/))){
+      const t = cmp(m[1], +m[2]);
+      const L = F.map((r,i)=>r.map((v,j)=>{ const y = t(v)?1:0; if (y) hl.add(i+","+j); return y; }));
+      out = "ans =\n  3×3 logical array\n" + matText(L);
+      if (!note) note = "النتيجة logical: 1 للبكسل اللي حقق الشرط.";
+    } else if ((m = s.match(/^f\((.+),(.+)\)$/))){
+      const R = parseIdx(m[1],3), C = parseIdx(m[2],3);
+      R.forEach(r=>C.forEach(c=>hl.add((r-1)+","+(c-1))));
+      const res = R.map(r=>C.map(c=>F[r-1][c-1]));
+      out = res.length===1 && res[0].length===1 ? `ans = ${res[0][0]}` : "ans =\n" + matText(res);
+      if (!note) note = `الصفوف [${R}] × الأعمدة [${C}] → النتيجة ${R.length}×${C.length}.`;
+    } else throw "syntax";
+  } catch(e){
+    out = e==="zero" ? "Index in position 1 is invalid. Array indices must be positive integers or logical values."
+        : e==="big" ? "Index exceeds the number of array elements. Index must not exceed 3."
+        : "مش فاهم الأمر ده. جرّب شكل زي: f(2,3) أو f(:,1) أو f>100 أو f(f>100)=0";
+    if (!note) note = e==="big" ? "المصفوفة 3×3 بس، فمفيش index أكبر من 3." : "";
+  }
+  $("idxM").innerHTML = mat(M, {img:true, hl, dim:true});
+  $("idxO").textContent = out;
+  $("idxE").innerHTML = note;
+  $("idxM").querySelectorAll("td").forEach(td=>td.onclick=()=>{
+    const i=+td.dataset.i+1, j=+td.dataset.j+1;
+    $("idxIn").value = `f(${i},${j})`; runIdx($("idxIn").value);
+  });
+}
+function cmp(op,k){ return {">":v=>v>k,"<":v=>v<k,">=":v=>v>=k,"<=":v=>v<=k,"==":v=>v===k,"~=":v=>v!==k}[op]; }
+const IP = ["f(2,3)","f(:,2)","f(2,:)","f(2:3,1:2)","f(end,end)","f(1:2:end,:)","f > 100","f(f > 100) = 255","f(0,0)"].map(c=>({c}));
+presets($("idxP"), IP, p=>{ $("idxIn").value = p.c; runIdx(p.c); });
+$("idxGo").onclick = ()=>{ $("idxP").querySelectorAll("button").forEach(x=>x.classList.remove("on")); runIdx($("idxIn").value); };
+$("idxIn").onkeydown = e=>{ if (e.key==="Enter") $("idxGo").click(); };
+
+/* --- 3. memory --- */
+function mem(){
+  const r = Math.max(1,+$("memR").value||1), c = Math.max(1,+$("memC").value||1), b = +$("memT").value, k = $("memRGB").checked ? 3 : 1;
+  const t = r*c*b*k, name = $("memT").selectedOptions[0].text.split(" ")[0];
+  $("memO").textContent = `${r} × ${c}${k===3?" × 3":""} × ${b} byte = ${t.toLocaleString()} bytes  ≈ ${(t/1048576).toFixed(2)} MB   (${name})`;
+}
+["memR","memC","memT","memRGB"].forEach(id=>$(id).oninput=mem); mem();
+
+/* --- 4. uint8 calculator --- */
+function u8(){
+  let a = +$("u8a").value||0, b = +$("u8b").value||0; const op = $("u8op").value;
+  const ua = clamp(Math.round(a),0,255), ub = clamp(Math.round(b),0,255);
+  const f = (x,y)=> op==="+"?x+y : op==="-"?x-y : op==="*"?x*y : (y===0? Infinity : x/y);
+  const tr = f(a,b), u = op==="/" && ub===0 ? (ua===0?0:255) : clamp(Math.round(f(ua,ub)),0,255);
+  const id = f(ua/255, ub/255), wrap = ((Math.round(f(ua,ub))%256)+256)%256;
+  const note = (ua!==a||ub!==b) ? `<br>⚠️ المدخلات نفسها اتقصت لما اتحولت uint8: a = ${ua}، b = ${ub}.` : "";
+  $("u8O").innerHTML =
+    `<div class="card"><div class="cap">double(a) ${op} double(b)</div><b class="big2">${fmtN(tr)}</b><div class="cap">الحقيقة الرياضية</div></div>`+
+    `<div class="card ${u!==Math.round(tr)?"bad":"good"}"><div class="cap">uint8(a) ${op} uint8(b)</div><b class="big2">${u}</b><div class="cap">${tr>255?"اتقص عند 255 (Saturation)":tr<0?"اتقص عند 0 (Saturation)":!Number.isInteger(tr)?"اتقرّب لأقرب رقم صحيح":"جوه المدى، تمام"}</div></div>`+
+    `<div class="card"><div class="cap">im2double(a) ${op} im2double(b)</div><b class="big2">${isFinite(id)?fmtN(+id.toFixed(4)):"Inf"}</b><div class="cap">${isFinite(id)&&id>1?"أكبر من 1 → imshow يعرضه أبيض":"وحدة من 1، مش من 255"}</div></div>`+
+    (tr>255||tr<0 ? `<div class="card strike"><div class="cap">لو كان بيلف (wrap)</div><b class="big2">${wrap}</b><div class="cap">❌ ده مش اللي MATLAB بيعمله</div></div>` : "");
+  $("u8mark").style.left = (clamp(tr,0,255)/255*100) + "%";
+  $("u8mark").className = tr>255||tr<0 ? "over" : "";
+  $("u8E").innerHTML = (tr>255 ? `الكوباية بتشيل لحد 255 بس، فالـ ${fmtN(tr)} بقت <b>255</b>.` : tr<0 ? `مفيش سالب في uint8، فالـ ${fmtN(tr)} بقت <b>0</b>.` : `النتيجة ${u}.`) + note;
+}
+["u8a","u8b","u8op"].forEach(id=>$(id).oninput=u8); u8();
+
+/* --- 5. conversions --- */
+function conv(){
+  const v = +$("cvS").value; $("cvV").textContent = v;
+  const d = v/255;
+  const cards = [
+    ["f (uint8)", v, v, "الأصل", ""],
+    ["double(f)", v, v===0?0:255, "نفس الرقم، بس imshow متوقع 0..1 → أي حاجة فوق 1 بيضا", v>1?"bad":""],
+    ["im2double(f)", +d.toFixed(4), v, "اتقسم على 255 → صح", "good"],
+    ["imshow(double(f), [])", v, v, "الحل لو مصمم على double(f)", "good"],
+    ["uint8(im2double(f))", Math.round(d), Math.round(d), "بيقرّب 0.78 → 1 بس! الصورة ضاعت", "bad"],
+    ["im2uint8(im2double(f))", Math.round(d*255), Math.round(d*255), "بيضرب في 255 → رجعت زي الأول", "good"]
+  ];
+  $("cvO").innerHTML = cards.map(([t,val,sw,cap,cls])=>`<div class="card ${cls}"><div class="cap ltr"><code>${t}</code></div><b class="big2">${val}</b><div class="sw" style="background:${gray(sw)}"></div><div class="cap">${cap}</div></div>`).join("");
+}
+$("cvS").oninput = conv; conv();
+
+/* --- mat2gray --- */
+function m2g(){
+  const xs = $("m2gIn").value.split(/[\s,]+/).filter(Boolean).map(Number).filter(x=>!isNaN(x));
+  if (xs.length < 2){ $("m2gO").innerHTML = '<p class="hint">اكتب رقمين على الأقل</p>'; return; }
+  const mn = Math.min(...xs), mx = Math.max(...xs), r = mx-mn || 1;
+  $("m2gO").innerHTML = `<div class="out">min = ${fmtN(mn)} · max = ${fmtN(mx)} · max − min = ${fmtN(+(mx-mn).toFixed(4))}</div><table class="ltr"><tr><th>value</th><th>(value − min) / (max − min)</th><th>result</th><th>الشكل</th></tr>` +
+    xs.map(x=>{ const g = (x-mn)/r; return `<tr><td>${fmtN(x)}</td><td>(${fmtN(x)} − ${fmtN(mn)}) / ${fmtN(+(mx-mn).toFixed(4))}</td><td><b>${(+g.toFixed(4))}</b></td><td><div class="sw sm" style="background:${gray(g*255)}"></div></td></tr>`; }).join("") + "</table>";
+}
+$("m2gIn").oninput = m2g; m2g();
+
+/* --- 6. imshow display range --- */
+const shC = $("shC"), shX = shC.getContext("2d"), SW = 160, SH = 90;
+const D = []; for (let i=0;i<SH;i++){ D.push([]); for (let j=0;j<SW;j++) D[i].push(Math.round(90 + 80*scene(j/SW*1.0, i/SH))); }
+let shMode = 0;
+function drawSh(){
+  let lo, hi, cmd;
+  if (shMode===0){ lo=0; hi=255; cmd="imshow(f)"; }
+  else if (shMode===1){ lo=90; hi=170; cmd="imshow(f, [])"; }
+  else { lo=+$("shLo").value; hi=Math.max(lo+1,+$("shHi").value); cmd=`imshow(f, [${lo} ${hi}])`; }
+  $("shCtl").style.opacity = shMode===2 ? 1 : .35;
+  $("shLoV").textContent = $("shLo").value; $("shHiV").textContent = $("shHi").value;
+  const cw = shC.width/SW, ch = shC.height/SH;
+  for (let i=0;i<SH;i++) for (let j=0;j<SW;j++){
+    shX.fillStyle = gray((D[i][j]-lo)/(hi-lo)*255);
+    shX.fillRect(Math.floor(j*cw), Math.floor(i*ch), Math.ceil(cw), Math.ceil(ch));
+  }
+  $("shO").textContent = `>> ${cmd}\nالعرض: ${lo} وأقل = أسود ، ${hi} وأكتر = أبيض\nالأرقام جوه f: لسه min = 90 و max = 170 (ما اتغيرتش)`;
+}
+presets($("shP"), [{c:"imshow(f)",m:0},{c:"imshow(f, [])",m:1},{c:"imshow(f, [low high])",m:2}], p=>{ shMode=p.m; drawSh(); });
+$("shLo").oninput = drawSh; $("shHi").oninput = drawSh;
+
+/* --- 7. H(r,c) vs sub2ind --- */
+const H = [[1,2,3],[4,5,6],[7,8,9]];
+presets($("subP"), [
+  {c:"H(r, c)", hl:[[0,2],[0,1],[0,0],[1,2],[1,1],[1,0],[2,2],[2,1],[2,0]], o:"ans =\n" + matText([[3,2,1],[6,5,4],[9,8,7]]),
+   e:"MATLAB أخد <b>كل صف</b> من r مع <b>كل عمود</b> من c: (1,3) (1,2) (1,1) ثم (2,3) (2,2) ... → 9 خانات = block 3×3. ومفيش error!"},
+  {c:"H(sub2ind(size(H), r, c))", hl:[[0,2],[1,1],[2,0]], o:"sub2ind(size(H), r, c)\nans =\n     7     5     3\n\nH(ans)\nans =\n     3     5     7",
+   e:"<code>sub2ind</code> بيحوّل كل زوج (row, col) لرقم واحد (<b>linear index</b>). MATLAB بيعد <b>عمود عمود</b>: (1,3) هي الخانة رقم 7، و(2,2) رقم 5، و(3,1) رقم 3. فبناخد الـ 3 خانات بس → [3 5 7]."},
+  {c:"H(:)", hl:[], o:"ans =\n     1\n     4\n     7\n     2\n     5\n     8\n     3\n     6\n     9",
+   e:"<code>H(:)</code> بيرصّ المصفوفة في عمود واحد، <b>عمود ورا عمود</b> (column-major). وعشان كده (1,3) ترتيبها 7."}
+], p=>{
+  $("subM").innerHTML = mat(H, {hl:new Set(p.hl.map(x=>x.join(","))), fmt:v=>`<span>${v}</span><small>#${H.flat().indexOf(v)%3*3+Math.floor(H.flat().indexOf(v)/3)+1}</small>`});
+  $("subO").textContent = p.o; $("subE").innerHTML = p.e;
+});
+
+/* --- 8. .* vs * --- */
+const A = [[1,2],[3,4]], B = [[5,6],[7,8]];
+let mulMode = 0;
+function mulRes(){ return mulMode===0 ? A.map((r,i)=>r.map((v,j)=>v*B[i][j])) : A.map((r,i)=>B[0].map((_,j)=>r[0]*B[0][j]+r[1]*B[1][j])); }
+function drawMul(hi){
+  const R = mulRes();
+  let hA = new Set(), hB = new Set();
+  if (hi){ const [i,j] = hi;
+    if (mulMode===0){ hA.add(i+","+j); hB.add(i+","+j); }
+    else { [0,1].forEach(k=>{ hA.add(i+","+k); hB.add(k+","+j); }); } }
+  $("mulM").innerHTML = `<div><div class="cap">A</div>${mat(A,{hl:hA})}</div><div class="op">${mulMode===0?".*":"*"}</div><div><div class="cap">B</div>${mat(B,{hl:hB})}</div><div class="op">=</div><div><div class="cap">النتيجة</div>${mat(R,{hl:hi?new Set([hi.join(",")]):new Set()})}</div>`;
+  $("mulM").lastElementChild.querySelectorAll("td").forEach(td=>td.onclick=()=>{
+    const i=+td.dataset.i, j=+td.dataset.j;
+    drawMul([i,j]);
+    $("mulO").textContent = mulMode===0
+      ? `(${i+1},${j+1}):  A(${i+1},${j+1}) × B(${i+1},${j+1}) = ${A[i][j]} × ${B[i][j]} = ${R[i][j]}\n← كل خانة في نظيرتها بس`
+      : `(${i+1},${j+1}):  صف ${i+1} من A · عمود ${j+1} من B\n= ${A[i][0]}×${B[0][j]} + ${A[i][1]}×${B[1][j]} = ${R[i][j]}`;
+  });
+}
+presets($("mulP"), [{c:"A .* B",m:0},{c:"A * B",m:1}], p=>{ mulMode=p.m; drawMul(); $("mulO").textContent="دوس على خانة في النتيجة"; });
+
+/* --- all / any --- */
+const BB = [[0,-1,1],[0,0,2]];
+const zeros = new Set(); BB.forEach((r,i)=>r.forEach((v,j)=>{ if (v===0) zeros.add(i+","+j); }));
+presets($("allP"), [
+  {c:"all(B)", r:[0,0,1], e:"all = \"كل العمود مش صفر؟\". العمود 1 فيه صفر، والعمود 2 فيه صفر، والعمود 3 مفيهوش → <b>0 0 1</b>. والنتيجة row vector."},
+  {c:"any(B)", r:[0,1,1], e:"any = \"فيه ولو رقم واحد مش صفر؟\". العمود 1 كله أصفار → 0. العمود 2 فيه −1 (مش صفر = true) → 1. العمود 3 → 1. يعني <b>0 1 1</b>."},
+  {c:"all(B(:))", r:null, e:"<code>B(:)</code> بيحط كل الأرقام في عمود واحد، فـ all بتختبر المصفوفة كلها مرة واحدة → <b>0</b> (لأن فيه أصفار)."},
+  {c:"any(B(:))", r:null, e:"فيه ولو رقم مش صفر في المصفوفة كلها؟ أيوه → <b>1</b>."}
+], p=>{
+  let h = mat(BB, {bad:zeros});
+  if (p.r) h += `<table class="mat res"><tr><th></th>${p.r.map(v=>`<td class="${v?"yes":"no"}">${v}</td>`).join("")}</tr></table>`;
+  else h += `<div class="out" style="display:inline-block;margin-inline-start:10px">ans = ${p.c.startsWith("all")?0:1}</div>`;
+  $("allM").innerHTML = h; $("allE").innerHTML = p.e;
+});
+
+/* --- meshgrid --- */
+const MX = [1,2,3].map(()=>[1,2,3,4]), MY = [1,2,3].map(i=>[i,i,i,i]);
+$("meshM").innerHTML = `<div><div class="cap">X (رقم العمود)</div>${mat(MX)}</div><div><div class="cap">Y (رقم الصف)</div>${mat(MY)}</div><div><div class="cap">X + Y (صورة بلون)</div>${mat(MX.map((r,i)=>r.map((v,j)=>v+MY[i][j])),{img:false,fmt:v=>`<span class="dot" style="background:${gray((v-2)/5*255)}"></span>${v}`})}</div>`;
+
+/* --- mini checks --- */
+const MINI = {
+ m1:{q:"صورة طالعة بلوكات (مربعات كبيرة باينة). المشكلة في إيه؟",o:["Quantization قليل","Sampling قليل","الـ data class","الـ JPEG quality عالية"],a:1,e:"عدد المربعات (M×N) قليل = sampling قليل. أما لو الدرجات قليلة، كنت هتشوف مناطق لون واحد ونقلات حادة."},
+ m2:{q:"في نفس الـ f، قيمة f(3,1)؟",o:["0","64","32","200"],a:1,e:"صف 3 = [64 32 200]، والعمود 1 = 64. ولو اخترت 0 تبقى قريت f(1,3)، يعني قلبت الترتيب."},
+ m3:{q:"f(:,3) بترجع إيه؟",o:["[64 32 200]","[0; 255; 200]","[255; 255; 0]","200"],a:1,e:"كل الصفوف في العمود 3 = 0، 255، 200 (column vector)."},
+ m4:{q:"صورة 256 × 256 كـ double بتاخد كام byte؟",o:["65,536","131,072","524,288","2,097,152"],a:2,e:"256 × 256 = 65,536 بكسل × 8 bytes = 524,288."},
+ m5:{q:"uint8(250) + uint8(10) = ؟",o:["260","4","255","error"],a:2,e:"Saturation عند 255. والـ 4 دي لو كان بيلف (wrap)، وده مش اللي بيحصل."},
+ m6:{q:"im2double(uint8(51)) = ؟",o:["51","0.2","0.51","1"],a:1,e:"51 / 255 = 0.2."},
+ m7:{q:"g = double(f) فيها أرقام 0..255. عملت imshow(g). هتشوف إيه؟",o:["الصورة عادي","أغلبها أبيض","أغلبها أسود","error"],a:1,e:"imshow مع double متوقع 0..1، فأي حاجة أكبر من 1 بيضا. الحل: imshow(g, []) أو im2double بدل double."},
+ m8:{q:"بعد imshow(f, [80 200])، قيم f اتغيرت؟",o:["أيوه، اتمدت","لأ، العرض بس اللي اتغير","اتحولت double","اتحولت logical"],a:1,e:"imshow نضارة: بيغيّر اللي بتشوفه بس. لتغيير الأرقام استخدم mat2gray أو imadjust."},
+ m9:{q:"H = [1 2 3;4 5 6;7 8 9]. H(sub2ind(size(H), [1 3], [2 3])) = ؟",o:["[2 9]","[4 9]","[2 3; 8 9]","[1 9]"],a:0,e:"الأزواج (1,2) = 2 و(3,3) = 9 → [2 9]. ولو كتبت H([1 3],[2 3]) هتاخد block: [2 3; 8 9]."},
+ m10:{q:"[1 2; 3 4] .^ 2 = ؟",o:["[7 10; 15 22]","[1 4; 9 16]","[2 4; 6 8]","error"],a:1,e:".^ = كل خانة تتربع لوحدها. أما ^2 من غير نقطة فهي A*A = [7 10; 15 22]."},
+ m11:{q:"all([1 0; 1 1]) = ؟",o:["0","[1 0]","[1 1]","[0 1]"],a:1,e:"عمود عمود: العمود 1 = [1;1] كله مش صفر → 1. العمود 2 = [0;1] فيه صفر → 0."},
+ m12:{q:"صورة 3 × 4. mean(f, 1) بترجع إيه؟",o:["رقم واحد","3 أرقام (رقم لكل صف)","4 أرقام (رقم لكل عمود)","3 × 4"],a:2,e:"mean(f,1) بينزل لتحت في كل عمود → رقم لكل عمود (1×4). mean(f,2) → رقم لكل صف. mean2 → رقم واحد."}
+};
+document.querySelectorAll(".mini").forEach(el=>{
+  const m = MINI[el.dataset.m]; if (!m) return;
+  el.innerHTML = `<div class="cap">✋ اتأكد إنك فهمت</div><div class="stem">${m.q}</div><div class="opts">${m.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join("")}</div><div class="ex"></div>`;
+  el.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    const j = +b.dataset.j;
+    el.querySelectorAll(".opt").forEach(x=>{ x.disabled = true; const k=+x.dataset.j; if (k===m.a) x.classList.add("right"); else if (k===j) x.classList.add("wrong"); });
+    const ex = el.querySelector(".ex"); ex.innerHTML = `<b>${j===m.a?"✔ برافو.":"✘ مش دي."}</b> ${m.e} <button class="again">جرّب تاني</button>`; ex.style.display="block";
+    ex.querySelector(".again").onclick = ()=>{ el.querySelectorAll(".opt").forEach(x=>{ x.disabled=false; x.classList.remove("right","wrong"); }); ex.style.display="none"; };
+  });
+});
+})();
+</script>
+
+<script>
+/* ===== Data Classes tab ===== */
+(function(){
+const $ = id => document.getElementById(id);
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const rnd = x => Math.sign(x) * Math.round(Math.abs(x));          // MATLAB round: half away from zero
+const fx = x => { if (Number.isInteger(x)) return String(x); const s = (+x.toFixed(4)).toString(); return s; };
+const p4 = x => Number.isInteger(x) ? String(x) : x.toFixed(4);
+
+/* ---------- converter ---------- */
+function parseM(s){
+  s = s.trim().replace(/^\[|\]$/g, "");
+  const rows = s.split(";").map(r=>r.trim()).filter(Boolean).map(r=>r.split(/[\s,]+/).filter(Boolean).map(Number));
+  if (!rows.length || rows.some(r=>r.some(isNaN)) || rows.some(r=>r.length!==rows[0].length)) throw "bad";
+  return rows;
+}
+const castIn = {
+  uint8: x => clamp(rnd(x),0,255), uint16: x => clamp(rnd(x),0,65535),
+  double: x => x, logical: x => x !== 0 ? 1 : 0
+};
+const MAX = {uint8:255, uint16:65535, double:1, logical:1};
+// each: (x, cls, ctx) -> [y, stepText]
+const FN = {
+  double:   {out:()=> "double", law:"<code>double(f)</code>: نفس الرقم بالظبط، بس الـ class بقى double. <b>مفيش rescale.</b>",
+             f:(x)=>[x, `${fx(x)} → ${fx(x)}`]},
+  im2double:{out:()=> "double", law:"<code>im2double</code>: uint8 → ÷255 · uint16 → ÷65535 · double → زي ما هو · logical → 0/1.",
+             f:(x,c)=> c==="uint8"?[x/255,`${x} / 255 = ${p4(x/255)}`] : c==="uint16"?[x/65535,`${x} / 65535 = ${p4(x/65535)}`] : [x,`${fx(x)} → ${fx(x)} (مفيش تغيير)`]},
+  uint8:    {out:()=> "uint8", law:"<code>uint8(x)</code> = clip( round(x), 0, 255 ). <b>مفيش ضرب في 255.</b>",
+             f:(x)=>{ const r = rnd(x), y = clamp(r,0,255); return [y, `round(${fx(x)}) = ${r}` + (y!==r?` → clip → ${y}`:"")]; }},
+  im2uint8: {out:()=> "uint8", law:"<code>im2uint8</code>: double → round( clip(x,0,1) × 255 ) · uint8 → زي ما هو · uint16 → round(x / 257) · logical → 0/255.",
+             f:(x,c)=>{
+               if (c==="double"){ const k = clamp(x,0,1), y = rnd(k*255); return [y, (k!==x?`clip(${fx(x)}) = ${k} → `:"") + `${fx(k)} × 255 = ${fx(+(k*255).toFixed(4))} → round → ${y}`]; }
+               if (c==="uint16"){ const y = rnd(x/257); return [y, `${x} / 257 = ${p4(x/257)} → ${y}`]; }
+               if (c==="logical") return [x*255, `${x} → ${x*255}`];
+               return [x, `${x} → ${x} (أصلًا uint8)`]; }},
+  mat2gray: {out:()=> "double", law:"<code>mat2gray</code>: (x − min) / (max − min). أصغر رقم → 0 ، أكبر رقم → 1.",
+             f:(x,c,ctx)=>{ const r = ctx.max-ctx.min; if (!r) return [x, "كل الأرقام متساوية (max = min)"]; const y=(x-ctx.min)/r; return [y, `(${fx(x)} − ${fx(ctx.min)}) / ${fx(+r.toFixed(4))} = ${p4(y)}`]; }},
+  im2bw:    {out:()=> "logical", law:"<code>im2bw(f, level)</code>: 1 لو البكسل > level × (أقصى قيمة للـ class). uint8: level × 255.",
+             f:(x,c,ctx)=>{ const T = ctx.level*MAX[c]; const y = x > T ? 1 : 0; return [y, `${fx(x)} > ${fx(+T.toFixed(4))} ؟ → ${y}`]; }},
+  logical:  {out:()=> "logical", law:"<code>logical(x)</code>: أي رقم مش صفر → 1، والصفر → 0.",
+             f:(x)=>[x!==0?1:0, `${fx(x)} ${x!==0?"≠ 0 → 1":"= 0 → 0"}`]},
+  int8:     {out:()=> "int8", law:"<code>int8(x)</code> = clip( round(x), −128, 127 ).",
+             f:(x)=>{ const r=rnd(x), y=clamp(r,-128,127); return [y, `round(${fx(x)}) = ${r}` + (y!==r?` → clip → ${y}`:"")]; }},
+  uint16:   {out:()=> "uint16", law:"<code>uint16(x)</code> = clip( round(x), 0, 65535 ).",
+             f:(x)=>{ const r=rnd(x), y=clamp(r,0,65535); return [y, `round(${fx(x)}) = ${r}` + (y!==r?` → clip → ${y}`:"")]; }},
+  im2uint16:{out:()=> "uint16", law:"<code>im2uint16</code>: uint8 → × 257 · double → round( clip(x,0,1) × 65535 ) · logical → 0/65535.",
+             f:(x,c)=>{
+               if (c==="uint8") return [x*257, `${x} × 257 = ${x*257}`];
+               if (c==="double"){ const k=clamp(x,0,1), y=rnd(k*65535); return [y, `${fx(k)} × 65535 → ${y}`]; }
+               if (c==="logical") return [x*65535, `${x} → ${x*65535}`];
+               return [x, `${x} → ${x}`]; }}
+};
+function show(M, cls){
+  const flat = M.flat(), isInt = cls!=="double" || flat.every(Number.isInteger);
+  const s = M.map(r=>r.map(v=> isInt || v===0 ? String(v) : v.toFixed(4))), w = Math.max(...s.flat().map(t=>t.length)) + 3;
+  return s.map(r=>r.map(t=>t.padStart(w)).join("")).join("\n");
+}
+function runCv(){
+  const ic = $("cvIn").value, fn = $("cvF").value;
+  $("cvLvW").style.display = fn==="im2bw" ? "" : "none";
+  let X;
+  try { X = parseM($("cvX").value); } catch(e){ $("cvA").textContent = "اكتب أرقام زي: [200 100; 51 300]"; $("cvB").textContent = ""; $("cvSteps").textContent=""; return; }
+  const raw = X.flat(), A = X.map(r=>r.map(castIn[ic])), flat = A.flat();
+  const changed = raw.some((v,i)=>v!==flat[i]);
+  $("cvA").textContent = `x = ${ic}(${$("cvX").value.trim()})\n` + show(A, ic) + `\nclass: ${ic}` + (changed ? `\n⚠ ${ic}() غيّر بعض الأرقام (round/clip)` : "");
+  const ctx = {min:Math.min(...flat), max:Math.max(...flat), level:clamp(+$("cvLv").value||0,0,1)};
+  const F = FN[fn], steps = [];
+  const B = A.map(r=>r.map(v=>{ const [y,t] = F.f(v, ic, ctx); steps.push(t); return y; }));
+  const oc = F.out();
+  $("cvB").textContent = `>> g = ${fn}(x${fn==="im2bw"?", "+ctx.level:""})\ng =\n` + show(B, oc) + `\nclass: ${oc}`;
+  $("cvLaw").innerHTML = "📐 القانون: " + F.law;
+  $("cvSteps").textContent = "الخطوات لكل رقم:\n" + steps.slice(0,12).join("\n");
+}
+["cvIn","cvF","cvX","cvLv"].forEach(id=>$(id).oninput = runCv);
+const CP = [
+  ["uint8","[200 100 51]","im2double"], ["double","[0.5 1.3 -0.2 0.78]","im2uint8"], ["double","[0.5 1.3 -0.2 0.78]","uint8"],
+  ["uint8","[200 100 51]","double"], ["double","[-0.5 0.5; 0.75 1]","mat2gray"], ["uint8","[100 127 128 200]","im2bw"],
+  ["uint8","[300 -5 3.5]","double"], ["double","[0 3 -1 0.2]","logical"], ["double","[200 -200 3.6]","int8"], ["uint8","[200 255]","im2uint16"]
+];
+$("cvP").innerHTML = CP.map((p,i)=>`<button data-i="${i}"><code>${p[2]}(${p[0]}(${p[1]}))</code></button>`).join("");
+$("cvP").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+  const p = CP[+b.dataset.i]; $("cvIn").value=p[0]; $("cvX").value=p[1]; $("cvF").value=p[2];
+  $("cvP").querySelectorAll("button").forEach(x=>x.classList.toggle("on", x===b)); runCv();
+});
+runCv();
+
+/* ---------- solved problems ---------- */
+const S = [
+ {t:"الذاكرة", q:"صورة RGB حجمها 640 × 480. احسب الذاكرة لو uint8 ولو double.",
+  s:["عدد البكسلات = 640 × 480 = 307,200","RGB يعني 3 قنوات → 307,200 × 3 = 921,600 قيمة","uint8 (1 byte): 921,600 × 1 = <b>921,600 bytes</b> ≈ 0.88 MB","double (8 bytes): 921,600 × 8 = <b>7,372,800 bytes</b> ≈ 7 MB (8 أضعاف)"]},
+ {t:"تتبع كود (أهم نوع)", q:"<pre>f = uint8([50 150 250]);\ng = f + 10;\nh = f * 2;\nk = im2double(f);\nm = im2uint8(k * 2);</pre>اكتب g و h و k و m والـ class بتاع كل واحد.",
+  s:["<code>g = f + 10</code>: uint8 + double = uint8 → [60 160 260→<b>255</b>] = <b>[60 160 255]</b> uint8",
+     "<code>h = f * 2</code>: [100 300→255 500→255] = <b>[100 255 255]</b> uint8",
+     "<code>k = im2double(f)</code>: ÷255 → 50/255, 150/255, 250/255 = <b>[0.1961 0.5882 0.9804]</b> double",
+     "<code>k * 2</code> = [0.3922 1.1765 1.9608] (double، ممكن يعدي 1 عادي)",
+     "<code>im2uint8</code>: clip لـ 0..1 → [0.3922 1 1] × 255 = <b>[100 255 255]</b> uint8"]},
+ {t:"متوسط صورتين", q:"f1 = uint8(200) ، f2 = uint8(100). احسب (f1 + f2) / 2 ، وقارنه بالطريقة الصح.",
+  s:["f1 + f2 = 300 → uint8 → <b>255</b> (اتقص قبل القسمة)","255 / 2 = 127.5 → round → <b>128</b> ✘","الصح: <code>(double(f1) + double(f2)) / 2</code> = 300 / 2 = <b>150</b> ✔","أو <code>imlincomb(0.5, f1, 0.5, f2)</code> = <b>150</b> ✔"]},
+ {t:"mat2gray ضد im2uint8 ضد uint8", q:"x = [-20 0 30 80] (double). احسب: mat2gray(x) ، im2uint8(mat2gray(x)) ، im2uint8(x) ، uint8(x).",
+  s:["min = −20 ، max = 80 ، max − min = 100","<code>mat2gray(x)</code> = [(−20+20)/100 (0+20)/100 (30+20)/100 (80+20)/100] = <b>[0 0.2 0.5 1]</b>",
+     "<code>im2uint8(mat2gray(x))</code> = [0 0.2 0.5 1] × 255 = [0 51 127.5 255] → <b>[0 51 128 255]</b>",
+     "<code>im2uint8(x)</code> مباشرة: clip لـ 0..1 الأول → [0 0 1 1] × 255 = <b>[0 0 255 255]</b> (معلومات كتير ضاعت)",
+     "<code>uint8(x)</code>: round و clip لـ 0..255 → <b>[0 0 30 80]</b>"]},
+ {t:"الترتيب في uint8", q:"a = uint8(100). احسب: a − 150 + 100 ، و a + 100 − 150 ، و double(a) − 150 + 100.",
+  s:["MATLAB بيحسب من الشمال لليمين، وكل خطوة بتتقص لوحدها","<code>a − 150 + 100</code>: 100 − 150 = −50 → <b>0</b> ، ثم 0 + 100 = <b>100</b>","<code>a + 100 − 150</code>: 100 + 100 = 200 ، ثم 200 − 150 = <b>50</b>","<code>double(a) − 150 + 100</code> = <b>50</b> (double مفيهوش saturation)"]},
+ {t:"Threshold", q:"f = uint8([60 127 128 220]). احسب im2bw(f, 0.5) والـ class، وبعدين im2uint8 للناتج.",
+  s:["الـ threshold = level × 255 = 0.5 × 255 = 127.5","60 > 127.5؟ لأ → 0 · 127؟ لأ → 0 · 128؟ أيوه → 1 · 220؟ أيوه → 1","<code>im2bw(f,0.5)</code> = <b>[0 0 1 1]</b> و class = <b>logical</b>","<code>im2uint8</code> على logical: 1 → 255 → <b>[0 0 255 255]</b> uint8"]},
+ {t:"الغلطة الأشهر", q:"f = uint8([0 64 255]); g = im2double(f); h = uint8(g); إيه h؟ وليه الصورة طلعت سودا؟",
+  s:["<code>g</code> = [0 64/255 1] = <b>[0 0.2510 1]</b>","<code>uint8(g)</code> بيعمل round بس من غير ضرب في 255: 0 → 0 ، 0.251 → 0 ، 1 → 1","<code>h</code> = <b>[0 0 1]</b>: وكلها قريبة من الأسود في مدى 0..255","الصح: <code>im2uint8(g)</code> = <b>[0 64 255]</b>"]},
+ {t:"bits ومستويات", q:"جهاز طبي بيطلّع صورة فيها 1024 مستوى رمادي. كام bit؟ وأنهي class تخزّنها فيه؟",
+  s:["L = 2^bits → 1024 = 2^10 → <b>10 bits</b>","أقصى قيمة = 1023","uint8 أقصاه 255 → ما ينفعش","<b>uint16</b> (0..65535، 2 bytes) ✔"]}
+];
+$("solved").innerHTML = S.map((p,i)=>`<div class="sp"><div class="cap">مسألة ${i+1} · ${p.t}</div><div class="stem">${p.q}</div><button class="sbtn">حلها في دماغك الأول، وبعدين دوس هنا تشوف الحل</button><ol class="steps">${p.s.map(x=>`<li>${x}</li>`).join("")}</ol></div>`).join("");
+$("solved").querySelectorAll(".sp").forEach(d=>{
+  const b = d.querySelector(".sbtn"), ol = d.querySelector(".steps"); let n = 0;
+  b.onclick = ()=>{ const li = ol.children; if (n < li.length){ li[n].classList.add("on"); n++; }
+    b.textContent = n < li.length ? `الخطوة الجاية (${n}/${li.length})` : "✔ خلصت"; if (n>=li.length) b.disabled = true; };
+});
+
+/* ---------- practice ---------- */
+const D = [
+ {l:1,q:"f = imread('photo.jpg'); class(f) غالبًا = ؟",o:["'double'","'uint8'","'logical'","'char'"],a:1,e:"imread بيرجّع الصور العادية uint8."},
+ {l:1,q:"كام byte بياخدها بكسل double؟",o:["1","2","4","8"],a:3,e:"double = 8 bytes. وعشان كده أكبر من uint8 بـ 8 أضعاف."},
+ {l:1,q:"أنهي دالة بتعمل rescale للصورة من 0..255 لـ 0..1؟",o:["double(f)","im2double(f)","uint8(f)","class(f)"],a:1,e:"الدوال اللي بتبدأ بـ im2 هي اللي بتعمل rescale."},
+ {l:1,q:"class(f > 50) = ؟",o:["'uint8'","'double'","'logical'","نفس class الـ f"],a:2,e:"أي مقارنة بتطلع logical."},
+ {l:1,q:"صورة 4 bits فيها كام مستوى رمادي؟",o:["4","8","16","15"],a:2,e:"2^4 = 16 مستوى (أقصى قيمة 15)."},
+ {l:1,q:"اللون الأبيض في صورة double سليمة قيمته:",o:["255","1","0","65535"],a:1,e:"double صورته من 0 (أسود) لـ 1 (أبيض)."},
+ {l:1,q:"double(uint8(77)) = ؟",a:77,e:"double مبيغيرش الرقم."},
+ {l:1,q:"im2double(uint8(51)) = ؟",a:0.2,e:"51 / 255 = 0.2"},
+ {l:2,q:"im2uint8(0.5) = ؟",a:128,e:"0.5 × 255 = 127.5 → round → 128"},
+ {l:2,q:"uint8(3.5) = ؟",o:["3","4","3.5","error"],a:1,e:"round بيقرّب النص لبعيد عن الصفر: 3.5 → 4."},
+ {l:2,q:"uint8(-20) = ؟",a:0,e:"clip: أقل من 0 → 0."},
+ {l:2,q:"im2uint8(1.3) = ؟",a:255,e:"clip لـ 1 الأول، ثم 1 × 255 = 255."},
+ {l:2,q:"uint8(0.8) = ؟",a:1,e:"uint8 بيقرّب بس: 0.8 → 1 (مش 204!)."},
+ {l:2,q:"mat2gray([2 4 6]) = ؟",o:["[2 4 6]","[0 0.5 1]","[0.33 0.67 1]","[0 128 255]"],a:1,e:"(x−2)/(6−2): 0، 0.5، 1."},
+ {l:2,q:"im2bw(uint8([100 128 200]), 0.5) = ؟",o:["[0 1 1]","[0 0 1]","[1 1 1]","[100 128 200]"],a:0,e:"threshold = 127.5: 100 → 0 ، 128 → 1 ، 200 → 1."},
+ {l:2,q:"صورة RGB حجمها 800 × 600 uint8 بتاخد كام byte؟",a:1440000,e:"800 × 600 × 3 × 1 = 1,440,000"},
+ {l:2,q:"uint8(200) * 0.5 = ؟",a:100,e:"100 جوه المدى، فمفيش مشكلة."},
+ {l:2,q:"im2uint8(0.2) = ؟",a:51,e:"0.2 × 255 = 51"},
+ {l:2,q:"الـ negative لبكسل uint8 قيمته 30 = ؟",a:225,e:"255 − 30 = 225"},
+ {l:2,q:"بكسل double قيمته 0.3. الـ negative بتاعه:",o:["225","0.7","-0.3","254.7"],a:1,e:"في double: 1 − 0.3 = 0.7"},
+ {l:2,q:"uint8(9) / uint8(2) = ؟",a:5,e:"4.5 → round → 5"},
+ {l:2,q:"صورة 100 × 100 double بتاخد كام byte؟",a:80000,e:"100 × 100 × 8 = 80,000"},
+ {l:3,q:"uint8(10) + uint16(10) = ؟",o:["20 uint8","20 uint16","Error","20 double"],a:2,e:"الأعداد الصحيحة لازم تبقى من نفس الـ class، أو تتجمع مع double."},
+ {l:3,q:"true + true = ؟",o:["1 logical","2 double","1 double","error"],a:1,e:"الحساب على logical بيطلع double: 1 + 1 = 2."},
+ {l:3,q:"sum(uint8([200 100])) = ؟",o:["255","300","44","150"],a:1,e:"sum بيرجّع double by default، فمفيش saturation."},
+ {l:3,q:"a = uint8(100); a − 150 + 100 = ؟",a:100,e:"100 − 150 → 0 ، ثم 0 + 100 = 100"},
+ {l:3,q:"a = uint8(100); a + 100 − 150 = ؟",a:50,e:"200 − 150 = 50"},
+ {l:3,q:"uint8(100) + 0.6 = ؟",a:101,e:"100.6 → round → 101، والـ class uint8."},
+ {l:3,q:"x = [-2 0 2]; im2uint8(x) = ؟",o:["[0 128 255]","[0 0 255]","[0 0 2]","[-2 0 2]"],a:1,e:"clip لـ 0..1: [0 0 1] → × 255 → [0 0 255]."},
+ {l:3,q:"x = [-2 0 2]; im2uint8(mat2gray(x)) = ؟",o:["[0 128 255]","[0 0 255]","[0 127 255]","[0 0.5 1]"],a:0,e:"mat2gray → [0 0.5 1]، و 0.5 × 255 = 127.5 → 128."},
+ {l:3,q:"f = uint8([0 64 255]); uint8(im2double(f)) = ؟",o:["[0 64 255]","[0 0 1]","[0 1 1]","[0 0 255]"],a:1,e:"[0 0.251 1] → round → [0 0 1]."},
+ {l:3,q:"f = uint8([100 200]); g = im2double(f) * 2; imshow(g). هيظهر إيه؟",o:["البكسلين عادي","الأول رمادي فاتح والتاني أبيض","الاتنين سود","error"],a:1,e:"g = [0.784 1.569]. التاني أكبر من 1 → أبيض."},
+ {l:3,q:"int8(200) = ؟",a:127,e:"int8 أقصاه 127."},
+ {l:3,q:"logical([0 3 -1]) = ؟",o:["[0 1 0]","[0 1 1]","[0 3 -1]","error"],a:1,e:"أي رقم مش صفر (حتى السالب) = 1."},
+ {l:3,q:"im2uint16(uint8(200)) = ؟",a:51400,e:"200 × 257 = 51,400 (لأن 65535 / 255 = 257)."},
+ {l:3,q:"صورة فيها 1024 مستوى رمادي. أصغر unsigned class يشيلها:",o:["uint8","uint16","logical","int8"],a:1,e:"1024 = 2^10 → 10 bits، و uint8 أقصاه 255."},
+ {l:3,q:"mean2(f) لصورة uint8 بيرجّع class إيه؟",o:["uint8","double","logical","int16"],a:1,e:"mean و mean2 بيرجّعوا double."}
+];
+const K = "ip-dc-v1"; let ds = {};
+try { ds = JSON.parse(localStorage.getItem(K)) || {}; } catch(e) { ds = {}; }
+const sv = () => { try { localStorage.setItem(K, JSON.stringify(ds)); } catch(e) {} };
+const LN = {1:"سهل",2:"متوسط",3:"صعب"};
+const ok = (q,v) => q.o ? v===q.a : Math.abs(v-q.a) <= Math.max(0.0006, Math.abs(q.a)*1e-4);
+function rd(){
+  const fl = +$("dcLvl").value, box = $("dcQs"); box.innerHTML = "";
+  D.forEach((q,i)=>{
+    if (fl && q.l!==fl) return;
+    const v = ds[i], done = v!==undefined, good = done && ok(q,v);
+    const d = document.createElement("div"); d.className = "q" + (done?" done":"");
+    const body = q.o
+      ? `<div class="opts">${q.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join("")}</div>`
+      : `<div class="ctl ltr"><input type="text" class="ans-in" placeholder="اكتب الرقم" ${done?"disabled":""} value="${done?v:""}"> <button class="chk" ${done?"disabled":""}>تأكد</button></div>`;
+    d.innerHTML = `<div class="meta"><span class="tag l${q.l}">${LN[q.l]}</span><span class="tag">${q.o?"اختيار":"اكتب الناتج"}</span><span class="tag">#${i+1}</span></div><div class="stem ltr-mix">${q.q}</div>${body}<div class="ex"><b>${good?"✔ صح.":"✘ الصح: "+(q.o?q.o[q.a]:q.a)+"."}</b> ${q.e}</div>`;
+    if (q.o){
+      d.querySelectorAll(".opt").forEach(b=>{
+        if (done){ b.disabled = true; const j=+b.dataset.j; if (j===q.a) b.classList.add("right"); else if (j===v) b.classList.add("wrong"); }
+        else b.onclick = ()=>{ ds[i] = +b.dataset.j; sv(); const y=scrollY; rd(); scrollTo(0,y); };
+      });
+    } else {
+      const inp = d.querySelector(".ans-in");
+      if (done) inp.classList.add(good?"right":"wrong");
+      const go = ()=>{ const t = inp.value.replace(/,/g,"").trim(); if (t==="" || isNaN(+t)) return; ds[i] = +t; sv(); const y=scrollY; rd(); scrollTo(0,y); };
+      d.querySelector(".chk").onclick = go; inp.onkeydown = e=>{ if (e.key==="Enter") go(); };
+    }
+    box.appendChild(d);
+  });
+  const ks = Object.keys(ds), c = ks.filter(k=>ok(D[k],ds[k])).length;
+  $("dcScore").textContent = `✔ ${c} / ${ks.length} محلول · ${D.length} سؤال`;
+}
+$("dcLvl").onchange = rd; $("dcReset").onclick = ()=>{ ds = {}; sv(); rd(); };
+rd();
+})();
+</script>
+
+</body>
+</html>
