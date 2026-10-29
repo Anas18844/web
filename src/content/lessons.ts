@@ -261,6 +261,23 @@ export const LESSONS: readonly Lesson[] = [
     interactiveUrl: '/interactive/second-bacc/incident-response-and-risk',
     bookletUrl: '/files/booklets/second-bacc-unit-2.pdf',
   },
+  {
+    slug: 'unit-2-review',
+    grade: 'second_bacc',
+    unit: 2,
+    // After lecture 7 in course order; not a week number.
+    n: 7.5,
+    kind: 'review',
+    eyebrow: 'مراجعة الوحدة الثانية',
+    title: 'الأمن السيبراني — الوحدة كاملة',
+    blurb:
+      'الدروس التلاتة في مراجعة واحدة: ١٧ نقطة بترتيب الكتاب، وبعد كل نقطة أسئلة الوزارة ونموذج الإجابة، وشرح أطول لأصعب النقاط.',
+    youtubeId: 'nm_7z1Lqbwk',
+    answerKeyUrl: '/files/answers/second-bacc/unit-2.pdf',
+    // The review's own student PDF (34 pages: the 17 points + the answers at the
+    // end), built in mr-anas-hq, curriculum/second-bacc/u2-cybersecurity/r02-unit-2-review.
+    bookletUrl: '/files/booklets/second-bacc-unit-2-review.pdf',
+  },
 
   // ── أولى ثانوي ────────────────────────────────────────────────────────────
   {
