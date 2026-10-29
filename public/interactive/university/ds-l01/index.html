@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Data Science · Lec 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=Readex+Pro:wght@300;400;500;600&display=swap">
+<style>
+/* Lesson page: sticky progress bar, then 7 parts. Each part = explanation → interactive → questions. Final timed mini-exam. Progress saved in this browser. */
+:root{
+  color-scheme:light;
+  --bg:#F4F6FA; --card:#FFFFFF; --ink:#1E2433; --soft:#5D6679; --faint:#8C94A6; --line:#E6E9F0;
+  --c:#4F5BD5; --tint:#EDEFFB; --c-deep:#3A45B0;
+  --pos:#1F8A4C; --pos-tint:#E5F5EC; --neg:#C0392B; --neg-tint:#FDECEA;
+  --amber:#B45309; --amber-tint:#FFF6E5;
+  --f-head:"Alexandria","Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --f-body:"Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --f-math:"Cambria Math","Cambria","Times New Roman",serif;
+  --shadow:0 1px 2px rgba(30,36,51,.04),0 6px 24px rgba(30,36,51,.06);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:2;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 80px}
+.wrap{max-width:860px;margin-inline:auto;display:flex;flex-direction:column;gap:24px}
+h1,h2,h3{font-family:var(--f-head);font-weight:700;margin:0;line-height:1.45;text-wrap:balance}
+p{margin:0}
+a{color:var(--c)}
+button{font:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.en{direction:ltr;unicode-bidi:isolate;font-weight:500}
+.m{font-family:var(--f-math);direction:ltr;unicode-bidi:isolate;font-size:1.08em;white-space:nowrap}
+.mb{font-family:var(--f-math);direction:ltr;text-align:center;font-size:20px;background:var(--tint);border-radius:12px;padding:12px;margin:4px 0;overflow-x:auto}
+
+/* sticky progress */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(244,246,250,.94);backdrop-filter:blur(6px);padding-block:10px;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:11;background:var(--bg)}
+.bar .in{max-width:860px;margin-inline:auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.bar nav{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.bar nav a{font-size:13px;text-decoration:none;color:var(--soft);background:var(--card);border-radius:999px;padding:2px 10px;border:1px solid var(--line);white-space:nowrap}
+.bar nav a.done{background:var(--pos-tint);border-color:var(--pos);color:var(--pos)}
+.track{flex-basis:100%;height:6px;background:var(--line);border-radius:999px;overflow:hidden}
+.track i{display:block;height:100%;width:0;background:var(--c);transition:width .3s}
+.pct{font-size:13px;color:var(--soft);white-space:nowrap}
+
+.top{display:flex;gap:8px;flex-wrap:wrap;padding-top:18px}
+.top a{background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:5px 14px;font-size:14px;color:var(--ink);text-decoration:none}
+
+.hero{background:var(--card);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+.hero .band{background:var(--tint);padding:24px 26px}
+.hero .meta{font-size:13px;color:var(--c);font-weight:600}
+.hero h1{font-size:clamp(26px,5vw,36px)}
+.hero .in{padding:20px 26px;display:flex;flex-direction:column;gap:12px}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.steps li{background:var(--bg);border-radius:12px;padding:10px 14px;font-size:15px}
+.steps b{color:var(--c)}
+
+.part{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:24px 26px;display:flex;flex-direction:column;gap:16px;scroll-margin-top:90px}
+.part .num{font-size:13px;color:var(--c);font-weight:600}
+.part h2{font-size:24px}
+.part h3{font-size:18px;margin-top:4px}
+.idea{background:var(--tint);border-radius:14px;padding:12px 16px;font-weight:500}
+.trap{background:var(--amber-tint);border-radius:14px;padding:12px 16px;color:#5A3505}
+.trap b:first-child{color:var(--amber)}
+.list{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:4px}
+table{border-collapse:collapse;width:100%;font-size:15.5px}
+.tbl{overflow-x:auto}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:start;vertical-align:top}
+th{font-weight:600;color:var(--soft);font-size:14px;background:var(--bg)}
+.flow{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:15px}
+.flow div{background:var(--bg);border-radius:12px;padding:8px 16px;text-align:center;min-width:min(100%,320px)}
+.flow .ours{background:var(--tint);border:2px solid var(--c)}
+.flow .arrow{background:none;padding:0;color:var(--faint);min-width:0}
+
+.lab{border:2px dashed color-mix(in srgb,var(--c) 35%,#fff);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.lab .tag{font-size:13px;font-weight:600;color:var(--c)}
+.ctl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ctl label{display:flex;flex-direction:column;font-size:14px;color:var(--soft);gap:2px}
+.ctl input[type=range]{width:100%;accent-color:var(--c)}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{border:0;background:var(--c);color:#fff;border-radius:999px;padding:6px 16px;font-size:15px}
+.btn.ghost{background:var(--card);color:var(--c);border:1.5px solid var(--c)}
+.btn:disabled{opacity:.5;cursor:default}
+canvas{width:100%;max-width:440px;aspect-ratio:1;background:#FBFCFE;border:1px solid var(--line);border-radius:14px;display:block;margin-inline:auto;touch-action:none}
+.read{font-size:15px;color:var(--soft);text-align:center}
+.stars{font-size:26px;letter-spacing:2px;color:#E2A400;direction:ltr;text-align:center}
+
+/* questions */
+.qs{display:flex;flex-direction:column;gap:12px}
+.qs .k{font-size:13px;color:var(--faint);font-weight:600}
+.q{background:var(--bg);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.q .stem{font-weight:500}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opts.row{flex-direction:row;flex-wrap:wrap}
+.opt{text-align:start;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:8px 12px;font-size:15.5px;line-height:1.7}
+.opt:hover:not(:disabled){border-color:var(--c)}
+.opt:disabled{cursor:default}
+.opt.right{background:var(--pos-tint);border-color:var(--pos);color:#14532D;font-weight:500}
+.opt.wrong{background:var(--neg-tint);border-color:var(--neg);color:#7F1D1D}
+.why{font-size:15px;color:var(--soft);border-inline-start:3px solid var(--c);padding-inline-start:10px}
+.why.bad{border-color:var(--neg)}
+.score-line{font-size:14px;color:var(--soft)}
+.done-badge{display:inline-block;background:var(--pos-tint);color:var(--pos);border-radius:999px;padding:2px 12px;font-size:14px;font-weight:600}
+
+.calc{display:flex;flex-direction:column;gap:10px}
+.calc .row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.calc input{width:70px;font:inherit;font-size:16px;text-align:center;border:1.5px solid var(--line);border-radius:10px;padding:4px 6px;direction:ltr}
+.calc select{font:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;padding:4px 8px;background:var(--card)}
+.calc input.ok,.calc select.ok{border-color:var(--pos);background:var(--pos-tint)}
+.calc input.no,.calc select.no{border-color:var(--neg);background:var(--neg-tint)}
+
+.stepper table td{font-family:var(--f-math);direction:ltr;text-align:center}
+.stepper tr.cur td{background:var(--tint)}
+.stepper tr.hid{display:none}
+
+.grid9{display:inline-grid;grid-template-columns:repeat(3,22px);gap:2px;padding:4px;background:var(--line);border-radius:6px}
+.grid9 i{width:22px;height:22px;background:#fff}
+.grid9 i.on{background:var(--ink)}
+.puz{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center}
+.puz figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:14px}
+
+.exam{border:2px solid var(--c)}
+.timer{font-family:var(--f-head);font-size:22px;color:var(--c)}
+.result{background:var(--tint);border-radius:14px;padding:14px 16px;font-weight:500}
+.next{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:22px 26px;display:flex;flex-direction:column;gap:10px}
+@media (max-width:700px){
+  .steps,.ctl{grid-template-columns:1fr}
+  .part,.hero .band,.hero .in,.next{padding-inline:18px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.track i{transition:none}}
+</style>
+</head>
+<body>
+<div class="bar"><div class="in">
+  <nav id="partnav" aria-label="أجزاء الدرس"></nav>
+  <span class="pct" id="pct">0%</span>
+  <div class="track"><i id="trackfill"></i></div>
+</div></div>
+
+<div class="wrap">
+  <div class="top">
+    <a href="/interactive/university/midterm">خريطة الميدترم</a>
+    <a href="/interactive/university/big-picture">الصورة الكبيرة</a>
+  </div>
+
+  <header class="hero">
+    <div class="band">
+      <div class="meta">مقدمة في علم البيانات · Lec 1 من 3 · الامتحان الحد 1/11 الساعة 9</div>
+      <h1>الكمبيوتر بيتعلم إزاي؟ <span class="en" style="font-weight:500;font-size:.7em;color:var(--soft)">The Learning Problem</span></h1>
+    </div>
+    <div class="in">
+      <p>الدرس ده هو الأساس اللي المادة كلها مبنية عليه. هنفهم إمتى نستخدم Machine Learning، وإيه مكوناته، وهنبني أول موديل بإيدينا ونعلّمه.</p>
+      <ul class="steps">
+        <li><b>1.</b> اقرا الجزء بالترتيب، وما تنطش.</li>
+        <li><b>2.</b> جرّب المعمل اللي في الجزء بإيدك.</li>
+        <li><b>3.</b> حل أسئلة الجزء. الجزء بيتعلّم "خلص" لما تحل كل أسئلته.</li>
+        <li><b>4.</b> في الآخر: امتحان مصغر بالتايمر، بنفس شكل الامتحان.</li>
+      </ul>
+      <p style="font-size:14px;color:var(--soft)">تقدمك بيتحفظ في المتصفح ده. يعني لو قفلت الصفحة ورجعت، هتلاقي اللي حليته زي ما هو.</p>
+    </div>
+  </header>
+
+  <!-- PART 1 -->
+  <section class="part" id="p1" data-part="p1">
+    <div class="num">الجزء 1 من 7</div>
+    <h2>إمتى نستخدم Machine Learning أصلًا؟</h2>
+    <p>نبدأ بمثال. Netflix عملت مسابقة: اللي يحسّن توقع تقييم المشاهد للفيلم بنسبة <b>10%</b> بس، ياخد <b>مليون دولار</b>. ليه كل الفلوس دي؟ لأن مفيش حد يقدر يكتب معادلة تقول "إنت هتحب الفيلم ده".</p>
+    <p>ومن المثال ده الدكتور بيطلع بـ 3 شروط. لو اتحققوا التلاتة مع بعض، يبقى المشكلة دي مكانها الـ ML:</p>
+    <div class="tbl"><table>
+      <tr><th>الشرط</th><th>بالإنجليزي</th><th>يعني إيه</th></tr>
+      <tr><td>1. فيه نمط</td><td class="en">A pattern exists</td><td>فيه علاقة حقيقية بين الدخل والخرج. لو مفيش نمط، مفيش حاجة تتعلم.</td></tr>
+      <tr><td>2. مش عارفين نكتبه بمعادلة</td><td class="en">We cannot pin it down mathematically</td><td>لو عارفين المعادلة، نستخدمها على طول ومش محتاجين نتعلم.</td></tr>
+      <tr><td>3. عندنا داتا</td><td class="en">We have data on it</td><td>ده أهم شرط. من غير داتا، مفيش learning خالص.</td></tr>
+    </table></div>
+    <div class="idea">قاعدة ذهبية: لو شرط واحد بس من التلاتة ناقص، يبقى الـ ML مش الحل.</div>
+
+    <div class="qs" data-quiz="p1">
+      <div class="k">جرّب: الحالة دي ينفع فيها ML ولا لأ؟</div>
+    </div>
+  </section>
+
+  <!-- PART 2 -->
+  <section class="part" id="p2" data-part="p2">
+    <div class="num">الجزء 2 من 7</div>
+    <h2>مثال الأفلام: إزاي الـ ML بيحل المشكلة</h2>
+    <p>الفكرة إننا نوصف <b>الفيلم</b> بشوية صفات: فيه action قد إيه؟ فيه comedy قد إيه؟ Tom Cruise موجود ولا لأ؟ وبعدين نوصف <b>المشاهد</b> بنفس الصفات: بيحب الـ action قد إيه؟ بيحب الـ comedy قد إيه؟</p>
+    <p>والتقييم المتوقع = نطابق كل صفة في الفيلم مع نفس الصفة في المشاهد، <b>ونجمع</b> المساهمات. لو الفيلم كله action والمشاهد بيكره الـ action، المساهمة دي هتطلع بالسالب.</p>
+
+    <div class="lab">
+      <div class="tag">المعمل: اعمل مشاهد وفيلم وشوف التقييم</div>
+      <div class="ctl" id="movieCtl"></div>
+      <div class="stars" id="stars">★★★☆☆</div>
+      <div class="read" id="movieRead"></div>
+    </div>
+
+    <h3>طيب مين بيحط الأرقام دي؟ (The learning approach)</h3>
+    <p>هنا السر. إحنا <b>مش</b> بنحط الصفات بإيدينا. بنبدأ بأرقام <b>عشوائية</b> للفيلم وللمشاهد، وبعدين نبص على التقييمات الحقيقية اللي الناس إدّتها، ونعدّل الأرقام شوية بشوية لحد ما التوقع يقرب من التقييم الحقيقي. ده هو الـ learning.</p>
+    <div class="qs" data-quiz="p2"></div>
+  </section>
+
+  <!-- PART 3 -->
+  <section class="part" id="p3" data-part="p3">
+    <div class="num">الجزء 3 من 7</div>
+    <h2>مكونات الـ Learning</h2>
+    <p>الدكتور بيمشي بمثال واحد طول الكورس: <b>بنك</b> عايز يقرر يوافق على كارت ائتمان لعميل ولا لأ. وعنده بيانات العميل: السن، والمرتب، وسنين في الشغل، والديون...</p>
+    <p>تعالى نسمّي كل حاجة باسمها، لأن الأسماء دي هتمشي معانا المادة كلها:</p>
+    <div class="tbl"><table>
+      <tr><th>الرمز</th><th>اسمه</th><th>في مثال البنك</th></tr>
+      <tr><td class="m">x</td><td class="en">Input</td><td>بيانات العميل</td></tr>
+      <tr><td class="m">y</td><td class="en">Output</td><td>عميل كويس ولا وحش؟</td></tr>
+      <tr><td class="m">f : X → Y</td><td class="en">Target function</td><td>المعادلة <b>المثالية</b> للموافقة. <b>محدش يعرفها</b>، ولو كنا عارفينها مكناش محتاجين نتعلم.</td></tr>
+      <tr><td class="m">(x₁,y₁) … (x_N,y_N)</td><td class="en">Data</td><td>سجلات العملاء القدام</td></tr>
+      <tr><td class="m">g : X → Y</td><td class="en">Final hypothesis</td><td>المعادلة اللي البنك هيستخدمها فعلًا. وعايزينها تبقى قريبة من f، يعني <span class="m">g ≈ f</span>.</td></tr>
+    </table></div>
+    <h3>طيب g دي بتيجي منين؟</h3>
+    <p>محتاجين حاجتين <b>إحنا</b> اللي بنختارهم:</p>
+    <ul class="list">
+      <li><b class="en">Hypothesis set H</b>: كل المعادلات المرشحة. و g لازم تكون واحدة منهم، يعني <span class="m">g ∈ H</span>.</li>
+      <li><b class="en">Learning algorithm A</b>: الطريقة اللي بتدور جوه H وتختار g.</li>
+    </ul>
+    <div class="idea">H و A مع بعض اسمهم <span class="en">the learning model</span>.</div>
+    <div class="flow" aria-label="رسمة الـ learning">
+      <div>الـ Target function المجهولة <span class="m">f</span></div><div class="arrow">↓</div>
+      <div>الـ Training examples <span class="m">(x₁,y₁) … (x_N,y_N)</span></div><div class="arrow">↓</div>
+      <div class="ours">الـ Learning algorithm <span class="m">A</span> ← الـ Hypothesis set <span class="m">H</span></div><div class="arrow">↓</div>
+      <div>الـ Final hypothesis <span class="m">g ≈ f</span></div>
+    </div>
+    <div class="trap"><b>فخ في الامتحان:</b> الـ f والـ data مش إحنا اللي بنختارهم، دول جايين مع المشكلة. اللي بنختاره H و A بس (المربع الملون في الرسمة).</div>
+    <div class="qs" data-quiz="p3"><div class="k">وصّل: كل جملة من مثال البنك بتاعة أنهي رمز؟</div></div>
+  </section>
+
+  <!-- PART 4 -->
+  <section class="part" id="p4" data-part="p4">
+    <div class="num">الجزء 4 من 7</div>
+    <h2>أول موديل: الـ Perceptron</h2>
+    <p>عايزين H بسيطة. الفكرة: كل صفة في العميل <span class="m">xᵢ</span> ليها وزن <span class="m">wᵢ</span> بيقول هي مهمة قد إيه. نضرب كل صفة في وزنها، ونجمع، ونقارن بحد معين اسمه <b class="en">threshold</b>:</p>
+    <ul class="list">
+      <li>لو المجموع <b>أكبر</b> من الـ threshold: <b>وافق</b> (+1)</li>
+      <li>لو المجموع <b>أصغر</b>: <b>ارفض</b> (−1)</li>
+    </ul>
+    <div class="mb">h(x) = sign( Σᵢ₌₁ᵈ wᵢxᵢ − threshold )</div>
+    <h3>التبسيط اللي هتشوفه في كل حتة</h3>
+    <p>خطوة 1: نسمّي <span class="m">w₀ = −threshold</span>. وخطوة 2: نزوّد صفة وهمية <span class="m">x₀ = 1</span> لكل عميل. وبكده الـ threshold بيدخل جوه المجموع، والمعادلة بتبقى سطر واحد:</p>
+    <div class="mb">h(x) = sign( Σᵢ₌₀ᵈ wᵢxᵢ ) = sign(wᵀx)</div>
+    <p>ولو عندنا صفتين بس (x₁ و x₂)، المعادلة <span class="m">w₀ + w₁x₁ + w₂x₂ = 0</span> ده <b>خط مستقيم</b>. ناحية منه +1، والناحية التانية −1. وكل w مختلفة معناها خط مختلف، يعني h مختلفة.</p>
+    <div class="idea">الداتا اللي ينفع خط واحد يفصلها فصل كامل اسمها <span class="en">linearly separable</span>.</div>
+
+    <div class="lab">
+      <div class="tag">المعمل: حرّك الأوزان لحد ما الخط يفصل الأزرق (+1) عن الأحمر (−1)</div>
+      <div class="ctl" id="percCtl"></div>
+      <canvas id="percCanvas" width="440" height="440" aria-label="رسم النقط والخط"></canvas>
+      <div class="read" id="percRead"></div>
+    </div>
+    <div class="qs" data-quiz="p4"></div>
+  </section>
+
+  <!-- PART 5 -->
+  <section class="part" id="p5" data-part="p5">
+    <div class="num">الجزء 5 من 7</div>
+    <h2>نعلّم الـ Perceptron: الـ PLA</h2>
+    <p>في المعمل اللي فات إنت اللي كنت بتحرك الأوزان. هنا هنخلي algorithm يعمل ده لوحده. اسمه <b class="en">Perceptron Learning Algorithm (PLA)</b>، وهو بسيط جدًا:</p>
+    <ol class="list">
+      <li>ابدأ بأي w، والعادة <span class="m">w = 0</span>.</li>
+      <li>دوّر على نقطة اتصنفت غلط (<span class="en">misclassified</span>)، يعني <span class="m">sign(wᵀxₙ) ≠ yₙ</span>.</li>
+      <li>عدّل: <span class="m">w ← w + yₙ xₙ</span></li>
+      <li>كرر لحد ما مفيش ولا نقطة غلط.</li>
+    </ol>
+    <h3>ليه التعديل ده بيشتغل؟</h3>
+    <ul class="list">
+      <li>لو النقطة المفروض <b>+1</b> واتصنفت −1: بنعمل <span class="m">w + x</span>، فالـ w تقرب من x، و wᵀx يكبر ويروح للموجب.</li>
+      <li>لو النقطة المفروض <b>−1</b> واتصنفت +1: بنعمل <span class="m">w − x</span>، فالـ w تبعد عن x، و wᵀx يصغر ويروح للسالب.</li>
+    </ul>
+    <div class="idea">لو الداتا <span class="en">linearly separable</span>، الـ PLA <b>أكيد هيوصل</b> لخط يفصلها. ولو مش separable، هيفضل يلف على طول (والحل ده في Lec 3).</div>
+
+    <div class="lab stepper">
+      <div class="tag">المعمل 1: مسألة امتحان محلولة خطوة بخطوة</div>
+      <p style="font-size:15px">3 نقط، وكل نقطة اتزود عليها <span class="m">x₀ = 1</span>. ونبدأ بـ <span class="m">w = [0, 0, 0]</span>:
+        A = (2, 1) و y = +1 · B = (−1, −2) و y = −1 · C = (1, −1) و y = −1</p>
+      <div class="tbl"><table id="stepTable">
+        <tr><th>الخطوة</th><th>w الحالية</th><th>النقطة</th><th>wᵀx</th><th>sign</th><th>y</th><th>النتيجة</th></tr>
+      </table></div>
+      <div class="read" id="stepRead">دوس "الخطوة الجاية" عشان تبدأ.</div>
+      <div class="btns"><button class="btn" id="stepNext" type="button">الخطوة الجاية</button><button class="btn ghost" id="stepReset" type="button">من الأول</button></div>
+    </div>
+
+    <div class="lab">
+      <div class="tag">المعمل 2: شوف الـ PLA وهو بيتعلم على داتا عشوائية</div>
+      <canvas id="plaCanvas" width="440" height="440" aria-label="الـ PLA على داتا عشوائية"></canvas>
+      <div class="read" id="plaRead"></div>
+      <div class="btns"><button class="btn" id="plaStep" type="button">iteration واحدة</button><button class="btn" id="plaRun" type="button">شغّل للآخر</button><button class="btn ghost" id="plaNew" type="button">داتا جديدة</button></div>
+      <p style="font-size:14px;color:var(--soft)">الخط المتقطع هو الـ f الحقيقية (اللي في الواقع محدش يعرفها)، والخط الملون هو الـ g بتاعة الـ PLA. والنقطة اللي عليها دايرة هي اللي هيتعدل عليها في الـ iteration الجاية.</p>
+    </div>
+
+    <div class="qs" data-quiz="p5"><div class="k">احسب بإيدك زي الامتحان</div><div id="calcs"></div></div>
+  </section>
+
+  <!-- PART 6 -->
+  <section class="part" id="p6" data-part="p6">
+    <div class="num">الجزء 6 من 7</div>
+    <h2>أنواع الـ Learning التلاتة</h2>
+    <p>الفكرة الأساسية (<span class="en">basic premise</span>) إننا نستخدم <b>observations</b> عشان نكتشف <b>underlying process</b>. والفكرة الواسعة دي ليها 3 أنواع، والفرق بينهم في <b>شكل الداتا</b>:</p>
+    <div class="tbl"><table>
+      <tr><th>النوع</th><th>الداتا شكلها</th><th>مثال السلايد</th></tr>
+      <tr><td class="en">Supervised</td><td>(input، <b>الإجابة الصح</b>)</td><td>ماكينة بيع بتتعرف على العملة من الـ <span class="en">mass</span> والـ <span class="en">size</span>، وكل عملة في الداتا معروف قيمتها (1، 5، 10، 25 سنت).</td></tr>
+      <tr><td class="en">Unsupervised</td><td>(input، <b>؟</b>)</td><td>نفس العملات من غير قيمتها. الـ algorithm بيقسمها <span class="en">clusters</span> لوحده، بس مش عارف اسم كل مجموعة.</td></tr>
+      <tr><td class="en">Reinforcement</td><td>(input، output جربه، <b>تقييم</b> للـ output ده)</td><td>لعبة الطاولة (<span class="en">backgammon</span>): الموديل بيعرف الحركة كانت كويسة ولا لأ، مش الحركة الصح. وبطل العالم فيها كان <span class="en">neural network</span>.</td></tr>
+    </table></div>
+    <div class="idea">بالبلدي: الـ Supervised بنقوله الإجابة. والـ Unsupervised مفيش إجابات خالص. والـ Reinforcement بنقيّم الإجابة اللي هو جربها.</div>
+    <div class="qs" data-quiz="p6"><div class="k">صنّف كل حالة</div></div>
+  </section>
+
+  <!-- PART 7 -->
+  <section class="part" id="p7" data-part="p7">
+    <div class="num">الجزء 7 من 7</div>
+    <h2>اللغز: هل الـ learning ممكن أصلًا؟</h2>
+    <p>آخر سلايد فيها لغز. عندنا صور 3×3، شوية منها <span class="m">f = −1</span>، وشوية <span class="m">f = +1</span>. والمطلوب f لصورة جديدة. الشكل ده تقريبي للفكرة:</p>
+    <div class="puz" id="puz"></div>
+    <p>المشكلة إن فيه <b>أكتر من قاعدة</b> بتطابق كل الأمثلة. لو القاعدة "الصورة symmetric"، الإجابة حاجة. ولو القاعدة "المربع اللي فوق على الشمال أسود"، الإجابة حاجة تانية. والاتنين صح على الداتا.</p>
+    <div class="idea">الخلاصة: الداتا لوحدها ما بتحددش f <b>بره</b> الداتا. وده بالظبط السؤال اللي Lec 2 بتبدأ بيه: هل الـ learning ممكن أصلًا؟ والإجابة هتبقى "أيوه، بس بالاحتمالات".</div>
+    <div class="qs" data-quiz="p7"></div>
+  </section>
+
+  <!-- EXAM -->
+  <section class="part exam" id="exam">
+    <div class="num">الامتحان المصغر</div>
+    <h2>12 سؤال في 12 دقيقة</h2>
+    <p>نفس شكل الامتحان: MCQ وصح وغلط ومسألة PLA. حل من غير ما تبص فوق. النتيجة بتتحفظ، وتقدر تعيد.</p>
+    <div class="btns"><button class="btn" id="examStart" type="button">ابدأ التايمر</button><span class="timer" id="timer" aria-live="polite">12:00</span></div>
+    <div class="qs" id="examBox" hidden></div>
+    <div class="result" id="examResult" hidden></div>
+  </section>
+
+  <section class="next">
+    <h2 style="font-size:20px">بعد ما تخلص</h2>
+    <ol class="list">
+      <li>اتفرج على أول فيديو في <a href="https://youtube.com/playlist?list=PLD63A284B7615313A" target="_blank" rel="noopener">البلاي ليست</a> بسرعة 1.5x كمراجعة. ده الدكتور ياسر بيشرح نفس السلايدز.</li>
+      <li>ارجع لـ Claude وقوله "خلصت Lec 1"، وهو هيسألك أسئلة استرجاع وإنت مش باصص.</li>
+      <li>وبعدها Lec 2: <b>Is Learning Feasible?</b></li>
+    </ol>
+  </section>
+</div>
+
+<script>
+/* ---------- progress storage ---------- */
+const KEY = "anas-uni-progress-v1", LESSON = "ds-l01";
+const PARTS = ["p1","p2","p3","p4","p5","p6","p7"];
+function loadAll(){ try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } }
+function saveAll(d){ try { localStorage.setItem(KEY, JSON.stringify(d)); } catch {} }
+function lesson(){ const d = loadAll(); d[LESSON] = d[LESSON] || {parts:{}, answers:{}, exam:null}; return d; }
+function setPart(p, right, total){ const d = lesson(); d[LESSON].parts[p] = {right, total, at:Date.now()}; d[LESSON].updated = Date.now(); saveAll(d); renderBar(); }
+function setAnswer(id, v){ const d = lesson(); d[LESSON].answers[id] = v; saveAll(d); }
+function getAnswer(id){ return (lesson()[LESSON].answers||{})[id]; }
+
+function renderBar(){
+  const L = lesson()[LESSON], done = PARTS.filter(p => L.parts[p]).length + (L.exam ? 1 : 0);
+  const total = PARTS.length + 1, pct = Math.round(done/total*100);
+  document.getElementById("pct").textContent = `${pct}% · ${done}/${total}`;
+  document.getElementById("trackfill").style.width = pct + "%";
+  document.getElementById("partnav").innerHTML = PARTS.map((p,i) =>
+    `<a href="#${p}" class="${L.parts[p]?"done":""}">${i+1}${L.parts[p]?" ✓":""}</a>`).join("") +
+    `<a href="#exam" class="${L.exam?"done":""}">الامتحان${L.exam?` ${L.exam.right}/${L.exam.total}`:""}</a>`;
+}
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- generic choice questions ---------- */
+function mountChoice(box, part, items, opts = {}){
+  const wrap = document.createElement("div"); wrap.className = "qs"; box.appendChild(wrap);
+  const status = document.createElement("div"); status.className = "score-line";
+  function check(){
+    const ans = items.map((_,i) => getAnswer(`${part}-${i}`));
+    const answered = ans.filter(a => a !== undefined).length;
+    const right = ans.filter((a,i) => a === items[i].a).length;
+    status.innerHTML = answered === items.length ? `<span class="done-badge">الجزء خلص · ${right}/${items.length}</span>` : `جاوبت ${answered} من ${items.length}`;
+    if (answered === items.length && !opts.noPart) setPart(part, right, items.length);
+  }
+  items.forEach((it,i) => {
+    const q = document.createElement("div"); q.className = "q";
+    const id = `${part}-${i}`;
+    function draw(){
+      const got = getAnswer(id);
+      q.innerHTML = `<div class="stem">${i+1}. ${it.q}</div><div class="opts ${it.row?"row":""}">${
+        it.o.map((o,j) => {
+          let cls = ""; if (got !== undefined){ if (j === it.a) cls = "right"; else if (j === got) cls = "wrong"; }
+          return `<button type="button" class="opt ${cls}" data-j="${j}" ${got!==undefined?"disabled":""}>${o}</button>`;
+        }).join("")}</div>${got!==undefined?`<div class="why ${got===it.a?"":"bad"}">${got===it.a?"صح. ":"غلط. "}${it.w}</div>`:""}`;
+    }
+    q.addEventListener("click", e => { const b = e.target.closest("button[data-j]"); if (!b || b.disabled) return; setAnswer(id, +b.dataset.j); draw(); check(); });
+    draw(); wrap.appendChild(q);
+  });
+  const reset = document.createElement("button"); reset.type = "button"; reset.className = "btn ghost"; reset.textContent = "أعيد أسئلة الجزء";
+  reset.addEventListener("click", () => { const d = lesson(); items.forEach((_,i) => delete d[LESSON].answers[`${part}-${i}`]); delete d[LESSON].parts[part]; saveAll(d); wrap.remove(); status.remove(); reset.remove(); renderBar(); mountChoice(box, part, items, opts); });
+  box.appendChild(status); box.appendChild(reset); check();
+}
+
+const YN = ["أيوه، ينفع ML","لأ، مش محتاج ML"];
+const Q = {
+  p1:[
+    {q:"نتوقع سعر شقة من مساحتها ومكانها وعدد أوضها، وعندنا بيانات آلاف الشقق اللي اتباعت.", o:YN, a:0, row:true, w:"الشروط التلاتة موجودة: فيه نمط (المساحة بتأثر في السعر)، ومفيش معادلة مضبوطة، وعندنا داتا."},
+    {q:"نحسب مساحة دايرة من نص قطرها.", o:YN, a:1, row:true, w:"الشرط التاني مش موجود: المعادلة معروفة (πr²)، فمش محتاجين نتعلم."},
+    {q:"نتعرف على الأرقام المكتوبة بخط اليد، وعندنا آلاف الصور متعلّم عليها.", o:YN, a:0, row:true, w:"فيه نمط، ومحدش يقدر يكتب معادلة لشكل الرقم 7، وعندنا داتا."},
+    {q:"نتوقع رقم اليانصيب اللي هيطلع الأسبوع الجاي.", o:YN, a:1, row:true, w:"الشرط الأول مش موجود: الأرقام عشوائية ومفيش نمط أصلًا."},
+    {q:"شركة لسه فاتحة النهارده، وعايزة تتوقع مين من العملاء هيسيبها. ومعندهاش أي سجلات.", o:YN, a:1, row:true, w:"الشرط التالت مش موجود: مفيش داتا، فمفيش حاجة نتعلم منها. ولما الداتا تتجمع، ساعتها ينفع."},
+    {q:"أنهي شرط من التلاتة الدكتور شايفه الأهم؟", o:["A pattern exists","We cannot pin it down mathematically","We have data on it"], a:2, w:"الداتا. من غيرها مفيش learning خالص، حتى لو النمط موجود."}
+  ],
+  p2:[
+    {q:"في حل مثال الأفلام، التقييم المتوقع بيتحسب إزاي؟", o:["بنختار أهم صفة واحدة في الفيلم","بنطابق كل صفة في الفيلم مع نفس الصفة في المشاهد، ونجمع المساهمات","بنحسب متوسط تقييمات الفيلم"], a:1, w:"كل factor بيساهم، والتقييم هو مجموع المساهمات (match movie and viewer factors, add contributions)."},
+    {q:"في الـ learning approach، أرقام صفات الفيلم والمشاهد بتيجي منين؟", o:["خبير بيحطها بإيده","بتبدأ عشوائية، وبتتعدل من التقييمات الحقيقية لحد ما التوقع يقرب منها","من وصف الفيلم على النت"], a:1, w:"ده جوهر الـ learning: البداية عشوائية، والداتا هي اللي بتعدّل."},
+    {q:"Netflix كانت هتدفع كام لتحسين التوقع بنسبة 10%؟", o:["100 ألف دولار","مليون دولار","10 مليون دولار"], a:1, w:"10% improvement = 1 million dollar prize."}
+  ],
+  p3:[
+    {q:"بيانات العميل: السن، والمرتب، والديون", o:["x","y","f","Data","g","H","A"], a:0, row:true, w:"ده الـ input x."},
+    {q:"العميل ده كويس ولا وحش؟", o:["x","y","f","Data","g","H","A"], a:1, row:true, w:"ده الـ output y."},
+    {q:"المعادلة المثالية للموافقة، اللي محدش يعرفها", o:["x","y","f","Data","g","H","A"], a:2, row:true, w:"ده الـ target function f، وهي unknown."},
+    {q:"سجلات العملاء القدام", o:["x","y","f","Data","g","H","A"], a:3, row:true, w:"دي الـ Data أو الـ training examples (x₁,y₁)…(x_N,y_N)."},
+    {q:"المعادلة اللي البنك هيستخدمها فعلًا", o:["x","y","f","Data","g","H","A"], a:4, row:true, w:"دي الـ final hypothesis g، وعايزينها ≈ f."},
+    {q:"كل المعادلات المرشحة", o:["x","y","f","Data","g","H","A"], a:5, row:true, w:"ده الـ hypothesis set H."},
+    {q:"الطريقة اللي بتختار المعادلة من المرشحين", o:["x","y","f","Data","g","H","A"], a:6, row:true, w:"ده الـ learning algorithm A."},
+    {q:"الـ learning model عبارة عن إيه؟", o:["f + Data","H + A","g + f","Data + A"], a:1, w:"The hypothesis set and the learning algorithm together are the learning model."},
+    {q:"صح ولا غلط: إحنا اللي بنختار الـ target function f.", o:["صح","غلط"], a:1, row:true, w:"غلط. الـ f مجهولة وجاية من المشكلة. إحنا بنختار H و A بس."}
+  ],
+  p4:[
+    {q:"بعد التبسيط، الـ w₀ بتساوي إيه؟", o:["threshold","−threshold","1","0"], a:1, w:"w₀ = −threshold، ومعاها x₀ = 1، فالـ threshold بيدخل جوه المجموع."},
+    {q:"ليه بنزود x₀ = 1؟", o:["عشان نكبّر الداتا","عشان الـ threshold يدخل جوه المجموع، والمعادلة تبقى sign(wᵀx)","عشان الخط يعدي بنقطة الأصل"], a:1, w:"x₀ = 1 هو artificial coordinate، عشان نكتب h(x) = sign(wᵀx) في سطر واحد."},
+    {q:"لو wᵀx = 2.5، الـ perceptron هيقول إيه؟", o:["+1 (وافق)","−1 (ارفض)","مش هيعرف"], a:0, w:"sign(2.5) = +1."},
+    {q:"الـ Perceptron بصفتين بيرسم إيه؟", o:["دايرة","خط مستقيم","منحنى"], a:1, w:"w₀ + w₁x₁ + w₂x₂ = 0 معادلة خط. عشان كده هو linear model."}
+  ],
+  p6:[
+    {q:"فلتر spam اتدرب على إيميلات، وكل إيميل متعلّم عليه spam ولا لأ.", o:["Supervised","Unsupervised","Reinforcement"], a:0, row:true, w:"كل input معاه الإجابة الصح."},
+    {q:"شركة عايزة تقسم عملاءها لمجموعات حسب مشترياتهم، ومفيش أي تقسيم جاهز.", o:["Supervised","Unsupervised","Reinforcement"], a:1, row:true, w:"(input، ؟): مفيش إجابات، والموديل بيعمل clusters لوحده."},
+    {q:"روبوت بيتعلم يمشي: كل ما يقع بياخد تقييم وحش، وكل ما يكمل بياخد تقييم كويس.", o:["Supervised","Unsupervised","Reinforcement"], a:2, row:true, w:"مفيش حد بيقوله الحركة الصح، فيه تقييم للحركة اللي عملها."},
+    {q:"ماكينة البيع: عملات معروف mass و size بتوعها، ومعروف قيمة كل واحدة.", o:["Supervised","Unsupervised","Reinforcement"], a:0, row:true, w:"مثال السلايد بالظبط: (input، correct output)."},
+    {q:"نفس العملات، بس من غير ما نعرف قيمتها.", o:["Supervised","Unsupervised","Reinforcement"], a:1, row:true, w:"نفس الداتا من غير الإجابات، يبقى Unsupervised."},
+    {q:"موديل بيلعب طاولة، وفي آخر الدور بيعرف كسب ولا خسر.", o:["Supervised","Unsupervised","Reinforcement"], a:2, row:true, w:"(input، some output، grade for this output)، وده مثال الـ backgammon في السلايد."}
+  ],
+  p7:[
+    {q:"اللغز اللي في آخر المحاضرة بيوضح إيه؟", o:["إن الـ Perceptron ضعيف","إن فيه أكتر من قاعدة بتطابق الداتا، فالداتا لوحدها ما بتحددش f بره الداتا","إن الداتا لازم تكون صور"], a:1, w:"وده اللي بيفتح سؤال Lec 2: هل الـ learning feasible؟"},
+    {q:"Lec 2 هترد على السؤال ده إزاي؟", o:["إن الـ learning مستحيل","إن الـ learning ممكن بالاحتمالات","إن لازم نعرف f الأول"], a:1, w:"مش هنعرف f بالظبط، بس نقدر نقول إن g قريبة منها باحتمال عالي (Hoeffding)."}
+  ]
+};
+Object.entries(Q).forEach(([p,items]) => mountChoice(document.querySelector(`[data-quiz="${p}"]`), p, items));
+
+/* ---------- part 2: movie lab ---------- */
+(function(){
+  const F = [["action","Action"],["comedy","Comedy"],["tom","Tom Cruise"]];
+  const st = {v:{action:.8,comedy:-.6,tom:.5}, m:{action:.9,comedy:.2,tom:1}};
+  const ctl = document.getElementById("movieCtl");
+  ctl.innerHTML = F.map(([k,n]) => `<div><label>المشاهد بيحب <span class="en">${n}</span>؟ <input id="v-${k}" type="range" min="-1" max="1" step=".1" value="${st.v[k]}"></label>
+    <label>الفيلم فيه <span class="en">${n}</span> قد إيه؟ <input id="m-${k}" type="range" min="0" max="1" step=".1" value="${st.m[k]}"></label></div>`).join("");
+  function upd(){
+    let sum = 0, parts = [];
+    F.forEach(([k,n]) => { st.v[k] = +document.getElementById("v-"+k).value; st.m[k] = +document.getElementById("m-"+k).value;
+      const c = st.v[k]*st.m[k]; sum += c; parts.push(`${n}: ${c>=0?"+":""}${c.toFixed(2)}`); });
+    const rating = Math.max(1, Math.min(5, 3 + sum*1.2)), full = Math.round(rating);
+    document.getElementById("stars").textContent = "★".repeat(full) + "☆".repeat(5-full);
+    document.getElementById("movieRead").innerHTML = `<span class="en">${parts.join(" · ")}</span><br>المجموع = <b class="en">${sum.toFixed(2)}</b>، والتقييم المتوقع ≈ <b class="en">${rating.toFixed(1)}</b> من 5`;
+  }
+  ctl.addEventListener("input", upd); upd();
+})();
+
+/* ---------- canvas helpers ---------- */
+function setupCanvas(cv){
+  const r = window.devicePixelRatio || 1, size = 440;
+  cv.width = size*r; cv.height = size*r; const ctx = cv.getContext("2d"); ctx.scale(r,r);
+  const R = 5, sx = x => (x+R)/(2*R)*size, sy = y => size - (y+R)/(2*R)*size;
+  return {ctx, size, R, sx, sy};
+}
+function drawBase(g){
+  const {ctx,size,R,sx,sy} = g; ctx.clearRect(0,0,size,size);
+  ctx.strokeStyle = "#E6E9F0"; ctx.lineWidth = 1;
+  for (let i=-R;i<=R;i++){ ctx.beginPath(); ctx.moveTo(sx(i),0); ctx.lineTo(sx(i),size); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0,sy(i)); ctx.lineTo(size,sy(i)); ctx.stroke(); }
+  ctx.strokeStyle = "#B8BFCC"; ctx.beginPath(); ctx.moveTo(sx(0),0); ctx.lineTo(sx(0),size); ctx.moveTo(0,sy(0)); ctx.lineTo(size,sy(0)); ctx.stroke();
+  ctx.fillStyle = "#8C94A6"; ctx.font = "12px sans-serif"; ctx.fillText("x₁", size-18, sy(0)-6); ctx.fillText("x₂", sx(0)+6, 14);
+}
+function shade(g, w){
+  const {ctx,size,R} = g, step = 8;
+  for (let px=0; px<size; px+=step) for (let py=0; py<size; py+=step){
+    const x = px/size*2*R - R, y = (size-py)/size*2*R - R, v = w[0]+w[1]*x+w[2]*y;
+    if (v === 0) continue;
+    ctx.fillStyle = v > 0 ? "rgba(79,91,213,.07)" : "rgba(192,57,43,.06)"; ctx.fillRect(px,py,step,step);
+  }
+}
+function line(g, w, color, dash){
+  const {ctx,R,sx,sy} = g; if (Math.abs(w[1])<1e-9 && Math.abs(w[2])<1e-9) return;
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.setLineDash(dash?[6,6]:[]); ctx.beginPath();
+  if (Math.abs(w[2]) > 1e-9){ const y = x => -(w[0]+w[1]*x)/w[2]; ctx.moveTo(sx(-R),sy(y(-R))); ctx.lineTo(sx(R),sy(y(R))); }
+  else { const x = -w[0]/w[1]; ctx.moveTo(sx(x),sy(-R)); ctx.lineTo(sx(x),sy(R)); }
+  ctx.stroke(); ctx.restore();
+}
+function pts(g, P, w, ring){
+  const {ctx,sx,sy} = g;
+  P.forEach((p,i) => {
+    const s = w ? Math.sign(w[0]+w[1]*p[0]+w[2]*p[1]) : p[2], bad = w && s !== p[2];
+    ctx.beginPath(); ctx.arc(sx(p[0]),sy(p[1]),7,0,Math.PI*2);
+    ctx.fillStyle = p[2] > 0 ? "#4F5BD5" : "#C0392B"; ctx.fill();
+    if (bad){ ctx.lineWidth = 3; ctx.strokeStyle = "#E2A400"; ctx.stroke(); }
+    if (ring === i){ ctx.beginPath(); ctx.arc(sx(p[0]),sy(p[1]),13,0,Math.PI*2); ctx.lineWidth = 2; ctx.strokeStyle = "#1E2433"; ctx.stroke(); }
+  });
+}
+
+/* ---------- part 4: perceptron lab ---------- */
+(function(){
+  const P = [[2,3,1],[3,1,1],[4,3,1],[1,4,1],[3,-0.5,1],[-2,-1,-1],[-1,-3,-1],[-3,1,-1],[0,-2,-1],[-3,-2,-1]];
+  const w = [0,1,-1];
+  const ctl = document.getElementById("percCtl");
+  ctl.innerHTML = [["w₀ (−threshold)",0],["w₁",1],["w₂",2]].map(([n,i]) =>
+    `<label><span class="en">${n}</span> = <b class="en" id="pw${i}v">${w[i]}</b><input id="pw${i}" type="range" min="-4" max="4" step=".5" value="${w[i]}"></label>`).join("");
+  const g = setupCanvas(document.getElementById("percCanvas"));
+  function draw(){
+    [0,1,2].forEach(i => { w[i] = +document.getElementById("pw"+i).value; document.getElementById(`pw${i}v`).textContent = w[i]; });
+    drawBase(g); shade(g,w); line(g,w,"#1E2433"); pts(g,P,w);
+    const bad = P.filter(p => Math.sign(w[0]+w[1]*p[0]+w[2]*p[1]) !== p[2]).length;
+    document.getElementById("percRead").innerHTML = bad === 0
+      ? `<b style="color:var(--pos)">برافو! الخط فصل كل النقط.</b> يعني الداتا دي linearly separable، والـ h دي صح على كل الداتا.`
+      : `النقط اللي عليها إطار أصفر اتصنفت غلط: <b class="en">${bad}</b> من ${P.length}. جرّب مثلًا <span class="en">w = [−1, 1, 1]</span>.`;
+  }
+  ctl.addEventListener("input", draw); draw();
+})();
+
+/* ---------- part 5: worked stepper ---------- */
+(function(){
+  const pts3 = [["A",[1,2,1],1],["B",[1,-1,-2],-1],["C",[1,1,-1],-1]];
+  const fmt = v => "[" + v.join(", ") + "]";
+  const dot = (a,b) => a.reduce((s,x,i)=>s+x*b[i],0);
+  let rows, w, step, done;
+  function reset(){ w=[0,0,0]; step=0; done=false; rows=[]; render(); document.getElementById("stepRead").textContent = "دوس \"الخطوة الجاية\" عشان تبدأ."; document.getElementById("stepNext").disabled = false; }
+  // precompute the same sequence as the notes: check A, B, C in order, repeat until all correct
+  function next(){
+    if (done) return;
+    const idx = step % 3, [n,x,y] = pts3[idx], s = dot(w,x), sg = Math.sign(s), bad = sg !== y;
+    const before = fmt(w);
+    let res = "✓ صح، ما نعملش حاجة";
+    if (bad){ w = w.map((v,i)=>v+y*x[i]); res = `✗ غلط ← w + (${y>0?"+1":"−1"})·x = ${fmt(w)}`; }
+    rows.push([rows.length+1, before, `${n} ${fmt(x)}`, s, sg===0?"0":(sg>0?"+1":"−1"), y>0?"+1":"−1", res]);
+    step++;
+    const allOk = pts3.every(([,x,y]) => Math.sign(dot(w,x)) === y);
+    if (allOk && !bad && rows.slice(-3).length === 3 && rows.slice(-3).every(r => r[6].startsWith("✓"))) done = true;
+    render();
+    const read = document.getElementById("stepRead");
+    if (done){ read.innerHTML = `<b style="color:var(--pos)">الـ PLA وقف عند w = ${fmt(w)}</b>، يعني الخط <span class="m">x₁ + 2x₂ = 0</span>. وكل النقط اتصنفت صح.`; document.getElementById("stepNext").disabled = true; }
+    else read.innerHTML = bad ? `النقطة ${n} اتصنفت غلط، فعدّلنا w. لاحظ: sign(0) = 0، وده ≠ y، فبنعتبرها غلط.` : `النقطة ${n} صح. نكمل على اللي بعدها.`;
+  }
+  function render(){
+    const t = document.getElementById("stepTable");
+    t.innerHTML = `<tr><th>الخطوة</th><th>w الحالية</th><th>النقطة</th><th>wᵀx</th><th>sign</th><th>y</th><th>النتيجة</th></tr>` +
+      rows.map((r,i) => `<tr class="${i===rows.length-1?"cur":""}">${r.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("");
+  }
+  document.getElementById("stepNext").addEventListener("click", next);
+  document.getElementById("stepReset").addEventListener("click", reset);
+  reset();
+})();
+
+/* ---------- part 5: random PLA ---------- */
+(function(){
+  const g = setupCanvas(document.getElementById("plaCanvas"));
+  let P, f, w, it, timer;
+  const mis = () => P.map((p,i)=>[p,i]).filter(([p]) => Math.sign(w[0]+w[1]*p[0]+w[2]*p[1]) !== p[2]);
+  function fresh(){
+    clearInterval(timer);
+    do {
+      const a = [Math.random()*8-4, Math.random()*8-4], b = [Math.random()*8-4, Math.random()*8-4];
+      f = [a[0]*b[1]-a[1]*b[0], a[1]-b[1], b[0]-a[0]];
+      P = Array.from({length:20}, () => { const x=[Math.random()*9-4.5, Math.random()*9-4.5]; const s=Math.sign(f[0]+f[1]*x[0]+f[2]*x[1]); return [x[0],x[1],s||1]; });
+    } while (P.every(p=>p[2]===1) || P.every(p=>p[2]===-1));
+    w = [0,0,0]; it = 0; draw();
+  }
+  function draw(){
+    drawBase(g); shade(g,w); line(g,f,"#8C94A6",true); line(g,w,"#4F5BD5");
+    const m = mis(); pts(g,P,w, m.length ? m[0][1] : -1);
+    document.getElementById("plaRead").innerHTML = m.length
+      ? `iteration رقم <b class="en">${it}</b> · w = <span class="en">[${w.map(v=>v.toFixed(1)).join(", ")}]</span> · النقط الغلط: <b class="en">${m.length}</b>`
+      : `<b style="color:var(--pos)">خلص في ${it} iteration.</b> مفيش ولا نقطة غلط. ولاحظ إن الـ g مش لازم تطابق الـ f بالظبط، هي بس فصلت الداتا اللي عندنا.`;
+  }
+  function step(){ const m = mis(); if (!m.length) return false; const [p] = m[0]; w = [w[0]+p[2], w[1]+p[2]*p[0], w[2]+p[2]*p[1]]; it++; draw(); return true; }
+  document.getElementById("plaStep").addEventListener("click", () => { clearInterval(timer); step(); });
+  document.getElementById("plaRun").addEventListener("click", () => { clearInterval(timer); timer = setInterval(() => { if (!step() || it > 2000) clearInterval(timer); }, 120); });
+  document.getElementById("plaNew").addEventListener("click", fresh);
+  fresh();
+})();
+
+/* ---------- part 5: hand calculations ---------- */
+(function(){
+  const C = [
+    {w:[2,1,-1], x:[1,4], y:1, d:-1, mis:true, nw:[3,2,3]},
+    {w:[0,1,2], x:[-2,3], y:-1, d:4, mis:true, nw:[-1,3,-1]},
+    {w:[1,-1,1], x:[-2,1], y:1, d:4, mis:false, nw:[1,-1,1]}
+  ];
+  const box = document.getElementById("calcs");
+  const state = C.map((_,i) => getAnswer(`p5-calc-${i}`) === true);
+  function check(){
+    const right = state.filter(Boolean).length;
+    if (state.every(s => s !== undefined) && right === C.length) setPart("p5", right, C.length);
+    document.getElementById("calcStatus").innerHTML = right === C.length ? `<span class="done-badge">الجزء خلص · ${right}/${C.length}</span>` : `حليت ${right} من ${C.length} صح`;
+  }
+  box.innerHTML = C.map((c,i) => `<div class="q calc" data-i="${i}">
+      <div class="stem">${i+1}. w = <span class="m">[${c.w.join(", ")}]</span>، والنقطة x = <span class="m">(${c.x.join(", ")})</span> و y = <span class="m">${c.y>0?"+1":"−1"}</span>. (افتكر x₀ = 1)</div>
+      <div class="row">wᵀx = <input inputmode="numeric" id="cd${i}" aria-label="wᵀx">
+        النقطة: <select id="cm${i}" aria-label="مصنفة صح ولا غلط"><option value="">اختار</option><option value="1">misclassified</option><option value="0">صح</option></select></div>
+      <div class="row">w الجديدة = [ <input id="cw${i}0" inputmode="numeric" aria-label="w0"> , <input id="cw${i}1" inputmode="numeric" aria-label="w1"> , <input id="cw${i}2" inputmode="numeric" aria-label="w2"> ]</div>
+      <div class="btns"><button type="button" class="btn" data-check="${i}">صحح</button></div>
+      <div class="why" id="cr${i}" hidden></div>
+    </div>`).join("") + `<div class="score-line" id="calcStatus"></div>`;
+  const num = s => Number(String(s).replace("−","-").trim());
+  box.addEventListener("click", e => {
+    const b = e.target.closest("[data-check]"); if (!b) return;
+    const i = +b.dataset.check, c = C[i];
+    const dEl = document.getElementById("cd"+i), mEl = document.getElementById("cm"+i);
+    const okD = num(dEl.value) === c.d, okM = mEl.value === (c.mis?"1":"0");
+    dEl.className = okD?"ok":"no"; mEl.className = okM?"ok":"no";
+    let okW = true; [0,1,2].forEach(k => { const el = document.getElementById(`cw${i}${k}`), ok = el.value.trim()!=="" && num(el.value) === c.nw[k]; el.className = ok?"ok":"no"; okW = okW && ok; });
+    const all = okD && okM && okW, r = document.getElementById("cr"+i);
+    r.hidden = false; r.className = "why" + (all?"":" bad");
+    const xs = [1, ...c.x];
+    r.innerHTML = (all ? "صح. " : "راجع الخطوات: ") + `wᵀx = ${c.w.map((v,k)=>`(${v})(${xs[k]})`).join(" + ")} = <b>${c.d}</b>، و sign = ${Math.sign(c.d)>0?"+1":"−1"}` +
+      (c.mis ? ` ≠ y، يعني misclassified. والتعديل: w + (${c.y>0?"+1":"−1"})·[${xs.join(", ")}] = <b>[${c.nw.join(", ")}]</b>.` : ` = y، يعني النقطة صح والـ w زي ما هي <b>[${c.nw.join(", ")}]</b>.`);
+    state[i] = all; setAnswer(`p5-calc-${i}`, all); check();
+  });
+  check();
+})();
+
+/* ---------- part 7: puzzle grids ---------- */
+(function(){
+  const G = [["f = −1",[1,0,0, 0,1,0, 0,0,1]],["f = −1",[1,1,0, 1,0,0, 0,0,0]],["f = +1",[0,1,0, 1,1,1, 0,1,0]],["f = +1",[0,0,0, 1,1,1, 0,0,0]],["f = ؟",[1,0,1, 0,1,0, 1,0,1]]];
+  document.getElementById("puz").innerHTML = G.map(([l,c]) => `<figure><div class="grid9">${c.map(v=>`<i class="${v?"on":""}"></i>`).join("")}</div><figcaption class="en">${l}</figcaption></figure>`).join("");
+})();
+
+/* ---------- final exam ---------- */
+(function(){
+  const E = [
+    {q:"أنهي واحد من دول <b>مش</b> من شروط استخدام الـ ML؟", o:["A pattern exists","We have data on it","We know the target function","We cannot pin it down mathematically"], a:2, w:"لو عارفين الـ target function، مش محتاجين learning خالص."},
+    {q:"أنهي مكون في الـ learning يعتبر <b>unknown</b>؟", o:["The hypothesis set H","The target function f","The learning algorithm A","The final hypothesis g"], a:1, w:"الـ f مجهولة، وده سبب إننا بنتعلم."},
+    {q:"The learning model consists of:", o:["f and Data","H and A","g and f","x and y"], a:1, w:"The hypothesis set + the learning algorithm."},
+    {q:"صح ولا غلط: الـ training data بيختارها مصمم الموديل زي ما بيختار H.", o:["صح","غلط"], a:1, w:"غلط. الداتا جاية من المشكلة. إحنا بنختار H و A بس."},
+    {q:"In the perceptron, x₀ = 1 is added so that:", o:["the data becomes separable","the threshold is absorbed as w₀ = −threshold","the output becomes 0 or 1","learning becomes faster"], a:1, w:"h(x) = sign(wᵀx) with w₀ = −threshold."},
+    {q:"The PLA update rule for a misclassified point (xₙ, yₙ) is:", o:["w ← w − yₙxₙ","w ← w + yₙxₙ","w ← yₙxₙ","w ← w + xₙ"], a:1, w:"w ← w + yₙxₙ (لو y = −1 بتبقى طرح)."},
+    {q:"w = [1, 1, 1]، والنقطة x = (−2, −1) و y = +1. بعد iteration واحدة من الـ PLA، w تبقى:", o:["[1, 1, 1] (النقطة صح)","[2, −1, 0]","[0, 3, 2]","[2, 3, 2]"], a:1, w:"wᵀx = 1 − 2 − 1 = −2، و sign = −1 ≠ +1، يبقى misclassified. w + x = [1+1, 1−2, 1−1] = [2, −1, 0]."},
+    {q:"The PLA is guaranteed to converge when:", o:["the data is linearly separable","N is large","w starts at zero","the data has noise"], a:0, w:"لو الداتا linearly separable، الـ PLA بيوصل. ولو مش separable، مش هيقف."},
+    {q:"عملات معروف mass و size بتوعها، من غير ما نعرف قيمتها، والموديل بيقسمها لمجموعات:", o:["Supervised","Unsupervised","Reinforcement"], a:1, w:"(input، ؟) يبقى Unsupervised (clustering)."},
+    {q:"Data of the form (input, some output, grade for this output) is:", o:["Supervised","Unsupervised","Reinforcement"], a:2, w:"ده تعريف الـ Reinforcement learning (مثال الـ backgammon)."},
+    {q:"صح ولا غلط: في الـ Unsupervised learning بنديله (input، correct output).", o:["صح","غلط"], a:1, w:"غلط، ده الـ Supervised. الـ Unsupervised بياخد input بس."},
+    {q:"The essence of machine learning (Netflix example): a 10% improvement was worth:", o:["$100,000","$1 million","$10 million","nothing"], a:1, w:"10% improvement = 1 million dollar prize."}
+  ];
+  const box = document.getElementById("examBox"), res = document.getElementById("examResult"), tEl = document.getElementById("timer");
+  let ans, left, tick;
+  const prev = lesson()[LESSON].exam;
+  if (prev){ res.hidden = false; res.innerHTML = `آخر نتيجة: <b>${prev.right} / ${prev.total}</b> (${new Date(prev.at).toLocaleString("ar-EG")}). تقدر تعيد.`; }
+  function finish(){
+    clearInterval(tick);
+    const right = E.filter((e,i) => ans[i] === e.a).length;
+    box.querySelectorAll("button.opt").forEach(b => b.disabled = true);
+    E.forEach((e,i) => {
+      const q = box.children[i];
+      q.querySelectorAll("button.opt").forEach((b,j) => { if (j === e.a) b.classList.add("right"); else if (j === ans[i]) b.classList.add("wrong"); });
+      const w = document.createElement("div"); w.className = "why" + (ans[i]===e.a?"":" bad"); w.innerHTML = (ans[i]===e.a?"صح. ":ans[i]===undefined?"ما جاوبتش. ":"غلط. ") + e.w; q.appendChild(w);
+    });
+    const d = lesson(); d[LESSON].exam = {right, total:E.length, at:Date.now(), secondsLeft:left}; saveAll(d); renderBar();
+    res.hidden = false;
+    res.innerHTML = `النتيجة: <b>${right} / ${E.length}</b>. ` + (right >= 11 ? "ممتاز، الدرس اتقفل." : right >= 9 ? "كويس. راجع اللي غلطت فيه وأعد الامتحان." : "لسه. ارجع للأجزاء اللي غلطت فيها، وأعد الامتحان.");
+    document.getElementById("examStart").textContent = "أعد الامتحان"; document.getElementById("examStart").disabled = false;
+  }
+  function start(){
+    ans = {}; left = 12*60; box.hidden = false; res.hidden = true;
+    box.innerHTML = E.map((e,i) => `<div class="q"><div class="stem">${i+1}. ${e.q}</div><div class="opts">${e.o.map((o,j)=>`<button type="button" class="opt" data-i="${i}" data-j="${j}">${o}</button>`).join("")}</div></div>`).join("") +
+      `<div class="btns"><button type="button" class="btn" id="examSubmit">سلّم</button></div>`;
+    document.getElementById("examSubmit").addEventListener("click", finish);
+    document.getElementById("examStart").disabled = true;
+    clearInterval(tick);
+    tick = setInterval(() => { left--; tEl.textContent = `${String(Math.floor(left/60)).padStart(2,"0")}:${String(left%60).padStart(2,"0")}`; if (left <= 0) finish(); }, 1000);
+  }
+  box.addEventListener("click", e => {
+    const b = e.target.closest("button.opt"); if (!b || b.disabled) return;
+    const i = +b.dataset.i; ans[i] = +b.dataset.j;
+    box.children[i].querySelectorAll("button.opt").forEach(x => x.style.borderColor = "");
+    b.style.borderColor = "var(--c)";
+  });
+  document.getElementById("examStart").addEventListener("click", start);
+})();
+
+renderBar();
+</script>
+</body>
+</html>

@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>خريطة الميدترم</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=Readex+Pro:wght@300;400;500;600&display=swap">
+<style>
+/* Layout: soft header with live countdown, a 5-day exam week, then one calm card per subject in exam order. Light only, each subject has its own color. */
+:root{
+  color-scheme:light;
+  --bg:#F4F6FA; --card:#FFFFFF; --ink:#1E2433; --soft:#5D6679; --faint:#8C94A6; --line:#E6E9F0;
+  --brand:#3D5AFE; --brand-tint:#EEF1FF;
+  --amber:#B45309; --amber-tint:#FFF6E5;
+  --f-head:"Alexandria","Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --f-body:"Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --shadow:0 1px 2px rgba(30,36,51,.04),0 6px 24px rgba(30,36,51,.06);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-weight:400;font-size:16px;line-height:1.85;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px}
+.wrap{max-width:980px;margin-inline:auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-head);font-weight:700;margin:0;line-height:1.35;text-wrap:balance}
+a{color:var(--brand);text-decoration:none}
+a:hover{text-decoration:underline}
+a:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+.ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
+
+/* header */
+header{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:28px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center}
+.eyebrow{font-size:13px;color:var(--faint)}
+h1{font-size:clamp(30px,5vw,42px);margin-top:4px}
+.lede{color:var(--soft);margin:8px 0 0;max-width:52ch}
+.next{background:var(--brand-tint);border-radius:16px;padding:16px 22px;min-width:240px;text-align:center}
+.next .k{font-size:13px;color:var(--soft)}
+.next .v{font-family:var(--f-head);font-weight:600;font-size:19px;margin-top:2px}
+.clock{display:flex;justify-content:center;gap:10px;margin-top:10px}
+.clock div{display:flex;flex-direction:column;align-items:center;min-width:44px}
+.clock b{font-family:var(--f-head);font-size:26px;font-weight:600;color:var(--brand);line-height:1.1}
+.clock span{font-size:11px;color:var(--soft)}
+
+.tip{display:flex;gap:14px;align-items:center;background:var(--amber-tint);color:#6B3F06;border-radius:16px;padding:14px 20px}
+.tip .big{font-family:var(--f-head);font-weight:700;font-size:28px;color:var(--amber);line-height:1}
+.tip .big small{font-size:13px;font-weight:500;display:block;text-align:center}
+
+/* week */
+.sec-title{font-family:var(--f-head);font-weight:600;font-size:18px;margin:0 0 12px}
+.week{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.day{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.day .d{font-family:var(--f-head);font-weight:600;font-size:15px}
+.day .d span{color:var(--faint);font-family:var(--f-body);font-weight:400;font-size:13px;margin-inline-start:4px}
+.slot{display:block;color:inherit;background:var(--tint);border-radius:12px;padding:8px 10px;border-inline-start:4px solid var(--c)}
+.slot:hover{text-decoration:none;filter:brightness(.97)}
+.slot .s{font-weight:500;font-size:14px;line-height:1.5}
+.slot .h{font-size:12px;color:var(--soft)}
+.slot.done{opacity:.45}
+.slot.is-next{box-shadow:0 0 0 2px var(--c)}
+
+/* cards */
+.exam{background:var(--card);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;scroll-margin-top:16px}
+.top{background:var(--tint);padding:20px 24px;display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between}
+.top .who{min-width:0}
+.top .order{font-size:12px;color:var(--c);font-weight:600}
+.top h2{font-size:24px}
+.top .en{font-size:13px;color:var(--soft)}
+.when{display:flex;flex-wrap:wrap;gap:8px}
+.pill{background:var(--card);border-radius:999px;padding:4px 14px;font-size:14px;font-weight:500;white-space:nowrap}
+.pill.cd{background:var(--c);color:#fff}
+.pill.cd.done{background:var(--line);color:var(--soft)}
+
+.content{padding:22px 24px 26px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:22px 32px}
+.full{grid-column:1/-1}
+.block .k{font-size:13px;color:var(--faint);margin-bottom:6px}
+.doc{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-family:var(--f-head);font-weight:600;font-size:17px}
+.doc .lec{font-family:var(--f-body);font-weight:400;font-size:13px;color:var(--soft)}
+.badge{font-family:var(--f-body);font-size:12px;font-weight:500;background:var(--brand-tint);color:var(--brand);border-radius:999px;padding:2px 10px}
+ul.scope{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+ul.scope li{display:flex;gap:10px;align-items:baseline}
+ul.scope li::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--c);transform:translateY(-2px)}
+ul.scope li.out{color:var(--faint);text-decoration:line-through}
+ul.scope li.out::before{background:var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:14px;font-weight:500;background:var(--tint);color:var(--ink);border-radius:999px;padding:3px 12px}
+.chip.maybe{background:transparent;border:1.5px dashed var(--faint);color:var(--soft)}
+.pending{color:var(--faint)}
+
+.meter{display:flex;gap:4px;margin-top:4px}
+.meter i{flex:1;height:8px;border-radius:999px;background:var(--line)}
+.meter i.on{background:var(--c)}
+.meter-l{display:flex;justify-content:space-between;font-size:12px;color:var(--faint);margin-top:4px}
+.meter-t{font-size:14px;font-weight:500}
+
+.grades{display:flex;gap:4px;height:34px}
+.grades span{display:flex;align-items:center;justify-content:center;gap:4px;border-radius:10px;font-size:13px;font-weight:500;background:var(--tint);white-space:nowrap;overflow:hidden;min-width:0;padding-inline:6px}
+.grades .mid{background:var(--c);color:#fff}
+.grades .unk{background:repeating-linear-gradient(-45deg,var(--bg) 0 6px,var(--line) 6px 8px);color:var(--soft)}
+.note{font-size:13px;color:var(--soft);margin-top:6px}
+
+.style p{margin:0;color:var(--ink)}
+.warns{display:flex;flex-direction:column;gap:8px}
+.warn{background:var(--amber-tint);border-radius:12px;padding:10px 14px;color:#5A3505;font-size:15px}
+.mats ul{margin:0;padding-inline-start:18px;color:var(--soft);font-size:14px;columns:2;column-gap:28px}
+.mats li{break-inside:avoid}
+.mats .missing{color:#C0392B;font-weight:500}
+
+nav.top{display:flex;gap:8px;flex-wrap:wrap}
+nav.top a{background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:6px 16px;font-size:14px;color:var(--ink)}
+nav.top a.on{background:var(--brand);color:#fff}
+nav.top a:hover{text-decoration:none}
+
+/* strategy + plan */
+.panel{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:24px}
+.panel > .sec-title{margin-bottom:4px}
+.panel .sub{color:var(--soft);margin:0 0 16px;font-size:15px}
+.rules{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.rules li{background:var(--bg);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.rules b{font-family:var(--f-head);font-weight:600;font-size:16px}
+.rules span{color:var(--soft);font-size:14px}
+.loop{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:16px 0 0}
+.loop .st{background:var(--brand-tint);color:var(--brand);border-radius:999px;padding:4px 14px;font-weight:500;font-size:14px}
+.loop .ar{color:var(--faint)}
+.decide{background:#FFF1F0;border-radius:22px;padding:22px 24px}
+.decide .sec-title{color:#A12B1F}
+.decide ol{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:8px}
+.decide li span{color:var(--soft);font-size:14px;display:block}
+.days{display:flex;flex-direction:column;gap:14px}
+.dayplan{border-radius:16px;background:var(--bg);padding:14px 16px}
+.dayplan h3{font-family:var(--f-head);font-weight:600;font-size:17px;margin:0 0 8px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.dayplan h3 small{font-family:var(--f-body);font-weight:400;font-size:13px;color:var(--soft)}
+.blocks{display:flex;flex-direction:column;gap:6px}
+.blk{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;align-items:start;background:var(--card);border-radius:10px;padding:8px 12px;border-inline-start:4px solid var(--c,var(--line))}
+.blk .tm{font-size:13px;color:var(--soft);direction:ltr;text-align:right;font-variant-numeric:tabular-nums}
+.blk .what{font-size:15px}
+.blk .what small{display:block;color:var(--soft);font-size:13px}
+.blk.exam-b{background:var(--c);color:#fff}
+.blk.exam-b .tm,.blk.exam-b small{color:rgba(255,255,255,.85)}
+.blk.life{border-inline-start-color:var(--faint);color:var(--soft)}
+.blk.cut{border-inline-start-color:#E0A39B;color:var(--faint);text-decoration:line-through}
+.blk.ask{border-inline-start-color:#E0A39B;background:#FFF6F5}
+.risk{margin-top:8px;font-size:14px;color:#8A2A1E;background:#FFF1F0;border-radius:10px;padding:8px 12px}
+
+.plan{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px;background:var(--bg);border-radius:16px;padding:16px 18px}
+.plan p{margin:0;font-size:15px}
+.plan ul{margin:0;padding-inline-start:18px;font-size:15px}
+.must{list-style:none!important;padding:0!important;display:flex;flex-direction:column;gap:4px}
+.must li::before{content:"☐ ";color:var(--c)}
+
+.lessons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.lsub{background:var(--bg);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.lsub h3{font-family:var(--f-head);font-weight:600;font-size:16px;margin:0;display:flex;justify-content:space-between;gap:8px}
+.lsub h3 span{font-family:var(--f-body);font-weight:500;font-size:13px;color:var(--c)}
+.lbar{height:6px;background:var(--line);border-radius:999px;overflow:hidden}
+.lbar i{display:block;height:100%;background:var(--c)}
+.lrow{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--card);border-radius:10px;padding:6px 10px;font-size:14px}
+.lrow a{font-weight:500}
+.lrow .st{font-size:12px;color:var(--faint);white-space:nowrap}
+.lrow .st.go{color:var(--c)}
+.lrow .st.ok{color:#1F8A4C;font-weight:600}
+@media (max-width:820px){.lessons{grid-template-columns:1fr}}
+
+footer{color:var(--soft);font-size:13px;text-align:center;display:flex;flex-direction:column;gap:4px;padding-top:8px}
+
+@media (max-width:820px){
+  header{grid-template-columns:1fr}
+  .next{min-width:0}
+  .week{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .content{grid-template-columns:1fr}
+  .mats ul{columns:1}
+  .rules,.plan{grid-template-columns:1fr}
+  .blk{grid-template-columns:1fr;gap:0}
+  .blk .tm{text-align:right}
+}
+@media (max-width:420px){.week{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>body{margin:0}</style>
+</head>
+<body>
+
+
+<div class="wrap" dir="rtl" lang="ar">
+  <nav class="top" aria-label="صفحات الموقع">
+    <a href="/interactive/university/midterm" class="on" aria-current="page">خريطة الميدترم</a>
+    <a href="/interactive/university/big-picture">الصورة الكبيرة</a>
+  </nav>
+  <header>
+    <div>
+      <div class="eyebrow">ذكاء اصطناعي · سنة رابعة · الترم الأول 2026/2027</div>
+      <h1>خريطة الميدترم</h1>
+      <p class="lede">كل اللي محتاج تعرفه عن كل امتحان في مكان واحد: الدكتور، والمنهج الداخل، والدرجات، وشكل الأسئلة، والتنبيهات.</p>
+    </div>
+    <div class="next" aria-live="polite">
+      <div class="k">الامتحان الجاي</div>
+      <div class="v" id="next-name">…</div>
+      <div class="clock" id="clock"></div>
+    </div>
+  </header>
+
+  <div class="tip"><div class="big num">30<small>دقيقة</small></div><div><b>كل امتحانات الميد نص ساعة بس.</b> السرعة جزء من الامتحان، فاتدرب تحل وإنت حاطط وقت.</div></div>
+
+  <section aria-labelledby="wk">
+    <h2 class="sec-title" id="wk">أسبوع الامتحانات</h2>
+    <div class="week" id="week"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="st">
+    <h2 class="sec-title" id="st">الاستراتيجية: هنقفل الست مواد</h2>
+    <p class="sub">الهدف مش إننا "نعدّي". الهدف إن كل مادة تتقفل. وعشان كده، مفيش مادة تدخل امتحانها من غير ما تعدي على 4 مراحل:</p>
+    <div class="loop"><span class="st">1. أفهم</span><span class="ar">←</span><span class="st">2. أسترجع من غير ما أبص</span><span class="ar">←</span><span class="st">3. أحل بشكل الامتحان وبالوقت</span><span class="ar">←</span><span class="st">4. أراجع غلطاتي</span></div>
+    <ul class="rules" style="margin-top:16px">
+      <li><b>الامتحان الأقرب هو الأهم</b><span>مفيش مادة تتفتح قبل ما اللي امتحانها قبلها تخلص المراحل الأربعة. الاستثناء الوحيد Deep Learning: بنقرا منها ساعة ونص آخر الليل من يوم الاتنين، لأن السلايدز كتير (159).</span></li>
+      <li><b>نص ساعة، يعني تايمر</b><span>كل تدريب بيتعمل بتايمر 30 دقيقة. وأي سؤال ياخد أكتر من نصيبه، سيبه وارجعله في الآخر.</span></li>
+      <li><b>نذاكر بنوع السؤال، مش بالسلايد</b><span>لكل مادة بنحدد أنواع الأسئلة اللي ممكن تيجي، ولكل نوع خطوات حل ثابتة، وبنحل فيه لحد ما يبقى أوتوماتيك.</span></li>
+      <li><b>آخر ساعة قبل الامتحان: مفيش جديد</b><span>بتراجع "ممكن ييجي في الامتحان" وملف الغلطات بس. وأي حاجة ما اتذاكرتش لحد دلوقتي، ما تفتحهاش.</span></li>
+      <li><b>النوم جزء من الخطة</b><span>6 ساعات على الأقل قبل كل امتحان. السهر بيبوّظ الحسابات، وده أخطر في DSP و Data Science.</span></li>
+      <li><b>دوري أنا (Claude)</b><span>أعمل ملخص كل محاضرة بالعامية، وأسألك أسئلة استرجاع، وأعمل أسئلة بنفس أسلوب كل دكتور، وأصحح وأسجل غلطاتك.</span></li>
+    </ul>
+  </section>
+
+  <div class="tip" style="background:var(--brand-tint);color:var(--ink)"><div class="big" style="color:var(--brand)">✓</div><div><b>الأسبوع ده مفيش غير المذاكرة.</b> العمدة والتصوير والحصص اتأجلوا، والكلية أجازة (مفيش محاضرات ولا سكاشن). مفيش حاجة غير الامتحانات.</div></div>
+
+  <section class="panel" aria-labelledby="pl">
+    <h2 class="sec-title" id="pl">الخطة يوم بيوم</h2>
+    <p class="sub">المواعيد بتوقيت القاهرة. وكل بلوك بلون مادته.</p>
+    <div class="days" id="days"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="pr">
+    <h2 class="sec-title" id="pr">الدروس وتقدمي</h2>
+    <p class="sub">كل درس ليه صفحة: شرح، وبعده معمل، وبعده أسئلة، وفي الآخر امتحان مصغر. والتقدم بيتحفظ في المتصفح ده.</p>
+    <div class="lessons" id="lessons"></div>
+  </section>
+
+  <h2 class="sec-title" style="margin:0">المواد بالتفصيل</h2>
+  <main id="exams" style="display:flex;flex-direction:column;gap:22px"></main>
+
+  <footer>
+    <span>الماتيريالز كلها على <a href="https://drive.google.com/drive/folders/1YeIUSkTn-TeTsIQ-CP-5yK_DirQGCq1C" target="_blank" rel="noopener">فولدر الدرايف</a></span>
+    <span>أي خانة مكتوب فيها "لسه" معناها إن المعلومة لسه ما وصلتش · آخر تحديث 29 أكتوبر 2026</span>
+  </footer>
+</div>
+
+<script>
+const EXAMS = [
+  { id:"ds", c:"#4F5BD5", ar:"مقدمة في علم البيانات", en:"Intro to Data Science · نال 360",
+    at:[2026,10,1,9,0], day:"الحد 1/11", time:"9:00 – 9:30",
+    doctor:"أ.د. مصطفى عادل", lecture:"الاتنين 8–10، مدرج 2",
+    scope:["Lec 1: The Learning Problem","Lec 2: Is Learning Feasible","Lec 3: The Linear Model I، لحد page 63 في الـ all-in-one slides"],
+    format:["مقالي","MCQ"], maybe:["مسائل"],
+    diff:[3,4], diffText:"من متوسط لصعب",
+    grades:[{l:"ميد",v:30,mid:true}], gradesNote:"الميد من 30. باقي التوزيع لسه.",
+    style:"امتحانه على قد الوقت بالظبط، ومفيش دقيقة فاضية. اتدرب تحل بسرعة.",
+    warn:["فيه example منفصل في Lec 2 (رمي 1000 عملة، كل واحدة 10 مرات)، وده ملف لوحده. ما تفوتوش."],
+    mats:["Slides 01، 02، 03","toss_1000_coin_10_times (المثال المنفصل)"],
+    links:[{t:"أول 3 فيديوهات من البلاي ليست",u:"https://youtube.com/playlist?list=PLD63A284B7615313A"}] },
+
+  { id:"dsp", c:"#0F8F86", ar:"معالجة الإشارات الرقمية", en:"Digital Signal Processing · تقن 341",
+    at:[2026,10,1,14,0], day:"الحد 1/11", time:"2:00 – 2:30",
+    doctor:"أ.د. آلاء عبد العزيز", lecture:"الحد 8–10، مدرج 1",
+    scope:["Lec 1 لحد Lec 5","آخر نقطة: Fourier Transform"],
+    format:["مقالي بالكامل"], maybe:[],
+    diff:[4,5], diffText:"من متوسط مرتفع لصعب مرتفع",
+    grades:[{l:"ميد",v:20,mid:true},{l:"كويزات",v:15},{l:"مشروع",v:15}], gradesNote:"",
+    style:"ملتزمة بالسلايدز بتاعتها جدًا، والامتحان مش هيخرج منها. بتجيب نفس أسئلة الأسايمنتات بالظبط: نفس فكرة السؤال بأرقام مختلفة. والأسئلة بتيجي من الكتاب، أو من الأسايمنتات، أو من أسئلة المعيد.",
+    warn:["حل كل أسئلة الأسايمنتات وأسئلة المعيد، وبعدين غيّر الأرقام وحلها تاني."],
+    mats:["DSP Lecture 01 لحد 05","Convolution Practice Problems","Magnitude & Phase Practice","كتاب Schaum's Outline of DSP (Hayes)"], links:[] },
+
+  { id:"pl3", c:"#7A4FD0", ar:"برمجة الحاسبات 3", en:"Programming Languages 3 · حسب 313",
+    at:[2026,10,2,12,0], day:"الاتنين 2/11", time:"12:00 – 12:30",
+    doctor:"أ.د. إسلام جمال", flag:"مشرف مشروع التخرج", lecture:"الاتنين 2–4، مدرج 2 (مجموعة 2)",
+    scope:["Lec 1: Introduction & Language Design Principles","Lec 2: Advanced Type Systems","Lec 3: Functional Programming (F#)، لحد مفهوم الـ Lazy Evaluation","السكاشن 2 و 3 و 4"],
+    format:["MCQ"], maybe:[],
+    diff:[1,3], diffText:"من سهل لمتوسط، بس هنعامله على إنه صعب",
+    grades:[{l:"ميد",v:20,mid:true},{l:"مشروع",v:30}], gradesNote:"باقي التوزيع لسه.",
+    style:"دكتور جامد. أسئلته مش صعبة وتتقفل عادي، بس بيسأل في كل المحاور ومش بيركز على نقطة واحدة.",
+    warn:["هو مشرف مشروع التخرج، فالدرجة هنا مهمة. هدفنا نقفل الميد، ويا ريت الفاينال كمان.","حل كتير جدًا وغطي كل محور، حتى النقط الصغيرة."],
+    mats:["سلايدز Lec 1 و 2","PL3 Lecture 3 Functional Programming F# Notes","Section 2، 3، 4"], links:[] },
+
+  { id:"eth", c:"#D14468", ar:"أخلاقيات المهنة", en:"Professional Ethics · أنس 334",
+    at:[2026,10,3,9,0], day:"التلات 3/11", time:"9:00 – 9:30",
+    doctor:"د. هلال أحمد", lecture:"الخميس 10–12، مدرج 2",
+    scope:["Lec 1: Introduction","Lec 2 و 3: Ethical Hacking","Lec 5: Cryptography (الدكتور هيكملها المحاضرة الجاية)",{t:"Lec 4: Malware، مش داخلة",out:true}],
+    format:["MCQ"], maybe:["صح وغلط"],
+    diff:[3,3.5], diffText:"من متوسط لصعب شوية",
+    grades:[{l:"ميد",v:40,mid:true},{l:"Report",v:10}], gradesNote:"باقي التوزيع لسه.",
+    style:"الامتحان MCQ كله، وممكن ييجي صح وغلط فنعمل حسابنا.",
+    warn:["فيه امتحان قديم بالإجابات (Professional Ethics Exam + Answer Key). حله بالوقت."],
+    mats:["Lec 1 Introduction","Lec 2 و 3 Ethical Hacking","Lec 5 Cryptography","Professional Ethics Exam + Answer Key"], links:[] },
+
+  { id:"ip", c:"#C77812", ar:"معالجة الصور 1", en:"Image Processing 1 · تقن 441",
+    at:[2026,10,4,9,0], day:"الأربع 4/11", time:"9:00 – 9:30",
+    doctor:"د. حسام شمردن", lecture:"الحد 10–12، مدرج 2",
+    scope:["Part A: Ch.1 Introduction","Part B: Ch.2 Digital Image Fundamentals","Part C: Ch.3 Spatial Enhancement"],
+    format:["MCQ (غالبًا)"], maybe:[],
+    diff:[3,4], diffText:"من متوسط لصعب",
+    grades:[{l:"ميد",v:20,mid:true}], gradesNote:"الميد من 20. باقي التوزيع لسه.",
+    style:"الميد غالبًا MCQ، والفاينال مقالي كله. امتحانه صعب يتوقع، وساعات أسئلته بتبقى بنفس شكل أسئلة ChatGPT.",
+    warn:["الدفعة قالت الأسئلة من السلايدز ومن Sheet 1 و 2، والدكتور قال إنها مش بتخرج من الشيتات. ذاكر السلايدز كويس، وحل الشيتات برضه.","اتدرب على أسئلة MCQ معمولة من السلايدز."],
+    mats:["Part A، B، C","DIP Chapter 2 و 3 Problems & Solutions","ملخص Lab 2 و 3 والكويز بتاعه","كتاب Gonzalez & Woods"], links:[] },
+
+  { id:"dl", c:"#1F7DC2", ar:"الشبكات العصبية والتعلم العميق", en:"Neural Networks & Deep Learning · ذك 335",
+    at:[2026,10,5,9,0], day:"الخميس 5/11", time:"9:00 – 9:30",
+    doctor:"أ.د. إسلام جمال", flag:"مشرف مشروع التخرج", lecture:"الخميس 2–4، مدرج 17ب",
+    scope:["أول ملف سلايدز كله (intro_26aug). الدكتور وصل لـ slide 125 وقال كملوا للآخر، والقصص اللي في الآخر سيبوها","السكاشن داخلة في الميد"],
+    format:[], maybe:[],
+    diff:null, diffText:"لسه",
+    grades:[{l:"ميد",v:20,mid:true},{l:"عملي",v:20},{l:"لسه",v:10,unk:true},{l:"فاينال",v:50}], gradesNote:"الـ 10 درجات الباقيين الدكتور لسه ما حددهمش.",
+    style:"نفس أسلوبه في PL3: بيسأل في كل المحاور ومش بيركز على نقطة واحدة.",
+    warn:["السكاشن داخلة، ومحتاجين نجمعها.","هو مشرف مشروع التخرج، فالدرجة هنا مهمة."],
+    mats:["intro_26aug (أول ملف سلايدز)"], missing:"السكاشن لسه ناقصة", links:[] },
+];
+
+const PLAN_INFO = {
+  ds:{ how:"السلايدز دي هي سلايدز كورس Caltech بتاع د. ياسر أبو مصطفى (Learning From Data)، والبلاي ليست هي نفس المحاضرات بشرحه. افتح السلايد واتفرج على الفيديو بسرعة 1.5x، وبعدين اقرا الملخص اللي هعمله بالعامية.",
+       topics:["مكونات الـ Learning problem: الـ target f، والـ data، والـ hypothesis set، والـ algorithm، والـ g النهائية","الـ Perceptron (PLA) وقاعدة الـ update","الفرق بين Supervised و Unsupervised و Reinforcement","الـ Bin model، والفرق بين ν و μ، و Hoeffding inequality","Hypotheses كتير مع بعض: الـ Union bound، ومثال العملات (ν₁، و ν_rand، و ν_min)","الـ Linear classification، والـ Pocket، والـ Linear regression بالـ pseudo-inverse، والـ Nonlinear transform"],
+       train:"MCQ وتعريفات مقالي ومسائل: iteration بتاع PLA بإيدك، وحساب Hoeffding (bound لـ N و ε معروفين، أو N المطلوب)، و Linear regression على 3 نقط. وبعدين امتحانين تجريبيين، كل واحد 30 دقيقة.",
+       must:["تكتب Hoeffding و Union bound وتشرح كل رمز فيهم","تعمل iteration لـ PLA بإيدك","تحسب w = X†y في مثال صغير","تشرح ليه ν_min مش بيمشي على Hoeffding"] },
+  dsp:{ how:"الدكتورة بتجيب الأسايمنت بأرقام جديدة، فهنذاكر بنوع السؤال مش بالسلايد. لكل نوع: الخطوات، ومثال السلايد محلول، ومسألة من Schaum's، وبعدين نسخة بأرقام جديدة أعملهالك.",
+       topics:["تصنيف الـ sequence: finite، و right-sided، و left-sided، و two-sided","الـ Fundamental period N₀","الجزء الـ Even والـ Odd من الإشارة","الـ Shifting، والـ Reversal، والـ Down/Up-sampling، ولو اتجمعوا في سؤال واحد","خواص الـ System: memoryless، و linear، و shift-invariant، و causal، و stable، و invertible (بإثبات)","الـ Convolution: Flip ← Shift ← Multiply ← Sum، وخواصه","الـ Frequency response: H(e^jω)، و |H|، و phase"],
+       train:"مسايل الأسايمنت من Schaum's: من 1.1 لـ 1.7، ومن 1.12 لـ 1.15، ومن 1.20 لـ 1.23، و 1.26، و 1.28، و 1.30، و 1.34، و 1.36. ومعاهم ملفين التدريب (Convolution و Magnitude & Phase). وبعدها نسخة بأرقام جديدة. والإجابة تتكتب بكل خطواتها، لأن الامتحان مقالي.",
+       must:["حليت مسألتين على الأقل في كل نوع من السبعة، من غير ما تبص","حليت Convolution بطريقة الجدول في أقل من 5 دقايق","طلعت |H| والـ phase لـ h بنقطتين و 3 نقط"] },
+  pl3:{ how:"ملخص لكل محاضرة، وكل مفهوم معاه تعريفه ومثال F# من السكشن. وبما إن الدكتور بيسأل في كل المحاور، أي slide ما عداش عليها سؤال يبقى لسه ما خلصش.",
+       topics:["Lec 1: Introduction & Language Design Principles","Lec 2: Advanced Type Systems","Lec 3: Functional Programming في F# لحد Lazy Evaluation (Recursion، و Higher-order functions، و Pattern matching، و Lazy evaluation)","السكاشن 2 و 3 و 4: أساسيات F#، والـ Data types (List، و Array، و Tuple، و Set)، والكود"],
+       train:"بنك MCQ كبير بيغطي كل محور، ومعاه أسئلة \"الكود ده هيطلع إيه\" من السكاشن. بنحل جولات، كل جولة 30 سؤال في 30 دقيقة، وبعدها نعيد اللي غلطت فيه لحد ما يبقى صفر.",
+       must:["كل slide في Lec 1 و 2 عدّى عليها سؤال","بتقرا كود F# من السكاشن وتعرف ناتجه","Pattern matching و Lazy evaluation بأمثلة"] },
+  eth:{ how:"ابدأ بالامتحان القديم بالوقت عشان تعرف مستواك وأسلوب الدكتور. وبعدها ذاكر Lec 1، و Lec 2 و 3، و Lec 5، وركز على التعريفات والتقسيمات والقوايم (أنواع، ومراحل، وفروق).",
+       topics:["Lec 1: Introduction","Lec 2 و 3: Ethical Hacking (أنواع الـ hackers، والمراحل، والقوانين)","Lec 5: Cryptography وأنواعها"],
+       train:"بنك MCQ وصح وغلط: 40 سؤال في 30 دقيقة. ونعيد الامتحان القديم في الآخر.",
+       must:["خدت درجة عالية في الامتحان القديم","حافظ كل أنواع وتقسيمات الـ Cryptography","عارف الفرق بين كل نوع من الـ hackers"],
+       note:"ملف Lec 2 بصيغة .ppt قديمة ومش بيتقري عندي. بس الـ PDF بتاع Lec 2 و 3 غالبًا مغطيه، ولو لقيته ناقص احفظه pptx." },
+  ip:{ how:"السلايدز (Part A و B و C) معمولة بتشبيهات من الحياة، فهي سهلة القراية. والدكتور بيجيب أسئلة شبه ChatGPT، فهنتدرب على أسئلة معمولة من السلايدز بنفس الأسلوب. وكمان هنحل Ch.2 و Ch.3 Problems، لأن الدفعة قالت إن الشيتات بتيجي.",
+       topics:["Ch.1: مقدمة ومجالات Image Processing","Ch.2: العين، والضوء، والـ Sampling والـ Quantization، والعلاقات بين الـ pixels (المسافات D4 و D8)","Ch.3: الـ Point transforms، والـ Histogram equalization، والـ Correlation والـ Convolution، والـ Smoothing والـ Sharpening"],
+       train:"MCQ من السلايدز: تعريفات، وحسابات صغيرة (حجم الصورة بالـ bits، وعدد الـ gray levels، وخطوة Histogram equalization، وناتج filter 3×3). ومعاهم Ch.2 و Ch.3 Problems، وامتحان تجريبي 30 دقيقة.",
+       must:["بتحسب حجم الصورة بالـ bits","بتعمل Histogram equalization لصورة صغيرة","بتطبق filter 3×3 على pixel","بتشرح الفرق بين الـ Smoothing والـ Sharpening وإمتى نستخدم كل واحد"] },
+  dl:{ how:"عندنا 159 slide، والمهم فيهم لحد 125، والباقي من غير القصص. ومعاهم السكاشن. ونفس أسلوب PL3: الدكتور بيسأل في كل المحاور، فكل جزء لازم يعدي عليه سؤال.",
+       topics:["أول ملف سلايدز (intro_26aug)","السكاشن (لسه ناقصة)"],
+       train:"بنك MCQ وتعريفات قصيرة، لحد ما شكل الامتحان يتأكد.",
+       must:["السكاشن اتجمعت قبل الاتنين 2/11","قريت أول 80 slide قبل يوم الأربع","حليت بنك MCQ بالوقت"],
+       note:"السلايدز كتير، فهنقسمها: 40 slide الاتنين بالليل، و 40 التلات بالليل، والباقي يوم الأربع بعد امتحان Image." },
+};
+
+// days: s = subject id for color; k = exam | life
+const DAYPLAN = [
+  { d:"الخميس 29/10", note:"النهارده بالليل", b:[
+    {t:"7:30 – 9:30 م", s:"ds", w:"Data Science Lec 1: The Learning Problem", x:"فيديو 1 بسرعة 1.5x مع السلايدز، وبعدين الملخص"},
+    {t:"9:30 – 11:30 م", s:"ds", w:"Data Science Lec 2: Is Learning Feasible + مثال العملات", x:"فيديو 2، و Hoeffding، والملف المنفصل"},
+    {t:"12:00 ص", k:"life", w:"نوم"} ]},
+  { d:"الجمعة 30/10", b:[
+    {t:"9:00 – 12:00", s:"dsp", w:"DSP Lec 1، 2، 3", x:"الإشارات، والتصنيف، والـ N₀، والـ Even/Odd، والـ Manipulations، وخواص الـ System. ومسايل 1.1 لـ 1.7 و 1.12 لـ 1.14"},
+    {t:"12:00 – 1:00", k:"life", w:"بريك وصلاة الجمعة"},
+    {t:"1:00 – 4:00", s:"dsp", w:"DSP Lec 4: LSI و Convolution", x:"ملف Convolution Practice (7 مسايل) ومسايل الأسايمنت من 1.15 لـ 1.36"},
+    {t:"4:00 – 6:00", s:"dsp", w:"DSP Lec 5: Fourier", x:"ملف Magnitude & Phase Practice"},
+    {t:"6:00 – 7:00", k:"life", w:"بريك"},
+    {t:"7:00 – 9:30 م", s:"ds", w:"Data Science Lec 3: The Linear Model I", x:"فيديو 3، والـ Pseudo-inverse، والـ Nonlinear transform"},
+    {t:"9:30 – 10:30 م", s:"ds", w:"Data Science: أسئلة استرجاع للتلات محاضرات", x:"أسألك وإنت مش باصص، والغلط يتسجل في mistakes.md"},
+    {t:"11:30 م", k:"life", w:"نوم"} ]},
+  { d:"السبت 31/10", note:"آخر يوم قبل امتحانين", b:[
+    {t:"9:00 – 12:00", s:"dsp", w:"DSP: السبع أنواع بأرقام جديدة، بالوقت", x:"وأي مسألة أسايمنت لسه ما اتحلتش"},
+    {t:"12:00 – 1:00", k:"life", w:"بريك"},
+    {t:"1:00 – 3:30", s:"ds", w:"Data Science: امتحانين تجريبيين (30 دقيقة لكل واحد) + تصحيح"},
+    {t:"4:00 – 6:00", s:"dsp", w:"DSP: امتحان تجريبي + تصحيح", x:"كل نوع غلطت فيه يتحل تاني بأرقام جديدة"},
+    {t:"6:00 – 7:00", k:"life", w:"بريك"},
+    {t:"7:00 – 9:00 م", s:"dsp", w:"DSP: امتحان تجريبي أخير + الخطوات بالترتيب"},
+    {t:"9:30 – 11:00 م", s:"ds", w:"Data Science: لفة على الغلطات وأهم المعادلات"},
+    {t:"11:30 م", k:"life", w:"نوم (6 ساعات على الأقل)"} ]},
+  { d:"الحد 1/11", note:"يوم الامتحانين", b:[
+    {t:"7:00 – 8:15", s:"ds", w:"مراجعة أخيرة: \"ممكن ييجي\" + الغلطات"},
+    {t:"9:00 – 9:30", s:"ds", k:"exam", w:"امتحان Data Science"},
+    {t:"9:45 – 1:15", s:"dsp", w:"DSP: إعادة حل الغلطات + امتحان تجريبي أخير"},
+    {t:"2:00 – 2:30", s:"dsp", k:"exam", w:"امتحان DSP"},
+    {t:"3:30 – 7:30", s:"pl3", w:"PL3 Lec 1 و 2 + Section 2 و 3"},
+    {t:"8:00 – 11:00 م", s:"pl3", w:"PL3 Lec 3 (لحد Lazy Evaluation) + Section 4 + جولة MCQ أولى"},
+    {t:"11:30 م", k:"life", w:"نوم"} ]},
+  { d:"الاتنين 2/11", b:[
+    {t:"7:30 – 11:15", s:"pl3", w:"PL3: بنك MCQ بالوقت + إعادة الغلطات"},
+    {t:"12:00 – 12:30", s:"pl3", k:"exam", w:"امتحان PL3"},
+    {t:"1:30 – 4:30", s:"eth", w:"Ethics: الامتحان القديم بالوقت، وبعدين Lec 1 و 2 و 3"},
+    {t:"5:00 – 7:30", s:"eth", w:"Ethics Lec 5: Cryptography + بنك MCQ وصح وغلط"},
+    {t:"8:00 – 10:00 م", s:"eth", w:"Ethics: امتحان تجريبي + الغلطات"},
+    {t:"10:00 – 11:30 م", s:"dl", w:"DL: slides من 1 لـ 40 (قراية سريعة)"} ]},
+  { d:"التلات 3/11", b:[
+    {t:"8:00 – 8:45", s:"eth", w:"مراجعة أخيرة Ethics"},
+    {t:"9:00 – 9:30", s:"eth", k:"exam", w:"امتحان Ethics"},
+    {t:"10:00 – 1:00", s:"ip", w:"Image: Part A و Part B"},
+    {t:"2:00 – 5:00", s:"ip", w:"Image: Part C + Ch.2 Problems"},
+    {t:"5:30 – 8:00", s:"ip", w:"Image: Ch.3 Problems + بنك MCQ"},
+    {t:"8:30 – 10:00 م", s:"ip", w:"Image: امتحان تجريبي + الغلطات"},
+    {t:"10:00 – 11:30 م", s:"dl", w:"DL: slides من 40 لـ 80"} ]},
+  { d:"الأربع 4/11", b:[
+    {t:"7:30 – 8:30", s:"ip", w:"مراجعة أخيرة Image"},
+    {t:"9:00 – 9:30", s:"ip", k:"exam", w:"امتحان Image Processing"},
+    {t:"10:00 – 1:00", s:"dl", w:"DL: slides من 80 لـ 125"},
+    {t:"1:00 – 2:00", k:"life", w:"بريك"},
+    {t:"2:00 – 5:00", s:"dl", w:"DL: باقي السلايدز (من غير القصص) + السكاشن"},
+    {t:"5:30 – 8:30", s:"dl", w:"DL: بنك MCQ بالوقت"},
+    {t:"9:00 – 10:30 م", s:"dl", w:"DL: امتحان تجريبي + الغلطات"},
+    {t:"11:00 م", k:"life", w:"نوم"} ]},
+  { d:"الخميس 5/11", b:[
+    {t:"7:00 – 8:30", s:"dl", w:"مراجعة أخيرة DL"},
+    {t:"9:00 – 9:30", s:"dl", k:"exam", w:"امتحان Deep Learning"},
+    {t:"9:30", k:"life", w:"خلصنا الميد"} ]},
+];
+
+const DAYS = [["الحد","1/11"],["الاتنين","2/11"],["التلات","3/11"],["الأربع","4/11"],["الخميس","5/11"]];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const when = e => new Date(...e.at);
+const endOf = e => new Date(when(e).getTime() + 30*60000);
+const pad = n => String(n).padStart(2,"0");
+const vars = e => `--c:${e.c};--tint:color-mix(in srgb, ${e.c} 10%, #fff)`;
+
+function left(ms){
+  const m = Math.floor(ms/60000), d = Math.floor(m/1440), h = Math.floor((m%1440)/60), mm = m%60;
+  if (d > 0) return `فاضل ${d} يوم و ${h} ساعة`;
+  if (h > 0) return `فاضل ${h} ساعة و ${mm} دقيقة`;
+  return `فاضل ${mm} دقيقة`;
+}
+const status = (e, now) => now >= endOf(e) ? "done" : now >= when(e) ? "now" : "up";
+const nextExam = now => EXAMS.find(e => status(e,now) !== "done");
+
+function renderWeek(now){
+  const nx = (nextExam(now)||{}).id;
+  document.getElementById("week").innerHTML = DAYS.map(([d,date]) => {
+    const list = EXAMS.filter(e => e.day.endsWith(date));
+    return `<div class="day"><div class="d">${d}<span class="num">${date}</span></div>${
+      list.map(e => `<a class="slot ${status(e,now)==="done"?"done":""} ${e.id===nx?"is-next":""}" style="${vars(e)}" href="#${e.id}"><div class="s">${esc(e.ar)}</div><div class="h num ltr">${esc(e.time)}</div></a>`).join("")
+    }</div>`;
+  }).join("");
+}
+
+function meter(e){
+  if (!e.diff) return `<div class="pending">لسه</div>`;
+  const [a,b] = e.diff;
+  const bars = [1,2,3,4,5].map(i => `<i class="${i>=Math.floor(a)&&i<=Math.ceil(b)?"on":""}"></i>`).join("");
+  return `<div class="meter-t">${esc(e.diffText)}</div><div class="meter" role="img" aria-label="الصعوبة: ${esc(e.diffText)}">${bars}</div><div class="meter-l"><span>سهل</span><span>متوسط</span><span>صعب</span></div>`;
+}
+function grades(e){
+  return `<div class="grades" role="img" aria-label="توزيع الدرجات">${
+    e.grades.map(g => `<span class="${g.mid?"mid":""} ${g.unk?"unk":""}" style="flex:${g.v}" title="${esc(g.l)}: ${g.v}">${esc(g.l)} <b class="num">${g.v}</b></span>`).join("")
+  }</div>${e.gradesNote?`<div class="note">${esc(e.gradesNote)}</div>`:""}`;
+}
+
+function renderExams(now){
+  document.getElementById("exams").innerHTML = EXAMS.map((e,i) => {
+    const st = status(e,now);
+    const cd = st==="done" ? `<span class="pill cd done">خلص</span>` : st==="now" ? `<span class="pill cd">شغال دلوقتي</span>` : `<span class="pill cd" data-cd="${e.id}">${left(when(e)-now)}</span>`;
+    const fmt = (e.format.length||e.maybe.length)
+      ? `<div class="chips">${e.format.map(f=>`<span class="chip">${esc(f)}</span>`).join("")}${e.maybe.map(f=>`<span class="chip maybe">ممكن: ${esc(f)}</span>`).join("")}</div>`
+      : `<div class="pending">لسه</div>`;
+    const scope = e.scope.map(s => typeof s === "string" ? `<li>${esc(s)}</li>` : `<li class="out">${esc(s.t)}</li>`).join("");
+    const links = e.links.map(l=>`<li><a href="${esc(l.u)}" target="_blank" rel="noopener">${esc(l.t)}</a></li>`).join("");
+    return `<article class="exam" id="${e.id}" style="${vars(e)}">
+      <div class="top">
+        <div class="who">
+          <div class="order">امتحان ${i+1} من ${EXAMS.length}</div>
+          <h2>${esc(e.ar)}</h2>
+          <div class="en">${esc(e.en)}</div>
+        </div>
+        <div class="when"><span class="pill">${esc(e.day)}</span><span class="pill num"><span class="ltr">${esc(e.time)}</span></span>${cd}</div>
+      </div>
+      <div class="content">
+        <div class="block full"><div class="k">الدكتور</div>
+          <div class="doc">${esc(e.doctor)}${e.flag?`<span class="badge">${esc(e.flag)}</span>`:""}<span class="lec">· المحاضرة ${esc(e.lecture)}</span></div></div>
+        <div class="block"><div class="k">الميد داخل فيه</div><ul class="scope">${scope}</ul></div>
+        <div class="block" style="display:flex;flex-direction:column;gap:18px">
+          <div><div class="k">شكل الامتحان</div>${fmt}</div>
+          <div><div class="k">الصعوبة</div>${meter(e)}</div>
+        </div>
+        <div class="block full"><div class="k">الدرجات</div>${grades(e)}</div>
+        <div class="block style full"><div class="k">أسلوب الدكتور</div><p>${esc(e.style)}</p></div>
+        ${e.warn.length?`<div class="block full"><div class="k">تنبيهات</div><div class="warns">${e.warn.map(w=>`<div class="warn">${esc(w)}</div>`).join("")}</div></div>`:""}
+        ${planBlock(e)}
+        <div class="block mats full"><div class="k">الماتيريال</div><ul>${e.mats.map(m=>`<li>${esc(m)}</li>`).join("")}${links}${e.missing?`<li class="missing">${esc(e.missing)}</li>`:""}</ul></div>
+      </div>
+    </article>`;
+  }).join("");
+}
+
+function planBlock(e){
+  const p = PLAN_INFO[e.id]; if (!p) return "";
+  return `<div class="block full"><div class="k">الخطة</div><div class="plan">
+    <div><div class="k">هنذاكر إزاي</div><p>${esc(p.how)}</p></div>
+    <div><div class="k">المحاور</div><ul>${p.topics.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>
+    <div><div class="k">هنتدرب إزاي</div><p>${esc(p.train)}</p></div>
+    <div><div class="k">ما تدخلش الامتحان غير لما</div><ul class="must">${p.must.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>
+    ${p.note?`<div style="grid-column:1/-1"><div class="warn">${esc(p.note)}</div></div>`:""}
+  </div></div>`;
+}
+
+function renderDays(){
+  const col = id => { const e = EXAMS.find(x=>x.id===id); return e ? vars(e) : ""; };
+  document.getElementById("days").innerHTML = DAYPLAN.map(day => `<div class="dayplan">
+    <h3>${esc(day.d)}${day.note?`<small>${esc(day.note)}</small>`:""}</h3>
+    <div class="blocks">${day.b.map(b => {
+      const cls = b.k==="exam" ? "exam-b" : b.k==="life" ? "life" : "";
+      return `<div class="blk ${cls}" style="${b.s?col(b.s):""}"><div class="tm">${esc(b.t)}</div><div class="what">${b.k==="exam"?"<b>":""}${esc(b.w)}${b.k==="exam"?"</b>":""}${b.x?`<small>${esc(b.x)}</small>`:""}</div></div>`;
+    }).join("")}</div>
+    ${day.risk?`<div class="risk">${esc(day.risk)}</div>`:""}
+  </div>`).join("");
+}
+
+function renderNext(now){
+  const n = nextExam(now), nm = document.getElementById("next-name"), cl = document.getElementById("clock");
+  if (!n){ nm.textContent = "خلصنا الميد"; cl.innerHTML = ""; return; }
+  nm.textContent = n.ar;
+  if (status(n,now)==="now"){ cl.innerHTML = `<div><b>شغال</b><span>دلوقتي</span></div>`; return; }
+  const s = Math.floor((when(n)-now)/1000);
+  const parts = [[Math.floor(s/86400),"يوم"],[pad(Math.floor(s%86400/3600)),"ساعة"],[pad(Math.floor(s%3600/60)),"دقيقة"],[pad(s%60),"ثانية"]];
+  cl.innerHTML = parts.map(([v,l]) => `<div><b class="num">${v}</b><span>${l}</span></div>`).join("");
+}
+
+function tick(){
+  const now = new Date();
+  renderNext(now);
+  document.querySelectorAll("[data-cd]").forEach(el => {
+    const e = EXAMS.find(x => x.id === el.dataset.cd);
+    if (e) el.textContent = left(when(e)-now);
+  });
+}
+// lesson registry: url = page exists; parts = parts + final exam
+const LESSONS = {
+  ds:[{id:"ds-l01",t:"Lec 1: The Learning Problem",url:"/interactive/university/ds-l01",n:8},{id:"ds-l02",t:"Lec 2: Is Learning Feasible?"},{id:"ds-l03",t:"Lec 3: The Linear Model I"}],
+  dsp:[{id:"dsp-l01",t:"Lec 1: Introduction"},{id:"dsp-l02",t:"Lec 2: Discrete-Time Signals"},{id:"dsp-l03",t:"Lec 3: Manipulations & Systems"},{id:"dsp-l04",t:"Lec 4: LSI & Convolution"},{id:"dsp-l05",t:"Lec 5: Fourier Analysis"}],
+  pl3:[{id:"pl3-l01",t:"Lec 1: Language Design Principles"},{id:"pl3-l02",t:"Lec 2: Advanced Type Systems"},{id:"pl3-l03",t:"Lec 3: Functional Programming (F#)"},{id:"pl3-sec",t:"السكاشن 2 و 3 و 4"}],
+  eth:[{id:"eth-l01",t:"Lec 1: Introduction"},{id:"eth-l23",t:"Lec 2 و 3: Ethical Hacking"},{id:"eth-l05",t:"Lec 5: Cryptography"},{id:"eth-old",t:"الامتحان القديم"}],
+  ip:[{id:"ip-a",t:"Part A: Introduction"},{id:"ip-b",t:"Part B: Fundamentals"},{id:"ip-c",t:"Part C: Spatial Enhancement"},{id:"ip-sheets",t:"Ch.2 و Ch.3 Problems"}],
+  dl:[{id:"dl-1",t:"LLMs: الفكرة والـ tokens والـ scaling"},{id:"dl-2",t:"الـ pretraining والـ embeddings"},{id:"dl-3",t:"الـ SFT والـ alignment والـ RL"},{id:"dl-4",t:"الـ inference والـ agents والـ safety"},{id:"dl-sec",t:"السكاشن"}]
+};
+function readProgress(){ try { return JSON.parse(localStorage.getItem("anas-uni-progress-v1")) || {}; } catch { return {}; } }
+function renderLessons(){
+  const P = readProgress();
+  document.getElementById("lessons").innerHTML = EXAMS.map(e => {
+    const ls = LESSONS[e.id] || [];
+    const rows = ls.map(l => {
+      const p = P[l.id], parts = p ? Object.keys(p.parts||{}).length + (p.exam?1:0) : 0;
+      const pct = l.n ? Math.round(parts/l.n*100) : 0;
+      const st = !l.url ? `<span class="st">الصفحة لسه</span>` : p && p.exam && pct===100 ? `<span class="st ok">خلص · ${p.exam.right}/${p.exam.total}</span>` : parts ? `<span class="st go">${pct}%</span>` : `<span class="st go">ابدأ</span>`;
+      return {pct, html:`<div class="lrow">${l.url?`<a href="${l.url}">${esc(l.t)}</a>`:`<span>${esc(l.t)}</span>`}${st}</div>`};
+    });
+    const avg = rows.length ? Math.round(rows.reduce((s,r)=>s+r.pct,0)/rows.length) : 0;
+    return `<div class="lsub" style="${vars(e)}"><h3>${esc(e.ar)}<span>${avg}%</span></h3><div class="lbar"><i style="width:${avg}%"></i></div>${rows.map(r=>r.html).join("")}</div>`;
+  }).join("");
+}
+renderLessons();
+
+const now0 = new Date();
+renderWeek(now0); renderDays(); renderExams(now0); tick();
+setInterval(tick, 1000);
+setInterval(() => { const n = new Date(); renderWeek(n); renderExams(n); }, 60000);
+</script>
+
+</body>
+</html>
