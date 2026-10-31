@@ -195,10 +195,9 @@ export const DEFAULT_SETTINGS: FinanceSettings = {
     { name: 'كيريو والتقييمات', hours: 6, studio: true, editing: true },
     { name: 'أولى ثانوي', hours: 6, studio: true, editing: true },
     { name: 'حل الامتحان الشامل', hours: 1.5, studio: true, editing: true },
-    { name: 'الريلز (جمال بيمنتجها)', hours: 6, studio: true, editing: false },
+    { name: 'الريلز (مونتاج داخلي)', hours: 6, studio: true, editing: false },
   ],
   fixed: [
-    { name: 'جمال', amount: 5000, from: '2026-10' },
     { name: 'مصاريف ثابتة تانية', amount: 1000, from: '2026-10' },
     { name: 'Claude', amount: 6000, from: null },
     { name: 'مصمم', amount: 0, from: null },

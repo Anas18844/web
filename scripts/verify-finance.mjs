@@ -51,16 +51,16 @@ console.log('\nDefaults — October, 50 monthly students, all planned hours')
   near('centre: 20 × 4 × (60 − 15 − 5) = 3,200', oct.revenue.center, 3200)
   near('studio: 41.5 h × 100 = 4,150', oct.costs.studio, 4150)
   near('editing: 35.5 h × 200 (reels edited in-house) = 7,100', oct.costs.editing, 7100)
-  near('fixed: Gamal 5,000 + other 1,000 = 6,000 (Claude off)', oct.costs.fixedTotal, 6000)
-  near('profit: 9,950 − 17,250 = −7,300', oct.profit, -7300)
-  near('break-even: ceil(14,050 / 135) = 105 students', oct.breakEven, 105)
+  near('fixed: other 1,000 (Claude off)', oct.costs.fixedTotal, 1000)
+  near('profit: 9,950 − 12,250 = −2,300', oct.profit, -2300)
+  near('break-even: ceil(9,050 / 135) = 68 students', oct.breakEven, 68)
   near('cash in: centre only, the platform pays next month', oct.cash.in, 3200)
   near('November cash in: 3,200 + 6,750 from October', months[1].cash.in, 9950)
 
   const jan = months[3]
   near('January is half a month: 200 × 180 × 0.5 × 0.75 = 13,500', jan.revenue.monthly, 13500)
   near('January centre: 1,600', jan.revenue.center, 1600)
-  near('January costs: 2,075 + 3,550 + 6,000 (salaries not halved)', jan.costs.total, 11625)
+  near('January costs: 2,075 + 3,550 + 1,000 (salaries not halved)', jan.costs.total, 6625)
 }
 
 console.log('\nUp-front packages are earned month by month')
@@ -91,8 +91,8 @@ console.log('\nOverrides and switches')
   const { months } = computeFinance(settings, records({ '2026-10': { hours: 36 } }))
   near('36 h override: studio 3,600', months[0].costs.studio, 3600)
   near('36 h override: editing in proportion, 36 × 35.5/41.5 × 200', months[0].costs.editing, (36 * 35.5 / 41.5) * 200)
-  near('Claude switched on from November: not in October', months[0].costs.fixedTotal, 6000)
-  near('… but in November', months[1].costs.fixedTotal, 12000)
+  near('Claude switched on from November: not in October', months[0].costs.fixedTotal, 1000)
+  near('… but in November', months[1].costs.fixedTotal, 7000)
   near('revision month with no price: break-even is unknown', months[6].breakEven === null ? 1 : 0, 1)
 }
 
