@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Data Science · Lec 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=Readex+Pro:wght@300;400;500;600&display=swap">
+<style>
+:root{color-scheme:light;--bg:#F4F6FA;--card:#FFFFFF;--ink:#1E2433;--soft:#5D6679;--faint:#8C94A6;--line:#E6E9F0;
+--c:#4F5BD5;--tint:#EDEFFB;--pos:#1F8A4C;--pos-tint:#E5F5EC;--neg:#C0392B;--neg-tint:#FDECEA;--amber:#B45309;--amber-tint:#FFF6E5;
+--f-head:"Alexandria","Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;--f-body:"Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;
+--f-math:"Cambria Math","Cambria","Times New Roman",serif;--shadow:0 1px 2px rgba(30,36,51,.04),0 6px 24px rgba(30,36,51,.06)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:2;padding:0 16px 80px}
+.wrap{max-width:820px;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--f-head);font-weight:700;margin:0;line-height:1.45}
+p{margin:0;max-width:68ch}a{color:var(--c)}button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.m{font-family:var(--f-math);direction:ltr;unicode-bidi:isolate;font-size:1.1em;white-space:nowrap}
+.mb{font-family:var(--f-math);direction:ltr;text-align:center;font-size:21px;background:var(--tint);border-radius:12px;padding:12px;overflow-x:auto}
+.bar{position:sticky;top:0;z-index:10;background:rgba(244,246,250,.96);padding:8px 16px;margin-inline:-16px;border-bottom:1px solid var(--line)}
+.bar .in{max-width:820px;margin-inline:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px}
+.bar a{text-decoration:none;color:var(--soft);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:1px 10px;white-space:nowrap}
+.bar a.done{background:var(--pos-tint);border-color:var(--pos);color:var(--pos)}
+.bar .sp{margin-inline-start:auto;color:var(--soft)}
+.track{flex-basis:100%;height:5px;background:var(--line);border-radius:6px;overflow:hidden}.track i{display:block;height:100%;width:0;background:var(--c)}
+.hero{background:var(--tint);border-radius:22px;padding:22px 24px;display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.hero h1{font-size:clamp(25px,5vw,34px)}.hero .meta{font-size:14px;color:var(--c);font-weight:600}
+.part{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;gap:16px;scroll-margin-top:64px}
+.part .num{font-size:13px;color:var(--c);font-weight:600}.part h2{font-size:23px}
+.part h3{font-size:18px;margin-top:10px;padding-top:12px;border-top:1px solid var(--line)}
+.idea{background:var(--tint);border-radius:14px;padding:12px 16px;font-weight:500}
+.trick{background:var(--pos-tint);border-radius:14px;padding:12px 16px}.trick b:first-child{color:var(--pos)}
+.trap{background:var(--amber-tint);border-radius:14px;padding:12px 16px;color:#5A3505}.trap b:first-child{color:var(--amber)}
+.examw{border:2px solid var(--c);border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:6px}.examw>b:first-child{color:var(--c)}
+.ex{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}.ex>b:first-child{color:var(--c)}
+.list{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:8px}
+.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.steps li{counter-increment:s;position:relative;background:var(--bg);border-radius:12px;padding:10px 14px;padding-inline-start:46px}
+.steps li::before{content:counter(s);position:absolute;inset-inline-start:12px;top:12px;width:24px;height:24px;border-radius:50%;background:var(--c);color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.tbl{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:15.5px}
+th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:start;vertical-align:top}th{color:var(--soft);font-size:14px;background:var(--bg)}
+.lab{border:2px dashed #B9C0EE;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.lab .tag{font-size:14px;font-weight:600;color:var(--c)}
+.ctl{display:flex;flex-wrap:wrap;gap:12px;align-items:end;direction:ltr}
+.ctl label{display:flex;flex-direction:column;font-size:13px;color:var(--soft);gap:2px}
+.ctl input,.ctl select{font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:10px;padding:4px 8px;background:var(--card);direction:ltr;width:130px}
+.ctl input[type=range]{padding:0;width:170px;accent-color:var(--c)}
+.ctl input.wide{width:240px}
+.read{font-family:var(--f-math);direction:ltr;text-align:center;font-size:17px;line-height:1.8;overflow-x:auto}
+.rd{text-align:center;font-size:15px;color:var(--soft)}
+canvas{width:100%;max-width:400px;aspect-ratio:1;background:#FBFCFE;border:1px solid var(--line);border-radius:14px;display:block;margin-inline:auto;touch-action:none}
+canvas.wide{max-width:100%;aspect-ratio:5/2}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.two figure{margin:0;display:flex;flex-direction:column;gap:4px;text-align:center;font-size:14px;color:var(--soft)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:0;background:var(--c);color:#fff;border-radius:999px;padding:6px 16px;font-size:15px;min-height:40px}
+.btn.ghost{background:var(--card);color:var(--c);border:1.5px solid var(--c)}.btn.on{background:var(--pos);color:#fff;border-color:var(--pos)}.btn:disabled{opacity:.5;cursor:default}
+.qs{display:flex;flex-direction:column;gap:12px}.qk{font-size:14px;font-weight:600;color:var(--c);margin-top:6px}
+.q{background:var(--bg);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.q .stem{font-weight:500}.opts{display:flex;flex-direction:column;gap:6px}
+.opt{text-align:start;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:8px 12px;font-size:15.5px;line-height:1.7}
+.opt:hover:not(:disabled){border-color:var(--c)}.opt:disabled{cursor:default}.opt.pick{border-color:var(--c);background:var(--tint)}
+.opt.right{background:var(--pos-tint);border-color:var(--pos)}.opt.wrong{background:var(--neg-tint);border-color:var(--neg)}
+.why{font-size:15px;color:var(--soft);border-inline-start:3px solid var(--c);padding-inline-start:10px}.why.bad{border-color:var(--neg)}
+.score{font-size:14px;color:var(--soft)}.badge{background:var(--pos-tint);color:var(--pos);border-radius:999px;padding:2px 12px;font-size:14px;font-weight:600}
+.prob{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.sol{display:none;background:var(--bg);border-radius:12px;padding:12px 14px;flex-direction:column;gap:8px}.sol.show{display:flex}
+.g{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}.g>b{color:var(--c)}
+.gs{background:var(--bg);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:8px}
+.gs .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.gs input{font:inherit;font-size:16px;width:170px;border:1.5px solid var(--line);border-radius:10px;padding:4px 8px;direction:ltr;text-align:center}
+.gs input.ok{border-color:var(--pos);background:var(--pos-tint)}.gs input.no{border-color:var(--neg);background:var(--neg-tint)}
+.gs .ans{display:none;color:var(--soft);font-size:15.5px}.gs.open .ans{display:block}.gs.lock{display:none}
+.timer{font-family:var(--f-head);font-size:28px;color:var(--c);direction:ltr}
+.result{background:var(--tint);border-radius:14px;padding:12px 16px;font-weight:500}
+.exam{border:2px solid var(--c)}
+.next{display:flex;gap:8px;flex-wrap:wrap}.next a{background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:6px 16px;text-decoration:none}
+@media (max-width:640px){.part{padding:18px 16px}.two{grid-template-columns:1fr}.m{white-space:normal}}
+@media print{.bar,.next,.btn{display:none}body{background:#fff}.part{box-shadow:none;break-inside:avoid}.sol{display:flex}}
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="in"><a href="/interactive/university/midterm">الخريطة</a><a href="#p1" data-chip="p1">1</a><a href="#p2" data-chip="p2">2</a><a href="#p3" data-chip="p3">3</a><a href="#p4" data-chip="p4">4</a><a href="#p5" data-chip="p5">5</a><a href="#p6" data-chip="p6">6</a><a href="#p7" data-chip="p7">7</a><a href="#essay" data-chip="essay">مقالي</a><a href="#guided" data-chip="guided">مسائل</a><a href="#exam" data-chip="exam">الامتحان</a><span class="sp" id="pct"></span><div class="track"><i id="fill"></i></div></div></div>
+<div class="wrap">
+<header class="hero"><div class="meta">مقدمة في علم البيانات · Lec 3</div><h1><bdi>الموديل الخطي: The Linear Model I</bdi></h1><p>الخط المستقيم بشكل جد: نختار الصفات، ونصنف، ونتوقع رقم في خطوة واحدة، ونعمل منه حدود مش خطية.</p></header>
+<section class="part" id="p1"><div class="num">الجزء 1 من 7</div><h2>الـ Input Representation: نختار الصفات</h2>
+<p>نبدأ بداتا حقيقية: <b>أرقام مكتوبة بخط اليد</b> (مكتب البريد).</p>
+<p>كل رقم صورة <span class="m">16 × 16</span>، يعني <b>256</b> pixel.</p>
+<h3>لو خدنا الـ pixels زي ما هي (raw input)</h3>
+<p><span class="m">x = (x₀, x₁, …, x₂₅₆)</span>، و <span class="m">x₀ = 1</span>.</p>
+<p>يعني الموديل محتاج <b>257</b> وزن: <span class="m">w₀ … w₂₅₆</span>. كتير جدًا.</p>
+<h3>الحل: Features</h3>
+<p>نطلّع معلومة مفيدة بدل الـ pixels. مثلًا صفتين:</p>
+<ul class="list">
+<li><span class="m">x₁</span>: <b>intensity</b>، الرقم متغطي حبر قد إيه.</li>
+<li><span class="m">x₂</span>: <b>symmetry</b>، الرقم متماثل قد إيه.</li>
+</ul>
+<p>كده <span class="m">x = (x₀, x₁, x₂)</span>، والموديل محتاج <b>3</b> أوزان بس.</p>
+<div class="idea">الرقم 1 حبره قليل ومتماثل. والرقم 5 حبره أكتر ومش متماثل. فالصفتين دول بيفرقوا بينهم.</div>
+<div class="trap"><b>فخ:</b> عدد الأوزان = <span class="m">d + 1</span> بسبب <span class="m">x₀</span>. الـ 256 pixel = 257 وزن.</div>
+<div class="qk">أسئلة الجزء (6)</div><div class="qs" data-mcq="p1"></div></section>
+<section class="part" id="p2"><div class="num">الجزء 2 من 7</div><h2>الـ Linear Classification: الـ PLA والـ Pocket</h2>
+<p>نشغّل الـ PLA على داتا الأرقام الحقيقية. إيه اللي بيحصل؟</p>
+<p>الداتا الحقيقية <b>مش linearly separable</b>. فيه نقط متلخبطة.</p>
+<ul class="list">
+<li>الـ PLA مش بيقف.</li>
+<li>الـ E<sub>in</sub> بيطلع وينزل بشكل عشوائي.</li>
+<li>لو وقفناه عند iteration معينة، ممكن تكون وحشة.</li>
+</ul>
+<h3>الحل: الـ Pocket Algorithm</h3>
+<p>الفكرة: زي ما اسمه، <b>جيب</b> بنشيل فيه أحسن حل.</p>
+<ol class="steps">
+<li>شغّل الـ PLA عادي.</li>
+<li>بعد كل iteration احسب E<sub>in</sub>.</li>
+<li>لو أحسن من اللي في الجيب، حط w الجديدة في الجيب.</li>
+<li>في الآخر، رجّع اللي في الجيب.</li>
+</ol>
+<div class="idea">الـ PLA بيرجّع <b>آخر</b> w. والـ Pocket بيرجّع <b>أحسن</b> w شافها.</div>
+<div class="lab"><div class="tag">معمل: PLA ضد Pocket على داتا مش separable</div>
+<canvas id="pk" class="wide"></canvas><div class="rd" id="pkr"></div><div class="btns"><button type="button" class="btn" id="pkg">شغّل 300 iteration</button></div>
+<p style="font-size:14px;color:var(--soft)">البرتقالي E<sub>in</sub> بتاع الـ PLA، والأزرق بتاع الـ Pocket. لاحظ إن الأزرق عمره ما بيطلع.</p></div>
+<div class="qk">أسئلة الجزء (6)</div><div class="qs" data-mcq="p2"></div></section>
+<section class="part" id="p3"><div class="num">الجزء 3 من 7</div><h2>الـ Linear Regression: الخرج رقم</h2>
+<p>نرجع للبنك.</p>
+<ul class="list">
+<li><b>Classification:</b> نوافق ولا لأ؟ (yes/no)</li>
+<li><b>Regression:</b> نديله credit line قد إيه؟ (رقم بالدولار)</li>
+</ul>
+<div class="idea">regression ≡ real-valued output، يعني الخرج رقم حقيقي.</div>
+<h3>الموديل</h3>
+<p>نفس المجموع، بس من غير sign:</p>
+<div class="mb">h(x) = Σᵢ₌₀ᵈ wᵢxᵢ = wᵀx</div>
+<p>والداتا: <span class="m">(x₁,y₁) … (x<sub>N</sub>,y<sub>N</sub>)</span>، و <span class="m">yₙ</span> هو الـ credit line اللي حدده موظف البنك.</p>
+<h3>نقيس الغلط إزاي؟ بالأرقام</h3>
+<p>عندنا 3 عملاء و <span class="m">h</span> جاهزة:</p>
+<div class="tbl"><table dir="ltr"><tr><th>n</th><th>h(xₙ)</th><th>yₙ</th><th>h − y</th><th>(h − y)²</th></tr>
+<tr><td class="m">1</td><td class="m">5</td><td class="m">4</td><td class="m">1</td><td class="m">1</td></tr>
+<tr><td class="m">2</td><td class="m">7</td><td class="m">9</td><td class="m">−2</td><td class="m">4</td></tr>
+<tr><td class="m">3</td><td class="m">2</td><td class="m">3</td><td class="m">−1</td><td class="m">1</td></tr></table></div>
+<p><span class="m">E<sub>in</sub> = (1 + 4 + 1) / 3 = 2</span>.</p>
+<h3>القاعدة: Squared error</h3>
+<div class="mb">E<sub>in</sub>(h) = (1/N) Σₙ₌₁ᴺ (h(xₙ) − yₙ)²</div>
+<p>وليه تربيع؟ عشان الغلط الموجب والسالب ما يلغوش بعض، والغلط الكبير ياخد عقاب أكبر.</p>
+<div class="trap"><b>فخ:</b> اقسم على <span class="m">N</span>. وربّع كل فرق <b>قبل</b> ما تجمع.</div>
+<div class="qk">أسئلة الجزء (8)</div><div class="qs" data-mcq="p3"></div></section>
+<section class="part" id="p4"><div class="num">الجزء 4 من 7</div><h2>نكتب E<sub>in</sub> بالمصفوفات</h2>
+<p>بدل ما نجمع واحد واحد، نحط كل حاجة في مصفوفة.</p>
+<h3>الـ X والـ y</h3>
+<ul class="list">
+<li><span class="m">X</span>: كل <b>صف</b> عميل، <span class="m">x₁ᵀ, x₂ᵀ, …, x_Nᵀ</span>.</li>
+<li><span class="m">y</span>: عمود فيه <span class="m">y₁, …, y<sub>N</sub></span>.</li>
+</ul>
+<div class="ex"><b>مثال: 3 عملاء بصفة واحدة</b>
+<div class="tbl"><table dir="ltr"><tr><th>x</th><th>y</th></tr><tr><td class="m">1</td><td class="m">1</td></tr><tr><td class="m">2</td><td class="m">3</td></tr><tr><td class="m">3</td><td class="m">4</td></tr></table></div>
+<p>لازم نضيف عمود <span class="m">x₀ = 1</span>:</p>
+<div class="mb">X = [1 1 ; 1 2 ; 1 3]   ,   y = [1 ; 3 ; 4]</div>
+</div>
+<h3>المعادلة بالمصفوفات</h3>
+<div class="mb">E<sub>in</sub>(w) = (1/N) ‖Xw − y‖²</div>
+<p><span class="m">Xw</span> هو كل التوقعات مرة واحدة. و <span class="m">Xw − y</span> كل الأخطاء. والـ <span class="m">‖·‖²</span> مجموع مربعاتها.</p>
+<h3>الأبعاد (بتيجي في الامتحان)</h3>
+<div class="tbl"><table dir="ltr"><tr><th>المصفوفة</th><th>الأبعاد</th><th>مثال N=100, d=2</th></tr>
+<tr><td class="m">X</td><td class="m">N × (d+1)</td><td class="m">100 × 3</td></tr>
+<tr><td class="m">y</td><td class="m">N × 1</td><td class="m">100 × 1</td></tr>
+<tr><td class="m">w</td><td class="m">(d+1) × 1</td><td class="m">3 × 1</td></tr>
+<tr><td class="m">XᵀX</td><td class="m">(d+1) × (d+1)</td><td class="m">3 × 3</td></tr>
+<tr><td class="m">X†</td><td class="m">(d+1) × N</td><td class="m">3 × 100</td></tr></table></div>
+<div class="qk">أسئلة الجزء (8)</div><div class="qs" data-mcq="p4"></div></section>
+<section class="part" id="p5"><div class="num">الجزء 5 من 7</div><h2>نلاقي أحسن w: الـ Pseudo-inverse</h2>
+<p>عايزين w اللي تخلي E<sub>in</sub> أقل حاجة.</p>
+<h3>الاشتقاق (ممكن يطلبه مقالي)</h3>
+<ol class="steps">
+<li>نبدأ من: <span class="m">E<sub>in</sub>(w) = (1/N)‖Xw − y‖²</span></li>
+<li>نفاضل ونساوي بصفر: <span class="m">∇E<sub>in</sub>(w) = (2/N) Xᵀ(Xw − y) = 0</span></li>
+<li>نفك القوس: <span class="m">XᵀXw = Xᵀy</span></li>
+<li>نضرب في المعكوس: <span class="m">w = (XᵀX)⁻¹Xᵀy</span></li>
+<li>نسمّي <span class="m">X† = (XᵀX)⁻¹Xᵀ</span>، فيبقى <span class="m">w = X†y</span>.</li>
+</ol>
+<div class="idea"><span class="m">X†</span> اسمها <b>pseudo-inverse</b>. والحل في خطوة واحدة (one-step)، مش iterations زي الـ PLA.</div>
+<h3>الـ Algorithm في 3 خطوات</h3>
+<ol class="steps"><li>كوّن <span class="m">X</span> و <span class="m">y</span> من الداتا.</li><li>احسب <span class="m">X† = (XᵀX)⁻¹Xᵀ</span>.</li><li>رجّع <span class="m">w = X†y</span>.</li></ol>
+<h3>مثال كامل بالأرقام</h3>
+<div class="ex"><b>النقط: (1, 1) و (2, 3) و (3, 4)</b>
+<ol class="steps">
+<li><span class="m">XᵀX = [3 6 ; 6 14]</span><br>(N، و Σx ، و Σx، و Σx²)</li>
+<li><span class="m">Xᵀy = [8 ; 19]</span><br>(Σy = 8، و Σxy = 1 + 6 + 12 = 19)</li>
+<li>المحدد: <span class="m">3 × 14 − 6 × 6 = 6</span></li>
+<li>المعكوس: <span class="m">(1/6) [14 −6 ; −6 3]</span></li>
+<li><span class="m">w = (1/6) [14(8) − 6(19) ; −6(8) + 3(19)] = (1/6)[−2 ; 9]</span></li>
+<li>النتيجة: <span class="m">w₀ = −1/3</span> و <span class="m">w₁ = 3/2</span></li>
+</ol>
+<p>يعني الخط: <span class="m">h(x) = −1/3 + 1.5x</span>.</p>
+<p>ولو حسبنا الغلط: <span class="m">E<sub>in</sub> = 1/18 ≈ 0.056</span>.</p></div>
+<div class="trick"><b>قانون سريع لصفة واحدة:</b> <span class="m">XᵀX = [N Σx ; Σx Σx²]</span> و <span class="m">Xᵀy = [Σy ; Σxy]</span>. ومعكوس مصفوفة 2×2: اقلب القطر، وغيّر إشارة الباقي، واقسم على المحدد.</div>
+<div class="lab"><div class="tag">معمل: اكتب نقطك وشوف الحل</div>
+<div class="ctl"><label>x<input class="wide" id="lrx" value="1,2,3"></label><label>y<input class="wide" id="lry" value="1,3,4"></label></div>
+<canvas id="lrc"></canvas><div class="read" id="lrr"></div></div>
+<div class="qk">أسئلة الجزء (10)</div><div class="qs" data-mcq="p5"></div></section>
+<section class="part" id="p6"><div class="num">الجزء 6 من 7</div><h2>نستخدم الـ Regression في الـ Classification</h2>
+<p>فكرة ذكية: الـ +1 والـ −1 أرقام حقيقية برضه.</p>
+<p>يعني نقدر نستخدم linear regression على داتا فيها <span class="m">y = ±1</span>.</p>
+<ol class="steps">
+<li>نشغّل regression عشان <span class="m">wᵀxₙ ≈ yₙ = ±1</span>.</li>
+<li>غالبًا <span class="m">sign(wᵀxₙ)</span> هيتفق مع <span class="m">yₙ</span>.</li>
+<li>نستخدم w دي <b>نقطة بداية</b> للـ PLA أو الـ Pocket.</li>
+</ol>
+<div class="idea">Linear regression بيدي <b>good initial weights</b> للـ classification، في خطوة واحدة.</div>
+<h3>مثال</h3>
+<p>لو <span class="m">w = [0.1, 0.5, −0.2]</span> و <span class="m">x = (2, 1)</span>:</p>
+<p><span class="m">wᵀx = 0.1 + 1 − 0.2 = 0.9</span>، فالـ <span class="m">sign = +1</span>.</p>
+<div class="qk">أسئلة الجزء (4)</div><div class="qs" data-mcq="p6"></div></section>
+<section class="part" id="p7"><div class="num">الجزء 7 من 7</div><h2>الـ Nonlinear Transformation</h2>
+<h3>الخط مش كفاية</h3>
+<p>لو الأزرق جوه دايرة والأحمر برة، مفيش خط يفصلهم.</p>
+<p>ومثال تاني: الـ credit line بيتأثر بـ "سنين الإقامة" بشكل مش خطي. الأحسن نسأل: <span class="m">[[xᵢ < 1]]</span> و <span class="m">[[xᵢ > 5]]</span>.</p>
+<h3>السر: Linear in what?</h3>
+<p>المعادلة <span class="m">Σ wᵢxᵢ</span> خطية في حاجتين: في x، وفي w.</p>
+<div class="idea">الـ algorithms بتشتغل بسبب إنها خطية في <b>الأوزان w</b>. مش لازم تكون خطية في x.</div>
+<h3>يبقى نغيّر x نفسها</h3>
+<ol class="steps">
+<li>نحوّل كل نقطة: <span class="m">(x₁, x₂) → Φ → (x₁², x₂²)</span></li>
+<li>نشغّل الموديل الخطي عادي في الفضاء الجديد.</li>
+<li>الخط هناك بيبقى دايرة هنا.</li>
+</ol>
+<div class="ex"><b>مثال بالأرقام</b>
+<p><span class="m">h(x) = sign(0.6 − x₁² − x₂²)</span>، يعني <span class="m">w̃ = [0.6, −1, −1]</span> في الفضاء الجديد.</p>
+<div class="tbl"><table dir="ltr"><tr><th>x</th><th>z = (x₁², x₂²)</th><th>0.6 − z₁ − z₂</th><th>h</th></tr>
+<tr><td class="m">(0.5, 0.5)</td><td class="m">(0.25, 0.25)</td><td class="m">0.1</td><td class="m">+1</td></tr>
+<tr><td class="m">(1, 0)</td><td class="m">(1, 0)</td><td class="m">−0.4</td><td class="m">−1</td></tr>
+<tr><td class="m">(−0.5, −0.5)</td><td class="m">(0.25, 0.25)</td><td class="m">0.1</td><td class="m">+1</td></tr></table></div></div>
+<div class="lab"><div class="tag">معمل: نفس النقط في الفضاءين</div>
+<div class="ctl"><label>r² = <output id="ntv"></output><input id="nt" type="range" min=".2" max="1.2" step=".05" value=".6"></label></div>
+<div class="two"><figure><canvas id="nx"></canvas><figcaption>فضاء x: دايرة</figcaption></figure><figure><canvas id="nz"></canvas><figcaption>فضاء z: خط</figcaption></figure></div></div>
+<div class="qk">أسئلة الجزء (8)</div><div class="qs" data-mcq="p7"></div></section>
+<section class="part" id="essay"><div class="num">أسئلة مقالية</div><h2>اكتب الإجابة في ورقة الأول</h2><p>ده الشكل اللي الدكتور ممكن يسأل بيه. اكتب، وبعدين قارن بالإجابة النموذجية.</p><div class="prob"><div>1. اشرح يعني إيه input representation، بمثال الأرقام.</div><div><button type="button" class="btn ghost" data-sol="es0" data-label="اظهر الإجابة النموذجية">اظهر الإجابة النموذجية</button></div><div class="sol" id="es0"><p>Raw input: 256 pixel، يعني 257 وزن. بدل كده نستخرج features زي intensity و symmetry، فنحتاج 3 أوزان بس.</p></div></div><div class="prob"><div>2. قارن بين الـ PLA والـ Pocket.</div><div><button type="button" class="btn ghost" data-sol="es1" data-label="اظهر الإجابة النموذجية">اظهر الإجابة النموذجية</button></div><div class="sol" id="es1"><p>الـ PLA بيرجع آخر w، وعلى داتا مش separable مش بيقف و E<sub>in</sub> بيتذبذب. الـ Pocket بيشغل PLA ويحتفظ بأحسن w حسب E<sub>in</sub>، وبيرجعها.</p></div></div><div class="prob"><div>3. قارن بين Classification و Regression في مثال البنك.</div><div><button type="button" class="btn ghost" data-sol="es2" data-label="اظهر الإجابة النموذجية">اظهر الإجابة النموذجية</button></div><div class="sol" id="es2"><p>Classification: موافقة yes/no، و <span class="m">h = sign(wᵀx)</span>. Regression: credit line رقم، و <span class="m">h = wᵀx</span>، والخطأ squared error.</p></div></div><div class="prob"><div>4. اكتب <span class="m">E<sub>in</sub></span> بالجمع وبالمصفوفات.</div><div><button type="button" class="btn ghost" data-sol="es3" data-label="اظهر الإجابة النموذجية">اظهر الإجابة النموذجية</button></div><div class="sol" id="es3"><p><span class="m">E<sub>in</sub> = (1/N) Σ (wᵀxₙ − yₙ)² = (1/N)‖Xw − y‖²</span>، حيث X صفوفها <span class="m">xₙᵀ</span> و y عمود.</p></div></div><div class="prob"><div>5. اشتق حل الـ linear regression.</div><div><button type="button" class="btn ghost" data-sol="es4" data-label="اظهر الإجابة النموذجية">اظهر الإجابة النموذجية</button></div><div class="sol" id="es4"><p><span class="m">∇E<sub>in</sub> = (2/N)Xᵀ(Xw − y) = 0</span> ← <span class="m">XᵀXw = Xᵀy</span> ← <span class="m">w = (XᵀX)⁻¹Xᵀy = X†y</span>.</p></div></div><div class="prob"><div>6. اكتب الـ linear regression algorithm.</div><div><button type="button" class="btn ghost" data-sol="es5" data-label="اظهر الإجابة النموذجية">اظهر الإجابة النموذجية</button></div><div class="sol" id="es5"><p>(1) كوّن X و y. (2) احسب <span class="m">X† = (XᵀX)⁻¹Xᵀ</span>. (3) رجّع <span class="m">w = X†y</span>.</p></div></div><div class="prob"><div>7. ليه linear regression مفيد للـ classification؟</div><div><button type="button" class="btn ghost" data-sol="es6" data-label="اظهر الإجابة النموذجية">اظهر الإجابة النموذجية</button></div><div class="sol" id="es6"><p>لأن ±1 أرقام حقيقية، فبنطلع w بحيث <span class="m">wᵀxₙ ≈ yₙ</span>، و <span class="m">sign(wᵀx)</span> غالبًا صح. وبتبقى good initial weights للـ PLA/Pocket.</p></div></div><div class="prob"><div>8. اشرح الـ nonlinear transformation، وLinear in what؟</div><div><button type="button" class="btn ghost" data-sol="es7" data-label="اظهر الإجابة النموذجية">اظهر الإجابة النموذجية</button></div><div class="sol" id="es7"><p>الـ algorithms بتعتمد على الخطية في w مش x. فبنحول <span class="m">(x₁,x₂) → (x₁²,x₂²)</span> بـ Φ، ونشغل الموديل الخطي في الفضاء الجديد، فالخط هناك يبقى حد غير خطي في x.</p></div></div><div><button type="button" class="btn ghost" data-done="essay"></button></div></section>
+<section class="part" id="guided"><div class="num">مسائل بحل موجّه</div><h2>حل معايا خطوة خطوة</h2><p>كل خطوة بتتفتح لما تحل اللي قبلها. اكتب الرقم وصحح. ولو القيمة كسر، تقدر تكتب <span class="m">1/3</span>. ولو المطلوب كذا رقم، افصل بينهم بفاصلة.</p><div class="g"><b>مسألة 1: Linear regression كاملة</b><div>النقط: (1, 2) و (2, 2) و (3, 5). طلّع <span class="m">w₀</span> و <span class="m">w₁</span>.</div><div class="gs" data-a='[3, 6, 14]'><div>احسب N و Σx و Σx² (3 أرقام).</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">N = 3</span> و <span class="m">Σx = 6</span> و <span class="m">Σx² = 14</span></div></div><div class="gs" data-a='[9, 21]'><div>احسب Σy و Σxy (رقمين).</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">Σy = 9</span> و <span class="m">Σxy = 2 + 4 + 15 = 21</span></div></div><div class="gs" data-a='[6]'><div>محدد <span class="m">XᵀX</span>.</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">3 × 14 − 6 × 6 = 6</span></div></div><div class="gs" data-a='[0]'><div><span class="m">w₀ = (14Σy − 6Σxy) / 6</span></div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">(126 − 126)/6 = 0</span></div></div><div class="gs" data-a='[1.5]'><div><span class="m">w₁ = (−6Σy + 3Σxy) / 6</span></div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">(−54 + 63)/6 = 1.5</span></div></div><div class="gs" data-a='[1.5, 3, 4.5]'><div>التوقعات عند x = 1, 2, 3.</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">h(x) = 1.5x</span></div></div><div class="gs" data-a='[0.5]'><div>احسب E<sub>in</sub>.</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">(0.25 + 1 + 0.25)/3 = 0.5</span></div></div></div><div class="g"><b>مسألة 2: نقطتين</b><div>النقط: (0, 1) و (2, 5).</div><div class="gs" data-a='[2, 2, 2, 4]'><div>اكتب <span class="m">XᵀX</span> كـ 4 أرقام: N, Σx, Σx, Σx².</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">[2 2 ; 2 4]</span></div></div><div class="gs" data-a='[6, 10]'><div>اكتب <span class="m">Xᵀy</span> (رقمين).</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">[6 ; 10]</span></div></div><div class="gs" data-a='[4]'><div>المحدد.</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">8 − 4 = 4</span></div></div><div class="gs" data-a='[1, 2]'><div><span class="m">w₀</span> و <span class="m">w₁</span>.</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">(1/4)[4(6) − 2(10) ; −2(6) + 2(10)] = (1/4)[4 ; 8] = [1 ; 2]</span></div></div><div class="gs" data-a='[0]'><div>E<sub>in</sub>؟</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans">الخط بيعدي على النقطتين بالظبط، فالغلط صفر.</div></div></div><div class="g"><b>مسألة 3: Squared error</b><div><span class="m">w = [1, 2]</span>، والنقط: (1, 2) و (2, 6) و (0, 1).</div><div class="gs" data-a='[3, 5, 1]'><div>التوقعات <span class="m">h(x) = 1 + 2x</span> (3 أرقام).</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">3, 5, 1</span></div></div><div class="gs" data-a='[1, -1, 0]'><div>الفروق <span class="m">h − y</span> (3 أرقام).</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">1, −1, 0</span></div></div><div class="gs" data-a='[0.667]'><div>E<sub>in</sub>.</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">(1 + 1 + 0)/3 = 2/3</span></div></div></div><div class="g"><b>مسألة 4: الأبعاد</b><div><span class="m">N = 1000</span> و <span class="m">d = 9</span>.</div><div class="gs" data-a='[1000, 10]'><div>أبعاد X (رقمين).</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">1000 × 10</span></div></div><div class="gs" data-a='[10, 10]'><div>أبعاد <span class="m">XᵀX</span>.</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">10 × 10</span></div></div><div class="gs" data-a='[10, 1000]'><div>أبعاد <span class="m">X†</span>.</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">10 × 1000</span></div></div><div class="gs" data-a='[10]'><div>عدد عناصر w.</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">d + 1 = 10</span></div></div></div><div><button type="button" class="btn ghost" data-done="guided"></button></div></section>
+<section class="part exam" id="exam"><div class="num">امتحان الدرس</div><h2>18 سؤال في 18 دقيقة</h2><p>حل من غير ما تبص فوق. الإجابات هتظهر لما تسلّم.</p><div class="btns"><button type="button" class="btn" id="go">ابدأ التايمر</button><span class="timer" id="clock"></span></div><div class="qs" id="xbox" hidden></div><div class="result" id="xres" hidden></div></section>
+<section class="part"><div class="num">الخلاصة</div><h2>السطور اللي تراجعها الصبح</h2><ol class="list"><li>Features: بدل 257 وزن، 3 أوزان (intensity و symmetry).</li><li>الـ PLA آخر w، والـ Pocket أحسن w حسب E<sub>in</sub>.</li><li>Regression: <span class="m">h = wᵀx</span>، و <span class="m">E<sub>in</sub> = (1/N)‖Xw − y‖²</span>.</li><li><span class="m">w = X†y</span> و <span class="m">X† = (XᵀX)⁻¹Xᵀ</span>، وأبعادها <span class="m">(d+1) × N</span>.</li><li>بنستخدم regression كـ good initial weights للـ classification.</li><li>الموديل linear في w. فنقدر نعمل <span class="m">Φ(x₁,x₂) = (x₁²,x₂²)</span>.</li></ol></section>
+<div class="next"><a href="/interactive/university/ds-l02">الدرس اللي فات</a><a href="/interactive/university/ds-summary">اللي بعده</a><a href="/interactive/university/ds-summary">المراجعة والامتحان التجريبي</a></div></div><script>
+const LESSON="ds-l03",PARTS=["p1", "p2", "p3", "p4", "p5", "p6", "p7", "essay", "guided"],HAS_EXAM=true,MCQ={"p1": [{"q": "<bdi>صورة <span class=\"m\">16 × 16</span> فيها كام pixel؟</bdi>", "o": ["257", "256", "1024", "32"], "a": 1, "w": "<span class=\"m\">16 × 16 = 256</span>."}, {"q": "<bdi>Raw input model عدد أوزانه:</bdi>", "o": ["256", "257", "3", "16"], "a": 1, "w": "<span class=\"m\">256 + 1</span> بسبب <span class=\"m\">x₀</span>."}, {"q": "<bdi>بعد features (intensity و symmetry)، عدد الأوزان:</bdi>", "o": ["256", "3", "257", "2"], "a": 1, "w": "<span class=\"m\">w₀, w₁, w₂</span>."}, {"q": "<bdi>الـ features معناها:</bdi>", "o": ["نزود الداتا", "نغيّر f", "نستخرج معلومة مفيدة من الـ raw input"], "a": 2, "w": "Extract useful information."}, {"q": "<bdi>الصفتين في مثال الأرقام:</bdi>", "o": ["intensity و symmetry", "mass و size", "age و salary"], "a": 0, "w": "ده مثال السلايد."}, {"q": "<bdi>صورة <span class=\"m\">28 × 28</span> raw، عدد الأوزان:</bdi>", "o": ["56", "784", "785", "29"], "a": 2, "w": "<span class=\"m\">784 + 1</span>."}], "p2": [{"q": "<bdi>الداتا الحقيقية غالبًا:</bdi>", "o": ["linearly separable", "مش linearly separable"], "a": 1, "w": "فيها نقط متلخبطة."}, {"q": "<bdi>الـ PLA على داتا مش separable:</bdi>", "o": ["مش بيقف، و E<sub>in</sub> بيتذبذب", "E<sub>in</sub> يبقى صفر", "بيقف بسرعة"], "a": 0, "w": "ده اللي في الرسمة."}, {"q": "<bdi>الـ Pocket بيرجّع:</bdi>", "o": ["أول w", "آخر w", "أحسن w شافها"], "a": 2, "w": "بيحتفظ بالأحسن."}, {"q": "<bdi>بيحدد الأحسن بإيه؟</bdi>", "o": ["E<sub>in</sub>", "E<sub>out</sub>", "عدد الـ features"], "a": 0, "w": "E<sub>out</sub> مش معروف."}, {"q": "<bdi>منحنى E<sub>in</sub> في الـ Pocket:</bdi>", "o": ["بيتذبذب", "بيزيد دايمًا", "ما بيزيدش مع الـ iterations"], "a": 2, "w": "لأنه بيحتفظ بالأقل."}, {"q": "<bdi>الـ Pocket زيادة على الـ PLA:</bdi>", "o": ["features جديدة", "حساب E<sub>in</sub> في كل iteration والاحتفاظ بالأحسن", "مصفوفات"], "a": 1, "w": "ده الفرق."}], "p3": [{"q": "<bdi>Regression معناها:</bdi>", "o": ["مفيش output", "output +1 أو −1", "real-valued output"], "a": 2, "w": "ده تعريف السلايد."}, {"q": "<bdi>Credit approval (yes/no):</bdi>", "o": ["Regression", "Classification"], "a": 1, "w": "خرجين بس."}, {"q": "<bdi>Credit line بالدولار:</bdi>", "o": ["Classification", "Regression"], "a": 1, "w": "رقم."}, {"q": "<bdi>Linear regression output:</bdi>", "o": ["<span class=\"m\">xᵀx</span>", "<span class=\"m\">sign(wᵀx)</span>", "<span class=\"m\">wᵀx</span>"], "a": 2, "w": "من غير sign."}, {"q": "<bdi>In linear regression the error is:</bdi>", "o": ["<span class=\"m\">h(x)·f(x)</span>", "<span class=\"m\">|h(x)|</span>", "<span class=\"m\">(h(x) − f(x))²</span>"], "a": 2, "w": "squared error."}, {"q": "<bdi><span class=\"m\">h = (2, 4)</span> و <span class=\"m\">y = (3, 2)</span>. E<sub>in</sub>:</bdi>", "o": ["3", "2.5", "1", "5"], "a": 1, "w": "<span class=\"m\">(1 + 4)/2 = 2.5</span>."}, {"q": "<bdi><span class=\"m\">h = (1, 1, 1, 1)</span> و <span class=\"m\">y = (1, 3, 1, 3)</span>. E<sub>in</sub>:</bdi>", "o": ["1", "8", "2", "4"], "a": 2, "w": "<span class=\"m\">(0+4+0+4)/4 = 2</span>."}, {"q": "<bdi>ليه بنربّع؟</bdi>", "o": ["عشان الرقم يصغر", "الموجب والسالب ما يلغوش بعض", "مفيش سبب"], "a": 1, "w": "والغلط الكبير يتعاقب أكتر."}], "p4": [{"q": "<bdi>كل صف في X بيمثل:</bdi>", "o": ["صفة", "عميل", "وزن"], "a": 1, "w": "<span class=\"m\">xₙᵀ</span>."}, {"q": "<bdi>أبعاد X:</bdi>", "o": ["d × d", "N × (d+1)", "N × d", "(d+1) × N"], "a": 1, "w": "N صف، و d+1 عمود بسبب <span class=\"m\">x₀</span>."}, {"q": "<bdi><span class=\"m\">E<sub>in</sub>(w)</span> بالمصفوفات:</bdi>", "o": ["<span class=\"m\">(1/N)‖Xw − y‖²</span>", "<span class=\"m\">Nw</span>", "<span class=\"m\">(1/N)Xy</span>", "<span class=\"m\">‖X − y‖</span>"], "a": 0, "w": "ده الشكل."}, {"q": "<bdi>أبعاد <span class=\"m\">XᵀX</span>:</bdi>", "o": ["(d+1) × (d+1)", "N × (d+1)", "N × N", "1 × 1"], "a": 0, "w": "ودي اللي بنعكسها."}, {"q": "<bdi>أبعاد <span class=\"m\">X†</span>:</bdi>", "o": ["N × N", "(d+1) × N", "N × (d+1)", "(d+1) × (d+1)"], "a": 1, "w": "عشان <span class=\"m\">w = X†y</span> يطلع <span class=\"m\">(d+1) × 1</span>."}, {"q": "<bdi>500 عميل و 4 صفات. أبعاد X:</bdi>", "o": ["500 × 4", "5 × 500", "500 × 5", "4 × 500"], "a": 2, "w": "<span class=\"m\">d+1 = 5</span>."}, {"q": "<bdi>نفس المسألة. أبعاد <span class=\"m\">XᵀX</span>:</bdi>", "o": ["5 × 5", "500 × 500", "4 × 4"], "a": 0, "w": "<span class=\"m\">(d+1) × (d+1)</span>."}, {"q": "<bdi>ليه بنضيف عمود واحدات في X؟</bdi>", "o": ["عشان نكبّر الأرقام", "عشان <span class=\"m\">x₀ = 1</span>", "مش بنضيف"], "a": 1, "w": "ده الـ <span class=\"m\">w₀</span>."}], "p5": [{"q": "<bdi>حل الـ linear regression:</bdi>", "o": ["<span class=\"m\">w = X†y</span>", "<span class=\"m\">w = yX</span>", "<span class=\"m\">w = Xy</span>", "<span class=\"m\">w = X⁻¹</span>"], "a": 0, "w": "one-step."}, {"q": "<bdi><span class=\"m\">X†</span> يساوي:</bdi>", "o": ["<span class=\"m\">Xᵀ(XXᵀ)</span>", "<span class=\"m\">(XᵀX)Xᵀ</span>", "<span class=\"m\">X⁻¹Xᵀ</span>", "<span class=\"m\">(XᵀX)⁻¹Xᵀ</span>"], "a": 3, "w": "pseudo-inverse."}, {"q": "<bdi>المعادلة بعد تساوي الـ gradient بصفر:</bdi>", "o": ["<span class=\"m\">w = 0</span>", "<span class=\"m\">Xw = 0</span>", "<span class=\"m\">XᵀXw = Xᵀy</span>"], "a": 2, "w": "normal equations."}, {"q": "<bdi><span class=\"m\">∇E<sub>in</sub>(w)</span>:</bdi>", "o": ["<span class=\"m\">(2/N)Xᵀ(Xw − y)</span>", "<span class=\"m\">2Xw</span>", "<span class=\"m\">(1/N)(Xw − y)</span>"], "a": 0, "w": "الاشتقاق."}, {"q": "<bdi>Linear regression بيتحل:</bdi>", "o": ["في خطوة واحدة", "مش بيتحل", "بـ iterations زي الـ PLA"], "a": 0, "w": "one-step."}, {"q": "<bdi>ترتيب الـ algorithm:</bdi>", "o": ["X† ← y ← X", "w ← X ← y", "X و y ← X† ← w"], "a": 2, "w": "3 خطوات."}, {"q": "<bdi>نقط (1, 2) و (2, 4)، صفة واحدة. <span class=\"m\">XᵀX</span>:</bdi>", "o": ["<span class=\"m\">[2 3 ; 3 6]</span>", "<span class=\"m\">[3 3 ; 3 5]</span>", "<span class=\"m\">[2 3 ; 3 5]</span>"], "a": 2, "w": "N=2، و Σx=3، و Σx²=5."}, {"q": "<bdi>نفس النقط. <span class=\"m\">Xᵀy</span>:</bdi>", "o": ["<span class=\"m\">[6 ; 8]</span>", "<span class=\"m\">[3 ; 10]</span>", "<span class=\"m\">[6 ; 10]</span>"], "a": 2, "w": "Σy=6، و Σxy=2+8=10."}, {"q": "<bdi>محدد <span class=\"m\">[3 6 ; 6 14]</span>:</bdi>", "o": ["0", "6", "42", "36"], "a": 1, "w": "<span class=\"m\">42 − 36 = 6</span>."}, {"q": "<bdi>معكوس <span class=\"m\">[2 0 ; 0 4]</span>:</bdi>", "o": ["<span class=\"m\">[4 0 ; 0 2]</span>", "<span class=\"m\">[0.5 0 ; 0 0.25]</span>", "<span class=\"m\">[2 0 ; 0 4]</span>"], "a": 1, "w": "<span class=\"m\">(1/8)[4 0 ; 0 2]</span>."}], "p6": [{"q": "<bdi>ليه ينفع نستخدم regression في الـ classification؟</bdi>", "o": ["الداتا أقل", "مفيش خرج", "±1 أرقام حقيقية"], "a": 2, "w": "Binary-valued functions are also real-valued."}, {"q": "<bdi>الفايدة الأساسية:</bdi>", "o": ["good initial weights للـ PLA/Pocket", "مفيش حسابات", "E<sub>out</sub> = 0"], "a": 0, "w": "ده نص السلايد."}, {"q": "<bdi>التصنيف النهائي بياخد:</bdi>", "o": ["<span class=\"m\">sign(wᵀx)</span>", "<span class=\"m\">wᵀx</span>", "<span class=\"m\">w</span>"], "a": 0, "w": "بنحول لـ ±1."}, {"q": "<bdi><span class=\"m\">w = [0, 1, 1]</span> و <span class=\"m\">x = (−2, 1)</span>. التصنيف:</bdi>", "o": ["+1", "−1"], "a": 1, "w": "<span class=\"m\">−2 + 1 = −1</span>."}], "p7": [{"q": "<bdi>Linear models are linear in:</bdi>", "o": ["x لازم", "الأوزان w", "y"], "a": 1, "w": "Algorithms work because of linearity in the weights."}, {"q": "<bdi>الـ transform في السلايد:</bdi>", "o": ["<span class=\"m\">(x₁,x₂) → (x₁+x₂)</span>", "<span class=\"m\">(x₁,x₂) → (0,0)</span>", "<span class=\"m\">(x₁,x₂) → (x₁²,x₂²)</span>"], "a": 2, "w": "<span class=\"m\">Φ</span>."}, {"q": "<bdi>الخط في فضاء z بيقابل في فضاء x:</bdi>", "o": ["نقطة", "خط برضه", "دايرة"], "a": 2, "w": "في المثال ده."}, {"q": "<bdi>بعد الـ transform، الموديل:</bdi>", "o": ["مبقاش linear في أي حاجة", "لسه linear في الأوزان"], "a": 1, "w": "وعشان كده نفس الـ algorithms تشتغل."}, {"q": "<bdi><span class=\"m\">x = (2, 1)</span> و <span class=\"m\">Φ(x) = (x₁², x₂²)</span>:</bdi>", "o": ["<span class=\"m\">(4, 1)</span>", "<span class=\"m\">(2, 1)</span>", "<span class=\"m\">(4, 2)</span>"], "a": 0, "w": "نربّع."}, {"q": "<bdi><span class=\"m\">h(x) = sign(1 − x₁² − x₂²)</span> و <span class=\"m\">x = (0.5, 0)</span>:</bdi>", "o": ["+1", "−1"], "a": 0, "w": "<span class=\"m\">1 − 0.25 = 0.75</span>."}, {"q": "<bdi><span class=\"m\">h(x) = sign(1 − x₁² − x₂²)</span> و <span class=\"m\">x = (1, 1)</span>:</bdi>", "o": ["+1", "−1"], "a": 1, "w": "<span class=\"m\">1 − 2 = −1</span>."}, {"q": "<bdi>مثال سنين الإقامة بيستخدم:</bdi>", "o": ["<span class=\"m\">xᵢ</span> بس", "<span class=\"m\">sin(xᵢ)</span>", "<span class=\"m\">[[xᵢ<1]]</span> و <span class=\"m\">[[xᵢ>5]]</span>"], "a": 2, "w": "نحول الصفة لسؤال yes/no."}]};
+
+const KEY="anas-uni-progress-v1",V="v2:";
+const $=id=>document.getElementById(id);
+const loadAll=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return {}}};
+const saveAll=d=>{try{localStorage.setItem(KEY,JSON.stringify(d))}catch{}};
+function L(){const d=loadAll();d[LESSON]=d[LESSON]||{parts:{},answers:{},exam:null};d[LESSON].answers=d[LESSON].answers||{};d[LESSON].parts=d[LESSON].parts||{};return d}
+function setPart(p,on,right,total){const d=L();if(on)d[LESSON].parts[p]={right,total,at:Date.now()};else delete d[LESSON].parts[p];saveAll(d);bar()}
+function bar(){const l=L()[LESSON],t=PARTS.length+(HAS_EXAM?1:0),done=PARTS.filter(p=>l.parts[p]).length+(HAS_EXAM&&l.exam?1:0),p=Math.round(done/t*100);
+ $("pct").textContent=`${p}% · ${done}/${t}`;$("fill").style.width=p+"%";
+ document.querySelectorAll("[data-chip]").forEach(a=>a.classList.toggle("done",a.dataset.chip==="exam"?!!l.exam:!!l.parts[a.dataset.chip]));
+ document.querySelectorAll("[data-done]").forEach(b=>{const on=!!l.parts[b.dataset.done];b.classList.toggle("on",on);b.textContent=on?"خلصت ✓":"علّم إني خلصت"})}
+document.querySelectorAll("[data-done]").forEach(b=>b.onclick=()=>setPart(b.dataset.done,!L()[LESSON].parts[b.dataset.done]));
+document.querySelectorAll("[data-sol]").forEach(b=>b.onclick=()=>{const s=$(b.dataset.sol);s.classList.toggle("show");b.textContent=s.classList.contains("show")?"اخفي الإجابة":b.dataset.label||"اظهر الإجابة"});
+function mcq(box,part,items){
+ const ans=()=>L()[LESSON].answers,k=i=>V+part+":"+i,st=document.createElement("div");st.className="score";
+ function check(){const a=ans(),got=items.filter((_,i)=>a[k(i)]!==undefined).length,r=items.filter((it,i)=>a[k(i)]===it.a).length;
+  st.innerHTML=got===items.length?`<span class="badge">خلصت · ${r}/${items.length}</span>`:`جاوبت ${got} من ${items.length}`;
+  if(got===items.length)setPart(part,true,r,items.length)}
+ items.forEach((it,i)=>{const q=document.createElement("div");q.className="q";
+  const draw=()=>{const g=ans()[k(i)];
+   q.innerHTML=`<div class="stem">${i+1}. ${it.q}</div><div class="opts">${it.o.map((o,j)=>{let c="";if(g!==undefined){if(j===it.a)c="right";else if(j===g)c="wrong"}return `<button type="button" class="opt ${c}" data-j="${j}" ${g!==undefined?"disabled":""}>${o}</button>`}).join("")}</div>${g!==undefined?`<div class="why ${g===it.a?"":"bad"}">${g===it.a?"صح. ":"غلط. "}${it.w}</div>`:""}`};
+  q.onclick=e=>{const b=e.target.closest("[data-j]");if(!b||b.disabled)return;const d=L();d[LESSON].answers[k(i)]=+b.dataset.j;saveAll(d);draw();check()};
+  draw();box.append(q)});
+ const re=document.createElement("button");re.type="button";re.className="btn ghost";re.textContent="أعيد الأسئلة دي";
+ re.onclick=()=>{const d=L();items.forEach((_,i)=>delete d[LESSON].answers[k(i)]);delete d[LESSON].parts[part];saveAll(d);box.innerHTML="";bar();mcq(box,part,items)};
+ box.append(st,re);check();
+}
+document.querySelectorAll("[data-mcq]").forEach(b=>mcq(b,b.dataset.mcq,MCQ[b.dataset.mcq]));
+function parseAns(s){return String(s).replace(/−/g,"-").replace(/[\[\]()]/g," ").split(/[,،\s]+/).filter(Boolean).map(t=>{const m=t.match(/^(-?\d*\.?\d+)\/(\d*\.?\d+)$/);return m?m[1]/m[2]:Number(t)})}
+function guided(box){box.querySelectorAll(".gs").forEach((s,i,all)=>{
+ if(i)s.classList.add("lock");
+ const inp=s.querySelector("input"),a=s.dataset.a?JSON.parse(s.dataset.a):null,tol=+(s.dataset.tol||.01);
+ const nxt=()=>{s.classList.add("open");if(all[i+1])all[i+1].classList.remove("lock")};
+ s.querySelector("[data-check]")?.addEventListener("click",()=>{const v=parseAns(inp.value),ok=a&&v.length===a.length&&v.every((x,j)=>Math.abs(x-a[j])<=tol);inp.className=ok?"ok":"no";if(ok)nxt()});
+ s.querySelector("[data-show]")?.addEventListener("click",nxt)})}
+document.querySelectorAll(".g").forEach(guided);
+function exam(cfg){const box=$(cfg.box),res=$(cfg.res),tEl=$(cfg.timer),go=$(cfg.go),E=cfg.items;let ans={},left=0,tick;
+ const prev=L()[LESSON][cfg.key];if(prev){res.hidden=false;res.textContent=`آخر نتيجة: ${prev.right} / ${prev.total}. تقدر تعيد.`}
+ const show=()=>tEl.textContent=`${String(Math.floor(left/60)).padStart(2,"0")}:${String(left%60).padStart(2,"0")}`;
+ function finish(){clearInterval(tick);const right=E.filter((e,i)=>ans[i]===e.a).length;
+  box.querySelectorAll("button.opt").forEach(b=>b.disabled=true);
+  E.forEach((e,i)=>{const q=box.children[i];q.querySelectorAll("button.opt").forEach((b,j)=>{b.classList.remove("pick");if(j===e.a)b.classList.add("right");else if(j===ans[i])b.classList.add("wrong")});
+   const w=document.createElement("div");w.className="why"+(ans[i]===e.a?"":" bad");w.innerHTML=(ans[i]===e.a?"صح. ":ans[i]===undefined?"ما جاوبتش. ":"غلط. ")+e.w;q.append(w)});
+  const d=L();d[LESSON][cfg.key]={right,total:E.length,at:Date.now()};saveAll(d);bar();
+  res.hidden=false;res.textContent=`النتيجة: ${right} / ${E.length}. `+(right/E.length>=.85?"ممتاز.":right/E.length>=.7?"كويس. راجع اللي غلطت فيه وأعد.":"ارجع للأجزاء اللي غلطت فيها، وأعد.");
+  go.disabled=false;go.textContent="أعد الامتحان";cfg.after&&cfg.after()}
+ go.onclick=()=>{ans={};left=cfg.min*60;box.hidden=false;res.hidden=true;go.disabled=true;
+  box.innerHTML=E.map((e,i)=>`<div class="q"><div class="stem">${i+1}. ${e.q}</div><div class="opts">${e.o.map((o,j)=>`<button type="button" class="opt" data-i="${i}" data-j="${j}">${o}</button>`).join("")}</div></div>`).join("")+`<div class="btns"><button type="button" class="btn" id="${cfg.box}Sub">سلّم</button></div>`;
+  $(cfg.box+"Sub").onclick=finish;show();clearInterval(tick);tick=setInterval(()=>{left--;show();if(left<=0)finish()},1000)};
+ box.addEventListener("click",e=>{const b=e.target.closest("button.opt");if(!b||b.disabled)return;const i=+b.dataset.i;ans[i]=+b.dataset.j;box.children[i].querySelectorAll("button.opt").forEach(x=>x.classList.remove("pick"));b.classList.add("pick")})}
+/* canvas helpers */
+function cv(id,size=400,R=5){const c=$(id),r=window.devicePixelRatio||1;c.width=size*r;c.height=size*r;const x=c.getContext("2d");x.scale(r,r);return {ctx:x,size,R,sx:v=>(v+R)/(2*R)*size,sy:v=>size-(v+R)/(2*R)*size}}
+function base(g){const {ctx,size,R,sx,sy}=g;ctx.clearRect(0,0,size,size);ctx.strokeStyle="#E6E9F0";ctx.lineWidth=1;for(let i=-R;i<=R;i++){ctx.beginPath();ctx.moveTo(sx(i),0);ctx.lineTo(sx(i),size);ctx.moveTo(0,sy(i));ctx.lineTo(size,sy(i));ctx.stroke()}
+ ctx.strokeStyle="#B8BFCC";ctx.beginPath();ctx.moveTo(sx(0),0);ctx.lineTo(sx(0),size);ctx.moveTo(0,sy(0));ctx.lineTo(size,sy(0));ctx.stroke()}
+function wline(g,w,color,dash){const {ctx,R,sx,sy}=g;if(Math.abs(w[1])<1e-9&&Math.abs(w[2])<1e-9)return;ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.setLineDash(dash?[6,6]:[]);ctx.beginPath();
+ if(Math.abs(w[2])>1e-9){const y=x=>-(w[0]+w[1]*x)/w[2];ctx.moveTo(sx(-R),sy(y(-R)));ctx.lineTo(sx(R),sy(y(R)))}else{const x=-w[0]/w[1];ctx.moveTo(sx(x),sy(-R));ctx.lineTo(sx(x),sy(R))}ctx.stroke();ctx.restore()}
+function dots(g,P,w,ring){const {ctx,sx,sy}=g;P.forEach((p,i)=>{ctx.beginPath();ctx.arc(sx(p[0]),sy(p[1]),6,0,7);ctx.fillStyle=p[2]>0?"#4F5BD5":"#C0392B";ctx.fill();
+ if(w&&Math.sign(w[0]+w[1]*p[0]+w[2]*p[1])!==p[2]){ctx.lineWidth=3;ctx.strokeStyle="#E2A400";ctx.stroke()}
+ if(ring===i){ctx.beginPath();ctx.arc(sx(p[0]),sy(p[1]),12,0,7);ctx.lineWidth=2;ctx.strokeStyle="#1E2433";ctx.stroke()}})}
+
+exam({box:"xbox",res:"xres",timer:"clock",go:"go",items:[{"q": "<bdi>صورة <span class=\"m\">16×16</span> raw، عدد الأوزان:</bdi>", "o": ["16", "256", "257", "3"], "a": 2, "w": "<span class=\"m\">256 + 1</span>."}, {"q": "<bdi>Features example:</bdi>", "o": ["intensity و symmetry", "H و A", "E<sub>in</sub> و E<sub>out</sub>"], "a": 0, "w": "مثال السلايد."}, {"q": "<bdi>On non-separable data, PLA:</bdi>", "o": ["stops at once", "doesn't settle", "gives E<sub>in</sub> = 0"], "a": 1, "w": "بيتذبذب."}, {"q": "<bdi>Pocket returns:</bdi>", "o": ["last w", "best w so far", "first w"], "a": 1, "w": "حسب E<sub>in</sub>."}, {"q": "<bdi>regression ≡</bdi>", "o": ["real-valued output", "binary output", "no output"], "a": 0, "w": "ده التعريف."}, {"q": "<bdi>Credit line problem:</bdi>", "o": ["regression", "classification"], "a": 0, "w": "رقم."}, {"q": "<bdi><span class=\"m\">E<sub>in</sub>(h)</span> in linear regression:</bdi>", "o": ["<span class=\"m\">(1/N)Σ(h(xₙ)−yₙ)²</span>", "<span class=\"m\">Σ|h−y|</span>", "<span class=\"m\">(1/N)Σ(h−y)</span>"], "a": 0, "w": "squared error."}, {"q": "<bdi><span class=\"m\">h=(1,3)</span> و <span class=\"m\">y=(2,1)</span>. E<sub>in</sub>:</bdi>", "o": ["2.5", "1", "5"], "a": 0, "w": "<span class=\"m\">(1+4)/2</span>."}, {"q": "<bdi>Matrix form:</bdi>", "o": ["<span class=\"m\">(1/N)‖Xw−y‖²</span>", "<span class=\"m\">‖Xy‖</span>", "<span class=\"m\">(1/N)Xw</span>"], "a": 0, "w": "ده الشكل."}, {"q": "<bdi><span class=\"m\">X†</span> =</bdi>", "o": ["<span class=\"m\">(XᵀX)⁻¹Xᵀ</span>", "<span class=\"m\">(XXᵀ)⁻¹</span>", "<span class=\"m\">XᵀX</span>"], "a": 0, "w": "pseudo-inverse."}, {"q": "<bdi>Solution:</bdi>", "o": ["<span class=\"m\">w = X†y</span>", "<span class=\"m\">w = y</span>", "<span class=\"m\">w = Xy</span>"], "a": 0, "w": "one-step."}, {"q": "<bdi>Dim of <span class=\"m\">X†</span>:</bdi>", "o": ["N × N", "N × (d+1)", "(d+1) × N"], "a": 2, "w": "ترتيب الضرب."}, {"q": "<bdi>نقط (0, 0) و (1, 2)، الخط:</bdi>", "o": ["<span class=\"m\">h = x</span>", "<span class=\"m\">h = 1 + x</span>", "<span class=\"m\">h = 2x</span>"], "a": 2, "w": "بيعدي على النقطتين."}, {"q": "<bdi>Linear regression for classification gives:</bdi>", "o": ["good initial weights", "M = 1", "E<sub>out</sub> = 0"], "a": 0, "w": "للـ PLA/Pocket."}, {"q": "<bdi>Linear models are linear in:</bdi>", "o": ["x لازم", "weights", "y"], "a": 1, "w": "ده السر."}, {"q": "<bdi><span class=\"m\">Φ(x₁,x₂)</span> in the slide:</bdi>", "o": ["<span class=\"m\">(x₁+x₂)</span>", "<span class=\"m\">(x₁,x₂)</span>", "<span class=\"m\">(x₁²,x₂²)</span>"], "a": 2, "w": "<span class=\"m\">Φ</span>."}, {"q": "<bdi><span class=\"m\">sign(0.6 − x₁² − x₂²)</span> عند <span class=\"m\">(0.5, 0.5)</span>:</bdi>", "o": ["+1", "−1"], "a": 0, "w": "<span class=\"m\">0.6 − 0.5 = 0.1</span>."}, {"q": "<bdi>الخط في فضاء z يقابل:</bdi>", "o": ["خط في x دايمًا", "حد غير خطي في x"], "a": 1, "w": "زي الدايرة."}],min:18,key:"exam"});
+
+(function(){const c=$("pk"),r=window.devicePixelRatio||1,W=500,H=200;c.width=W*r;c.height=H*r;const x=c.getContext("2d");x.scale(r,r);
+ function data(){const P=[];for(let i=0;i<60;i++){const a=Math.random()*8-4,b=Math.random()*8-4;let y=Math.sign(a+b-.5)||1;if(Math.random()<.12)y=-y;P.push([a,b,y])}return P}
+ const err=(w,P)=>P.filter(p=>Math.sign(w[0]+w[1]*p[0]+w[2]*p[1])!==p[2]).length/P.length;
+ function go(){const P=data();let w=[0,0,0],best=[...w],be=1;const a=[],b=[];for(let t=0;t<300;t++){const m=P.filter(p=>Math.sign(w[0]+w[1]*p[0]+w[2]*p[1])!==p[2]);if(m.length){const p=m[Math.floor(Math.random()*m.length)];w=[w[0]+p[2],w[1]+p[2]*p[0],w[2]+p[2]*p[1]]}const e=err(w,P);if(e<be){be=e;best=[...w]}a.push(e);b.push(be)}
+  x.clearRect(0,0,W,H);const mx=Math.max(.2,...a),X=i=>10+i/299*(W-20),Y=v=>H-14-v/mx*(H-28);x.strokeStyle="#E6E9F0";x.beginPath();x.moveTo(10,Y(0));x.lineTo(W-10,Y(0));x.stroke();
+  [[a,"#D9822B"],[b,"#4F5BD5"]].forEach(([s,col])=>{x.strokeStyle=col;x.lineWidth=2;x.beginPath();s.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.stroke()});
+  $("pkr").textContent=`آخر E_in بتاع الـ PLA = ${a[299].toFixed(2)}، وE_in بتاع الـ Pocket = ${be.toFixed(2)}`}
+ $("pkg").onclick=go;go()})();
+(function(){const g=cv("lrc",400,6);function u(){const pr=s=>s.split(/[ ,]+/).filter(Boolean).map(Number),xs=pr($("lrx").value),ys=pr($("lry").value),n=xs.length;if(n<2||n!==ys.length||xs.some(isNaN)||ys.some(isNaN)){$("lrr").textContent="لازم نفس العدد في x و y";return}
+  const sx=xs.reduce((a,b)=>a+b,0),sy=ys.reduce((a,b)=>a+b,0),sxx=xs.reduce((a,b)=>a+b*b,0),sxy=xs.reduce((a,b,i)=>a+b*ys[i],0),D=n*sxx-sx*sx;if(Math.abs(D)<1e-9){$("lrr").textContent="المحدد صفر: لازم قيم x مختلفة";return}
+  const w0=(sxx*sy-sx*sxy)/D,w1=(-sx*sy+n*sxy)/D,E=xs.reduce((a,x,i)=>a+(w0+w1*x-ys[i])**2,0)/n;base(g);wline(g,[w0,w1,-1],"#4F5BD5");dots(g,xs.map((x,i)=>[x,ys[i],1]));
+  $("lrr").innerHTML=`XᵀX = [${n} ${sx} ; ${sx} ${sxx}]   Xᵀy = [${sy} ; ${sxy}]   det = ${D}<br>w₀ = ${w0.toFixed(3)}   w₁ = ${w1.toFixed(3)}   E_in = ${E.toFixed(3)}`}
+ $("lrx").oninput=u;$("lry").oninput=u;u()})();
+(function(){const a=cv("nx",300,1.2),b=cv("nz",300,1.5);const P=Array.from({length:70},()=>[Math.random()*2-1,Math.random()*2-1]);
+ function u(){const r=+$("nt").value;$("ntv").textContent=r.toFixed(2);const lab=p=>r-p[0]*p[0]-p[1]*p[1]>0?1:-1;
+  a.ctx.clearRect(0,0,300,300);a.ctx.strokeStyle="#1E2433";a.ctx.lineWidth=2.5;a.ctx.beginPath();a.ctx.arc(a.sx(0),a.sy(0),Math.sqrt(r)/2.4*300,0,7);a.ctx.stroke();P.forEach(p=>{a.ctx.beginPath();a.ctx.arc(a.sx(p[0]),a.sy(p[1]),4,0,7);a.ctx.fillStyle=lab(p)>0?"#4F5BD5":"#C0392B";a.ctx.fill()});
+  b.ctx.clearRect(0,0,300,300);b.ctx.strokeStyle="#1E2433";b.ctx.lineWidth=2.5;b.ctx.beginPath();b.ctx.moveTo(b.sx(r),b.sy(0));b.ctx.lineTo(b.sx(0),b.sy(r));b.ctx.stroke();
+  [[-1.5,0,1.5,0],[0,-1.5,0,1.5]].forEach(q=>{b.ctx.strokeStyle="#B8BFCC";b.ctx.lineWidth=1;b.ctx.beginPath();b.ctx.moveTo(b.sx(q[0]),b.sy(q[1]));b.ctx.lineTo(b.sx(q[2]),b.sy(q[3]));b.ctx.stroke()});
+  P.forEach(p=>{const z=[p[0]*p[0],p[1]*p[1]];b.ctx.beginPath();b.ctx.arc(b.sx(z[0]),b.sy(z[1]),4,0,7);b.ctx.fillStyle=lab(p)>0?"#4F5BD5":"#C0392B";b.ctx.fill()})}
+ $("nt").oninput=u;u()})();
+
+bar();
+</script>
+</body>
+</html>

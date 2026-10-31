@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Data Science · Lec 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=Readex+Pro:wght@300;400;500;600&display=swap">
+<style>
+:root{color-scheme:light;--bg:#F4F6FA;--card:#FFFFFF;--ink:#1E2433;--soft:#5D6679;--faint:#8C94A6;--line:#E6E9F0;
+--c:#4F5BD5;--tint:#EDEFFB;--pos:#1F8A4C;--pos-tint:#E5F5EC;--neg:#C0392B;--neg-tint:#FDECEA;--amber:#B45309;--amber-tint:#FFF6E5;
+--f-head:"Alexandria","Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;--f-body:"Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;
+--f-math:"Cambria Math","Cambria","Times New Roman",serif;--shadow:0 1px 2px rgba(30,36,51,.04),0 6px 24px rgba(30,36,51,.06)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:2;padding:0 16px 80px}
+.wrap{max-width:820px;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--f-head);font-weight:700;margin:0;line-height:1.45}
+p{margin:0;max-width:68ch}a{color:var(--c)}button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.m{font-family:var(--f-math);direction:ltr;unicode-bidi:isolate;font-size:1.1em;white-space:nowrap}
+.mb{font-family:var(--f-math);direction:ltr;text-align:center;font-size:21px;background:var(--tint);border-radius:12px;padding:12px;overflow-x:auto}
+.bar{position:sticky;top:0;z-index:10;background:rgba(244,246,250,.96);padding:8px 16px;margin-inline:-16px;border-bottom:1px solid var(--line)}
+.bar .in{max-width:820px;margin-inline:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px}
+.bar a{text-decoration:none;color:var(--soft);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:1px 10px;white-space:nowrap}
+.bar a.done{background:var(--pos-tint);border-color:var(--pos);color:var(--pos)}
+.bar .sp{margin-inline-start:auto;color:var(--soft)}
+.track{flex-basis:100%;height:5px;background:var(--line);border-radius:6px;overflow:hidden}.track i{display:block;height:100%;width:0;background:var(--c)}
+.hero{background:var(--tint);border-radius:22px;padding:22px 24px;display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.hero h1{font-size:clamp(25px,5vw,34px)}.hero .meta{font-size:14px;color:var(--c);font-weight:600}
+.part{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;gap:16px;scroll-margin-top:64px}
+.part .num{font-size:13px;color:var(--c);font-weight:600}.part h2{font-size:23px}
+.part h3{font-size:18px;margin-top:10px;padding-top:12px;border-top:1px solid var(--line)}
+.idea{background:var(--tint);border-radius:14px;padding:12px 16px;font-weight:500}
+.trick{background:var(--pos-tint);border-radius:14px;padding:12px 16px}.trick b:first-child{color:var(--pos)}
+.trap{background:var(--amber-tint);border-radius:14px;padding:12px 16px;color:#5A3505}.trap b:first-child{color:var(--amber)}
+.examw{border:2px solid var(--c);border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:6px}.examw>b:first-child{color:var(--c)}
+.ex{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}.ex>b:first-child{color:var(--c)}
+.list{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:8px}
+.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.steps li{counter-increment:s;position:relative;background:var(--bg);border-radius:12px;padding:10px 14px;padding-inline-start:46px}
+.steps li::before{content:counter(s);position:absolute;inset-inline-start:12px;top:12px;width:24px;height:24px;border-radius:50%;background:var(--c);color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.tbl{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:15.5px}
+th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:start;vertical-align:top}th{color:var(--soft);font-size:14px;background:var(--bg)}
+.lab{border:2px dashed #B9C0EE;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.lab .tag{font-size:14px;font-weight:600;color:var(--c)}
+.ctl{display:flex;flex-wrap:wrap;gap:12px;align-items:end;direction:ltr}
+.ctl label{display:flex;flex-direction:column;font-size:13px;color:var(--soft);gap:2px}
+.ctl input,.ctl select{font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:10px;padding:4px 8px;background:var(--card);direction:ltr;width:130px}
+.ctl input[type=range]{padding:0;width:170px;accent-color:var(--c)}
+.ctl input.wide{width:240px}
+.read{font-family:var(--f-math);direction:ltr;text-align:center;font-size:17px;line-height:1.8;overflow-x:auto}
+.rd{text-align:center;font-size:15px;color:var(--soft)}
+canvas{width:100%;max-width:400px;aspect-ratio:1;background:#FBFCFE;border:1px solid var(--line);border-radius:14px;display:block;margin-inline:auto;touch-action:none}
+canvas.wide{max-width:100%;aspect-ratio:5/2}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.two figure{margin:0;display:flex;flex-direction:column;gap:4px;text-align:center;font-size:14px;color:var(--soft)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:0;background:var(--c);color:#fff;border-radius:999px;padding:6px 16px;font-size:15px;min-height:40px}
+.btn.ghost{background:var(--card);color:var(--c);border:1.5px solid var(--c)}.btn.on{background:var(--pos);color:#fff;border-color:var(--pos)}.btn:disabled{opacity:.5;cursor:default}
+.qs{display:flex;flex-direction:column;gap:12px}.qk{font-size:14px;font-weight:600;color:var(--c);margin-top:6px}
+.q{background:var(--bg);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.q .stem{font-weight:500}.opts{display:flex;flex-direction:column;gap:6px}
+.opt{text-align:start;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:8px 12px;font-size:15.5px;line-height:1.7}
+.opt:hover:not(:disabled){border-color:var(--c)}.opt:disabled{cursor:default}.opt.pick{border-color:var(--c);background:var(--tint)}
+.opt.right{background:var(--pos-tint);border-color:var(--pos)}.opt.wrong{background:var(--neg-tint);border-color:var(--neg)}
+.why{font-size:15px;color:var(--soft);border-inline-start:3px solid var(--c);padding-inline-start:10px}.why.bad{border-color:var(--neg)}
+.score{font-size:14px;color:var(--soft)}.badge{background:var(--pos-tint);color:var(--pos);border-radius:999px;padding:2px 12px;font-size:14px;font-weight:600}
+.prob{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.sol{display:none;background:var(--bg);border-radius:12px;padding:12px 14px;flex-direction:column;gap:8px}.sol.show{display:flex}
+.g{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}.g>b{color:var(--c)}
+.gs{background:var(--bg);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:8px}
+.gs .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.gs input{font:inherit;font-size:16px;width:170px;border:1.5px solid var(--line);border-radius:10px;padding:4px 8px;direction:ltr;text-align:center}
+.gs input.ok{border-color:var(--pos);background:var(--pos-tint)}.gs input.no{border-color:var(--neg);background:var(--neg-tint)}
+.gs .ans{display:none;color:var(--soft);font-size:15.5px}.gs.open .ans{display:block}.gs.lock{display:none}
+.timer{font-family:var(--f-head);font-size:28px;color:var(--c);direction:ltr}
+.result{background:var(--tint);border-radius:14px;padding:12px 16px;font-weight:500}
+.exam{border:2px solid var(--c)}
+.next{display:flex;gap:8px;flex-wrap:wrap}.next a{background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:6px 16px;text-decoration:none}
+@media (max-width:640px){.part{padding:18px 16px}.two{grid-template-columns:1fr}.m{white-space:normal}}
+@media print{.bar,.next,.btn{display:none}body{background:#fff}.part{box-shadow:none;break-inside:avoid}.sol{display:flex}}
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="in"><a href="/interactive/university/midterm">الخريطة</a><a href="#p1" data-chip="p1">1</a><a href="#p2" data-chip="p2">2</a><a href="#p3" data-chip="p3">3</a><a href="#p4" data-chip="p4">4</a><a href="#p5" data-chip="p5">5</a><a href="#p6" data-chip="p6">6</a><a href="#p7" data-chip="p7">7</a><a href="#essay" data-chip="essay">مقالي</a><a href="#guided" data-chip="guided">مسائل</a><a href="#exam" data-chip="exam">الامتحان</a><span class="sp" id="pct"></span><div class="track"><i id="fill"></i></div></div></div>
+<div class="wrap">
+<header class="hero"><div class="meta">مقدمة في علم البيانات · Lec 2</div><h1><bdi>هل التعلم ممكن؟ Is Learning Feasible?</bdi></h1><p>هنعرف ليه المعادلة اللي نجحت على الداتا القديمة غالبًا هتنجح على داتا جديدة، وبأي ضمان. وفيه المثال المنفصل بتاع الـ 1000 عملة.</p></header>
+<section class="part" id="p1"><div class="num">الجزء 1 من 7</div><h2>المشكلة: نقدر نعرف حاجة بره الداتا؟</h2>
+<p>آخر Lec 1 سيبنا سؤال. تعالى نشوفه بأرقام.</p>
+<div class="tbl"><table dir="ltr"><tr><th>x</th><td class="m">1</td><td class="m">2</td><td class="m">3</td><td class="m">4</td></tr><tr><th>f(x)</th><td class="m">2</td><td class="m">4</td><td class="m">6</td><td class="m">؟</td></tr></table></div>
+<p>إيه قيمة <span class="m">f(4)</span>؟</p>
+<ul class="list">
+<li>ممكن 8، لو القاعدة <span class="m">f(x) = 2x</span>.</li>
+<li>وممكن 100. مفيش حاجة تمنع f تعمل كده عند نقطة ما شفناهاش.</li>
+</ul>
+<div class="idea">السلايد بتقول: Learning an unknown function? <b>Impossible</b>. The function can assume any value outside the data we have.</div>
+<h3>طيب والحل؟</h3>
+<p>نغيّر السؤال نفسه.</p>
+<ul class="list">
+<li>مش هنقول "متأكدين 100%".</li>
+<li>هنقول "<b>غالبًا</b> صح"، ونحسب غالبًا دي قد إيه.</li>
+</ul>
+<p>عشان كده الاحتمالات هي اللي بتنقذنا (Probability to the rescue).</p>
+<div class="qk">أسئلة الجزء (4)</div><div class="qs" data-mcq="p1"></div></section>
+<section class="part" id="p2"><div class="num">الجزء 2 من 7</div><h2>تجربة الصندوق: μ و ν</h2>
+<p>نسيب الـ learning شوية، ونلعب تجربة بسيطة.</p>
+<p>عندنا <b>صندوق (bin)</b> مليان كور حمرا وخضرا، بنسبة ما نعرفهاش.</p>
+<ul class="list">
+<li><span class="m">μ</span> (مو): نسبة الأحمر في <b>الصندوق كله</b>. دي المجهولة.</li>
+<li>نسحب <span class="m">N</span> كورة، ونسمي نسبة الأحمر في <b>العينة</b> <span class="m">ν</span> (نو).</li>
+</ul>
+<h3>مثال بأرقام</h3>
+<p>سحبنا 10 كور، طلع منهم 7 حمر. يبقى <span class="m">ν = 7/10 = 0.7</span>.</p>
+<p>هل كده <span class="m">μ = 0.7</span>؟ مش لازم. بس غالبًا قريبة منها.</p>
+<h3>ν بتقول حاجة عن μ؟</h3>
+<div class="tbl"><table><tr><th>الإجابة</th><th>ليه</th></tr>
+<tr><td><b>No</b></td><td>العينة ممكن تطلع خضرا، والصندوق معظمه أحمر. ده <b>possible</b>.</td></tr>
+<tr><td><b>Yes</b></td><td><span class="m">ν</span> غالبًا قريبة من <span class="m">μ</span>. ده <b>probable</b>.</td></tr></table></div>
+<div class="idea">الفرق كله بين <b>possible</b> (ممكن يحصل) و <b>probable</b> (غالبًا هيحصل).</div>
+<div class="lab"><div class="tag">معمل: اسحب عينات وشوف ν بتقرب من μ قد إيه</div>
+<div class="ctl"><label>μ = <output id="bmv"></output><input id="bm" type="range" min="0" max="1" step=".05" value=".6"></label><label>N = <output id="bnv"></output><input id="bn" type="range" min="5" max="500" step="5" value="10"></label><label>ε = <output id="bev"></output><input id="be" type="range" min=".02" max=".3" step=".01" value=".1"></label></div>
+<div class="btns"><button type="button" class="btn" id="bgo">اسحب عينة</button><button type="button" class="btn ghost" id="brun">اعمل التجربة 10,000 مرة</button></div>
+<div class="read" id="br"></div></div>
+<div class="qk">أسئلة الجزء (6)</div><div class="qs" data-mcq="p2"></div></section>
+<section class="part" id="p3"><div class="num">الجزء 3 من 7</div><h2>Hoeffding's Inequality</h2>
+<h3>المعادلة</h3>
+<p>دي أهم معادلة في الدرس. بتحسب "غالبًا" دي قد إيه:</p>
+<div class="mb">P[ |ν − μ| > ε ] ≤ 2 e<sup>−2ε²N</sup></div>
+<p>نقراها حتة حتة:</p>
+<ol class="steps">
+<li><span class="m">|ν − μ|</span>: المسافة بين العينة والحقيقة.</li>
+<li><span class="m">ε</span> (إبسيلون): السماحية اللي إحنا حطيناها.</li>
+<li><span class="m">P[ … > ε ]</span>: احتمال إن العينة تكدب علينا بأكتر من ε.</li>
+<li><span class="m">2e<sup>−2ε²N</sup></span>: الحد الأقصى للاحتمال ده.</li>
+</ol>
+<h3>نحسب بأرقام</h3>
+<div class="ex"><b>مثال: <span class="m">N = 1000</span> و <span class="m">ε = 0.05</span></b>
+<ol class="steps">
+<li>احسب الأس: <span class="m">2ε²N = 2 × 0.0025 × 1000 = 5</span></li>
+<li>عوّض: <span class="m">2e<sup>−5</sup> = 2 × 0.00674 = 0.0135</span></li>
+<li>الترجمة: احتمال إن ν تبعد عن μ بأكتر من 0.05 هو <b>1.35% على الأكتر</b>.</li>
+</ol></div>
+<h3>أربع ملاحظات السلايد بتسأل عليهم</h3>
+<ol class="steps">
+<li><b>Valid for all N and ε:</b> المعادلة شغالة لأي قيم.</li>
+<li><b>Bound does not depend on μ:</b> مش محتاجين نعرف المجهول.</li>
+<li><b>Tradeoff: N و ε والـ bound:</b> لو عايز ε أصغر، لازم N أكبر.</li>
+<li><b><span class="m">ν ≈ μ ⟹ μ ≈ ν</span>:</b> إحنا بنستنتج المجهول من المعروف.</li>
+</ol>
+<div class="idea">الجملة <span class="m">μ = ν</span> اسمها <b>P.A.C.</b>، يعني Probably Approximately Correct: غالبًا (probably) وتقريبًا (approximately).</div>
+<div class="trap"><b>فخ:</b> لو الـ bound طلع أكبر من 1، زي <span class="m">N = 10</span> و <span class="m">ε = 0.1</span> (1.64)، يبقى مش بيقول أي حاجة، لأن أي احتمال أصلًا أقل من 1.</div>
+<div class="lab"><div class="tag">حاسبة Hoeffding: غيّر الأرقام وشوف</div>
+<div class="ctl"><label>N<input id="hn" type="number" value="1000"></label><label>ε<input id="he" type="number" step=".01" value=".05"></label></div><div class="read" id="hr"></div></div>
+<div class="qk">أسئلة الجزء (10)</div><div class="qs" data-mcq="p3"></div></section>
+<section class="part" id="p4"><div class="num">الجزء 4 من 7</div><h2>نربط الصندوق بالـ Learning</h2>
+<p>نرجع للـ learning. إيه علاقة الكور بالبنك؟</p>
+<p>تخيل إن عندنا hypothesis واحدة <b><span class="m">h</span> ثابتة</b>.</p>
+<div class="tbl"><table><tr><th>الصندوق</th><th>الـ Learning</th></tr>
+<tr><td>كل كورة</td><td>نقطة <span class="m">x ∈ X</span> (عميل)</td></tr>
+<tr><td>كورة <b>خضرا</b></td><td><span class="m">h(x) = f(x)</span>: الـ hypothesis صح</td></tr>
+<tr><td>كورة <b>حمرا</b></td><td><span class="m">h(x) ≠ f(x)</span>: الـ hypothesis غلط</td></tr>
+<tr><td><span class="m">μ</span></td><td>نسبة الغلط عند كل الناس (الدنيا كلها)</td></tr>
+<tr><td><span class="m">ν</span></td><td>نسبة الغلط على الداتا اللي عندنا</td></tr></table></div>
+<h3>مثال</h3>
+<p>عندنا 100 عميل، و h غلطت في 8 منهم.</p>
+<p>يبقى <span class="m">ν = 0.08</span>. و Hoeffding بتقول إن الغلط الحقيقي <span class="m">μ</span> غالبًا قريب من 0.08.</p>
+<h3>إيه اللي اتضاف للرسمة؟</h3>
+<p>عشان ده يبقى سليم، الداتا لازم تتسحب بشكل عشوائي.</p>
+<p>فبنضيف للـ learning diagram <b>probability distribution <span class="m">P</span> on <span class="m">X</span></b>، وهي اللي بتولّد <span class="m">x₁ … x<sub>N</sub></span>.</p>
+<div class="trap"><b>ليه لسه ما خلصناش (Not so fast):</b> الـ h كانت ثابتة قبل ما نشوف الداتا. ده اسمه <b>verification</b> (تأكيد) لـ h، مش learning. والـ ν ممكن تطلع كبيرة. والـ learning الحقيقي إننا <b>نختار</b> من h كتير.</div>
+<div class="qk">أسئلة الجزء (8)</div><div class="qs" data-mcq="p4"></div></section>
+<section class="part" id="p5"><div class="num">الجزء 5 من 7</div><h2>صناديق كتير: E<sub>in</sub> و E<sub>out</sub></h2>
+<p>الـ learning الحقيقي: عندنا <span class="m">M</span> hypotheses، يعني <b>M صندوق</b>.</p>
+<p>كل <span class="m">h<sub>m</sub></span> ليها صندوق خاص بيها، ولكل صندوق <span class="m">μ</span> و <span class="m">ν</span> بتوعه.</p>
+<h3>أسماء جديدة</h3>
+<div class="tbl"><table><tr><th>القديم</th><th>الجديد</th><th>معناه</th></tr>
+<tr><td class="m">ν</td><td class="m">E<sub>in</sub>(h)</td><td><b>in-sample error:</b> الغلط على الداتا</td></tr>
+<tr><td class="m">μ</td><td class="m">E<sub>out</sub>(h)</td><td><b>out-of-sample error:</b> الغلط الحقيقي</td></tr></table></div>
+<p>و Hoeffding بتتكتب:</p>
+<div class="mb">P[ |E<sub>in</sub>(h) − E<sub>out</sub>(h)| > ε ] ≤ 2 e<sup>−2ε²N</sup></div>
+<h3>طيب خلاص؟ Not so fast!!</h3>
+<p>لأ. <b>Hoeffding doesn't apply to multiple bins</b>.</p>
+<p>المعادلة دي بتشتغل على h ثابتة. لكن الـ g إحنا <b>اخترناها بعد ما شفنا الداتا</b>: اخترنا اللي E<sub>in</sub> بتاعها أقل.</p>
+<p>وده زي اللي بيرمي عملات كتير ويختار أحسن واحدة. وده بالظبط مثال العملات اللي جاي.</p>
+<div class="qk">أسئلة الجزء (6)</div><div class="qs" data-mcq="p5"></div></section>
+<section class="part" id="p6"><div class="num">الجزء 6 من 7</div><h2>مثال العملات (الملف المنفصل)</h2>
+<div class="trap"><b>مهم:</b> ده الـ example المنفصل بتاع Lec 2. نبهوا عليه، فحل خطواته بإيدك.</div>
+<p><b>السؤال:</b> لو رمينا 1000 عملة، كل عملة 10 مرات، إيه احتمال إن عملة واحدة على الأقل تجيب 10 Heads؟</p>
+<ol class="steps">
+<li><b>عملة واحدة:</b> كل رمية <span class="m">1/2</span>، و10 رميات مستقلين:<br><span class="m">(1/2)<sup>10</sup> = 1/1024 ≈ 0.001 = 0.1%</span></li>
+<li><b>العملة دي ما تجيبش 10 Heads:</b><br><span class="m">1 − 1/1024 = 1023/1024</span></li>
+<li><b>ولا عملة من الـ 1000 تجيب:</b> العملات مستقلة، فبنضرب:<br><span class="m">(1023/1024)<sup>1000</sup> ≈ 0.377</span></li>
+<li><b>عملة واحدة على الأقل:</b> "على الأقل واحدة" عكس "ولا واحدة":<br><span class="m">1 − 0.377 = 0.623</span>، يعني حوالي <b>62.3%</b></li>
+</ol>
+<div class="trap"><b>ملحوظة:</b> السلايد مكتوب فيها ≈ 63%، وملف الحل طلعها 62.3%. الاتنين نفس التقريب، واكتب خطواتك زي الملف.</div>
+<h3>إزاي نحسب <span class="m">(1023/1024)<sup>1000</sup></span> من غير آلة قوية؟</h3>
+<p>نستخدم التقريب: <span class="m">(1 − 1/n)<sup>k</sup> ≈ e<sup>−k/n</sup></span>.</p>
+<p>يعني <span class="m">(1 − 1/1024)<sup>1000</sup> ≈ e<sup>−1000/1024</sup> = e<sup>−0.976</sup> ≈ 0.377</span>.</p>
+<h3>القانون العام</h3>
+<div class="mb">P[at least one] = 1 − (1 − p)<sup>n</sup></div>
+<p>حيث <span class="m">p</span> احتمال الحدث في المرة الواحدة، و <span class="m">n</span> عدد المرات.</p>
+<h3>ده علاقته إيه بالـ learning؟</h3>
+<ul class="list">
+<li>العملة = hypothesis.</li>
+<li>10 Heads = E<sub>in</sub> = 0، يعني شكلها مثالية.</li>
+<li>بس العملات كلها عادلة! يعني E<sub>out</sub> = 0.5.</li>
+</ul>
+<div class="idea">لو جربت hypotheses كتير، واحدة منهم هتطلع ممتازة على الداتا <b>بالصدفة</b>. وده سبب إن Hoeffding ما تنفعش لوحدها.</div>
+<div class="lab"><div class="tag">معمل: غيّر عدد العملات والرميات</div>
+<div class="ctl"><label>coins n<input id="cn" type="number" value="1000"></label><label>tosses t<input id="ct" type="number" value="10"></label></div>
+<div class="read" id="cr"></div><div class="btns"><button type="button" class="btn" id="cg">جرّبها فعلًا 2000 مرة</button></div><div class="read" id="cs"></div></div>
+<div class="qk">أسئلة الجزء (11)</div><div class="qs" data-mcq="p6"></div></section>
+<section class="part" id="p7"><div class="num">الجزء 7 من 7</div><h2>الحل: الـ Union Bound</h2>
+<p>عايزين معادلة تشتغل على <span class="m">g</span> اللي اخترناها من جوه <span class="m">H</span>.</p>
+<h3>الفكرة بالكلام</h3>
+<ol class="steps">
+<li><span class="m">g</span> لازم تكون واحدة من <span class="m">h₁, h₂, …, h<sub>M</sub></span>.</li>
+<li>يبقى لو <span class="m">g</span> كدبت علينا، أكيد واحدة من الـ h كدبت.</li>
+<li>يعني الحدث بتاع g جوه "h₁ كدبت <b>أو</b> h₂ كدبت <b>أو</b> …".</li>
+<li>واحتمال "أو" ≤ مجموع الاحتمالات. ده الـ <b>Union bound</b>.</li>
+<li>وكل واحدة فيهم ثابتة، فـ Hoeffding بتشتغل عليها.</li>
+</ol>
+<h3>بالرموز</h3>
+<div class="mb">P[|E<sub>in</sub>(g) − E<sub>out</sub>(g)| > ε] ≤ Σₘ₌₁ᴹ P[|E<sub>in</sub>(hₘ) − E<sub>out</sub>(hₘ)| > ε] ≤ Σₘ₌₁ᴹ 2e<sup>−2ε²N</sup></div>
+<p>والمجموع ده <span class="m">M</span> مرة نفس الرقم، فالنتيجة النهائية:</p>
+<div class="mb">P[|E<sub>in</sub>(g) − E<sub>out</sub>(g)| > ε] ≤ 2M e<sup>−2ε²N</sup></div>
+<h3>نحسب</h3>
+<div class="ex"><b>نفس المثال <span class="m">N = 1000</span> و <span class="m">ε = 0.05</span></b>
+<div class="tbl"><table dir="ltr"><tr><th>M</th><th>bound</th><th>الترجمة</th></tr>
+<tr><td class="m">1</td><td class="m">0.0135</td><td dir="rtl">ممتاز</td></tr>
+<tr><td class="m">10</td><td class="m">0.1348</td><td dir="rtl">أضعف</td></tr>
+<tr><td class="m">100</td><td class="m">1.3476</td><td dir="rtl">مش بيقول حاجة</td></tr></table></div></div>
+<div class="idea">كل ما H تكبر (M أكبر)، الضمان يضعف. عشان كده محتاجين N أكبر. ولو M لا نهائي (زي الـ Perceptron)، ده موضوع محاضرات جاية بره الميد.</div>
+<h3>كام N محتاجين؟</h3>
+<p>عايزين الـ bound ≤ δ. نعدل المعادلة:</p>
+<div class="mb">N ≥ (1 / 2ε²) · ln(2M / δ)</div>
+<div class="ex"><b>مثال: <span class="m">ε = 0.05</span> و <span class="m">δ = 0.03</span> و <span class="m">M = 1</span></b>
+<ol class="steps"><li><span class="m">1 / 2ε² = 1 / 0.005 = 200</span></li><li><span class="m">ln(2/0.03) = ln(66.7) = 4.2</span></li><li><span class="m">N ≥ 200 × 4.2 = 840</span></li></ol>
+<p>ولو <span class="m">M = 100</span>: <span class="m">ln(6667) = 8.8</span>، يبقى <span class="m">N ≥ 1761</span>.</p></div>
+<div class="lab"><div class="tag">حاسبة: الـ bound و N المطلوبة</div>
+<div class="ctl"><label>N<input id="un" type="number" value="1000"></label><label>ε<input id="ue" type="number" step=".01" value=".05"></label><label>M<input id="um" type="number" value="10"></label><label>δ<input id="ud" type="number" step=".01" value=".03"></label></div><div class="read" id="ur"></div></div>
+<div class="qk">أسئلة الجزء (10)</div><div class="qs" data-mcq="p7"></div></section>
+<section class="part" id="essay"><div class="num">أسئلة مقالية</div><h2>اكتب الإجابة في ورقة الأول</h2><p>ده الشكل اللي الدكتور ممكن يسأل بيه. اكتب، وبعدين قارن بالإجابة النموذجية.</p><div class="prob"><div>1. Is learning feasible؟ اشرح الإجابة.</div><div><button type="button" class="btn ghost" data-sol="es0" data-label="اظهر الإجابة النموذجية">اظهر الإجابة النموذجية</button></div><div class="sol" id="es0"><p>Learning f بالظبط impossible، لأن f ممكن تاخد أي قيمة بره الداتا. بس في معنى احتمالي feasible: بـ Hoeffding، <span class="m">E<sub>in</sub></span> غالبًا قريب من <span class="m">E<sub>out</sub></span>. فلو <span class="m">E<sub>in</sub></span> صغير، يبقى <span class="m">E<sub>out</sub></span> غالبًا صغير.</p></div></div><div class="prob"><div>2. اشرح تجربة الـ bin، واربطها بالـ learning.</div><div><button type="button" class="btn ghost" data-sol="es1" data-label="اظهر الإجابة النموذجية">اظهر الإجابة النموذجية</button></div><div class="sol" id="es1"><p>صندوق نسبة الأحمر فيه <span class="m">μ</span> مجهولة، وعينة N نسبتها <span class="m">ν</span>. وبـ Hoeffding: <span class="m">P[|ν−μ|>ε] ≤ 2e<sup>−2ε²N</sup></span>.</p><p>الربط: الكورة نقطة x. أخضر: <span class="m">h(x)=f(x)</span>. أحمر: <span class="m">h(x)≠f(x)</span>. و <span class="m">ν</span> هي <span class="m">E<sub>in</sub></span> و <span class="m">μ</span> هي <span class="m">E<sub>out</sub></span>.</p></div></div><div class="prob"><div>3. ما الفرق بين possible و probable؟</div><div><button type="button" class="btn ghost" data-sol="es2" data-label="اظهر الإجابة النموذجية">اظهر الإجابة النموذجية</button></div><div class="sol" id="es2"><p>Possible: العينة ممكن تكون مختلفة عن الصندوق. Probable: مع N كبيرة، <span class="m">ν</span> غالبًا قريبة من <span class="m">μ</span>.</p></div></div><div class="prob"><div>4. ليه h ثابتة تعتبر verification مش learning؟</div><div><button type="button" class="btn ghost" data-sol="es3" data-label="اظهر الإجابة النموذجية">اظهر الإجابة النموذجية</button></div><div class="sol" id="es3"><p>لأن h اتحددت قبل الداتا، فإحنا بنتأكد من أدائها بس. ومفيش ضمان إن <span class="m">E<sub>in</sub></span> يطلع صغير. والـ learning إننا نختار g من H بناءً على الداتا.</p></div></div><div class="prob"><div>5. ليه Hoeffding مش بتتطبق مباشرة على g؟ وازاي اتحلت المشكلة؟</div><div><button type="button" class="btn ghost" data-sol="es4" data-label="اظهر الإجابة النموذجية">اظهر الإجابة النموذجية</button></div><div class="sol" id="es4"><p>لأن g اتاختارت بعد الداتا من M hypotheses، زي اختيار أحسن عملة من 1000. الحل: g واحدة من <span class="m">h<sub>m</sub></span>، فبالـ union bound: <span class="m">P[|E<sub>in</sub>(g)−E<sub>out</sub>(g)|>ε] ≤ 2Me<sup>−2ε²N</sup></span>.</p></div></div><div class="prob"><div>6. اكتب خطوات مسألة الـ 1000 عملة كاملة.</div><div><button type="button" class="btn ghost" data-sol="es5" data-label="اظهر الإجابة النموذجية">اظهر الإجابة النموذجية</button></div><div class="sol" id="es5"><p>(1) <span class="m">(1/2)<sup>10</sup> = 1/1024</span>. (2) <span class="m">1023/1024</span>. (3) <span class="m">(1023/1024)<sup>1000</sup> ≈ e<sup>−0.976</sup> ≈ 0.377</span>. (4) <span class="m">1 − 0.377 = 0.623</span>.</p><p>المعنى: حدث نادر لعملة واحدة بيبقى متوقع مع عملات كتير.</p></div></div><div class="prob"><div>7. اذكر ملاحظات السلايد على Hoeffding.</div><div><button type="button" class="btn ghost" data-sol="es6" data-label="اظهر الإجابة النموذجية">اظهر الإجابة النموذجية</button></div><div class="sol" id="es6"><p>Valid for all N and ε. الـ bound مش معتمد على μ. فيه tradeoff بين N و ε والـ bound. و <span class="m">ν≈μ ⟹ μ≈ν</span>.</p></div></div><div><button type="button" class="btn ghost" data-done="essay"></button></div></section>
+<section class="part" id="guided"><div class="num">مسائل بحل موجّه</div><h2>حل معايا خطوة خطوة</h2><p>كل خطوة بتتفتح لما تحل اللي قبلها. اكتب الرقم وصحح. ولو القيمة كسر، تقدر تكتب <span class="m">1/3</span>. ولو المطلوب كذا رقم، افصل بينهم بفاصلة.</p><div class="g"><b>مسألة 1: Hoeffding</b><div><span class="m">N = 400</span> و <span class="m">ε = 0.05</span>. احسب الـ bound.</div><div class="gs" data-a='[0.0025]'><div>احسب <span class="m">ε²</span>.</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">0.05² = 0.0025</span></div></div><div class="gs" data-a='[1]'><div>احسب الأس <span class="m">2ε²N</span>.</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">2 × 0.0025 × 400 = 1</span></div></div><div class="gs" data-a='[0.736]'><div>احسب <span class="m">2e<sup>−1</sup></span>. (اكتب 3 أرقام عشرية)</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">2 × 0.3679 = 0.736</span></div></div><div class="gs"><div>المعنى؟</div><div class="row"><button type="button" class="btn ghost" data-show>اظهر الخطوة</button></div><div class="ans">احتمال إن ν تبعد عن μ بأكتر من 0.05 هو 73.6% على الأكتر. ضمان ضعيف، فمحتاجين N أكبر.</div></div></div><div class="g"><b>مسألة 2: أقل N</b><div>عايزين <span class="m">ε = 0.05</span> و <span class="m">δ = 0.05</span> و <span class="m">M = 1</span>.</div><div class="gs" data-a='[200]'><div>احسب <span class="m">1 / 2ε²</span>.</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">1 / 0.005 = 200</span></div></div><div class="gs" data-a='[3.69]'><div>احسب <span class="m">ln(2M/δ)</span>. (رقمين عشريين)</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">ln(40) = 3.69</span></div></div><div class="gs" data-a='[738]'><div>اضرب، وقرّب لفوق.</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">200 × 3.689 = 737.8</span>، يبقى <span class="m">N = 738</span></div></div></div><div class="g"><b>مسألة 3: نفس المسألة بـ M = 100</b><div><span class="m">ε = 0.05</span> و <span class="m">δ = 0.05</span> و <span class="m">M = 100</span>.</div><div class="gs" data-a='[4000]'><div>احسب <span class="m">2M/δ</span>.</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">200 / 0.05 = 4000</span></div></div><div class="gs" data-a='[8.29]'><div>احسب <span class="m">ln(4000)</span>. (رقمين عشريين)</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">8.29</span></div></div><div class="gs" data-a='[1659]'><div>اضرب في 200، وقرّب لفوق.</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">200 × 8.294 = 1658.8</span>، يبقى <span class="m">N = 1659</span></div></div></div><div class="g"><b>مسألة 4: العملات بأرقام جديدة</b><div>500 عملة، كل عملة 10 رميات. احتمال عملة على الأقل تجيب 10 Heads؟</div><div class="gs" data-a='[0.0009765625]'><div>احتمال 10 Heads لعملة (كسر).</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">1/1024</span></div></div><div class="gs" data-a='[0.488]'><div>الأس في التقريب: <span class="m">500/1024</span>. (3 أرقام)</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">0.488</span></div></div><div class="gs" data-a='[0.614]'><div>احسب <span class="m">e<sup>−0.488</sup></span>. (3 أرقام)</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">0.614</span></div></div><div class="gs" data-a='[0.386]'><div>الاحتمال المطلوب. (3 أرقام)</div><div class="row"><input aria-label="إجابتك" placeholder="إجابتك"><button type="button" class="btn" data-check>صحح</button><button type="button" class="btn ghost" data-show>اظهر الحل</button></div><div class="ans"><span class="m">1 − 0.614 = 0.386</span>، يعني حوالي 38.6%</div></div></div><div><button type="button" class="btn ghost" data-done="guided"></button></div></section>
+<section class="part exam" id="exam"><div class="num">امتحان الدرس</div><h2>18 سؤال في 18 دقيقة</h2><p>حل من غير ما تبص فوق. الإجابات هتظهر لما تسلّم.</p><div class="btns"><button type="button" class="btn" id="go">ابدأ التايمر</button><span class="timer" id="clock"></span></div><div class="qs" id="xbox" hidden></div><div class="result" id="xres" hidden></div></section>
+<section class="part"><div class="num">الخلاصة</div><h2>السطور اللي تراجعها الصبح</h2><ol class="list"><li>f بالظبط impossible، بس الـ learning feasible <b>احتماليًا</b>.</li><li><span class="m">μ</span> الصندوق، و <span class="m">ν</span> العينة. Hoeffding: <span class="m">P[|ν−μ|>ε] ≤ 2e<sup>−2ε²N</sup></span>.</li><li>الربط: أخضر صح، وأحمر غلط، و <span class="m">ν → E<sub>in</sub></span>، و <span class="m">μ → E<sub>out</sub></span>.</li><li>h ثابتة = verification. و M hypotheses = M صندوق، و Hoeffding ما تنفعش مباشرة.</li><li>العملات: <span class="m">(1/2)<sup>10</sup> = 1/1024</span>، و <span class="m">1 − (1023/1024)<sup>1000</sup> ≈ 62.3%</span>.</li><li>الحل: <span class="m">P[|E<sub>in</sub>(g)−E<sub>out</sub>(g)|>ε] ≤ 2Me<sup>−2ε²N</sup></span>، و <span class="m">N ≥ (1/2ε²) ln(2M/δ)</span>.</li></ol></section>
+<div class="next"><a href="/interactive/university/ds-l01">الدرس اللي فات</a><a href="/interactive/university/ds-l03">اللي بعده</a><a href="/interactive/university/ds-summary">المراجعة والامتحان التجريبي</a></div></div><script>
+const LESSON="ds-l02",PARTS=["p1", "p2", "p3", "p4", "p5", "p6", "p7", "essay", "guided"],HAS_EXAM=true,MCQ={"p1": [{"q": "<bdi>Learning an unknown function exactly from data is:</bdi>", "o": ["Impossible", "Easy", "Possible"], "a": 0, "w": "الدالة ممكن تاخد أي قيمة بره الداتا."}, {"q": "<bdi>ليه مش نقدر نحدد f بره الداتا؟</bdi>", "o": ["الكمبيوتر بطيء", "الداتا قليلة بس", "الدالة ممكن تاخد أي قيمة بره الداتا"], "a": 2, "w": "ده نص السلايد."}, {"q": "<bdi>الحل اللي الدرس هيستخدمه:</bdi>", "o": ["نجمع كل الداتا", "نحفظ الداتا", "الاحتمالات"], "a": 2, "w": "Probability to the rescue."}, {"q": "<bdi>الإجابة النهائية عن سؤال الـ feasibility:</bdi>", "o": ["No", "Yes, always", "Yes, in a probabilistic sense"], "a": 2, "w": "feasible بمعنى احتمالي."}], "p2": [{"q": "<bdi><span class=\"m\">μ</span> هي:</bdi>", "o": ["نسبة الأحمر في العينة", "عدد الكور", "نسبة الأحمر في الصندوق كله"], "a": 2, "w": "probability of picking a red marble."}, {"q": "<bdi><span class=\"m\">ν</span> هي:</bdi>", "o": ["الخطأ", "نسبة الأحمر في الصندوق", "نسبة الأحمر في العينة"], "a": 2, "w": "fraction of red marbles in the sample."}, {"q": "<bdi>المجهول هو:</bdi>", "o": ["<span class=\"m\">N</span>", "<span class=\"m\">ν</span>", "<span class=\"m\">μ</span>"], "a": 2, "w": "بنعرف ν من العينة، و μ مجهولة."}, {"q": "<bdi>سحبنا 20 كورة منهم 5 حمر. <span class=\"m\">ν</span>:</bdi>", "o": ["0.20", "0.75", "0.25"], "a": 2, "w": "<span class=\"m\">5/20 = 0.25</span>."}, {"q": "<bdi>هل ممكن العينة تطلع معظمها أخضر والصندوق معظمه أحمر؟</bdi>", "o": ["دايمًا", "مستحيل", "possible بس مش probable"], "a": 2, "w": "ده بالظبط الفرق."}, {"q": "<bdi>Does ν say anything about μ?</bdi>", "o": ["Possible no, but probably yes", "Yes بيقين 100%", "No خالص"], "a": 0, "w": "possible versus probable."}], "p3": [{"q": "<bdi>صيغة Hoeffding:</bdi>", "o": ["<span class=\"m\">P[|ν−μ|>ε] ≥ 2e<sup>−2ε²N</sup></span>", "<span class=\"m\">P[|ν−μ|>ε] ≤ 2Me<sup>−2εN</sup></span>", "<span class=\"m\">P[ν=μ] = 1</span>", "<span class=\"m\">P[|ν−μ|>ε] ≤ 2e<sup>−2ε²N</sup></span>"], "a": 3, "w": "دي الصيغة."}, {"q": "<bdi>The Hoeffding bound depends on:</bdi>", "o": ["<span class=\"m\">f</span>", "<span class=\"m\">μ</span>", "<span class=\"m\">N</span> و <span class=\"m\">ε</span> بس"], "a": 2, "w": "Bound does not depend on μ."}, {"q": "<bdi>لو N كبرت والـ ε ثابتة، الـ bound:</bdi>", "o": ["ثابت", "يكبر", "يصغر"], "a": 2, "w": "الأس بقى سالب أكبر."}, {"q": "<bdi>لو ε صغرت و N ثابتة، الـ bound:</bdi>", "o": ["يكبر", "يصغر", "ثابت"], "a": 0, "w": "دي الـ tradeoff."}, {"q": "<bdi>احسب الـ bound لـ <span class=\"m\">N = 100</span> و <span class=\"m\">ε = 0.1</span>:</bdi>", "o": ["0.0135", "1.64", "0.2707", "0.736"], "a": 2, "w": "<span class=\"m\">2ε²N = 2</span>، و <span class=\"m\">2e<sup>−2</sup> = 0.2707</span>."}, {"q": "<bdi>احسب الـ bound لـ <span class=\"m\">N = 200</span> و <span class=\"m\">ε = 0.1</span>:</bdi>", "o": ["0.2707", "0.1353", "0.0183", "0.0366"], "a": 3, "w": "<span class=\"m\">2ε²N = 4</span>، و <span class=\"m\">2e<sup>−4</sup> = 0.0366</span>."}, {"q": "<bdi>احسب الـ bound لـ <span class=\"m\">N = 10</span> و <span class=\"m\">ε = 0.3</span>:</bdi>", "o": ["0.8", "0.3306", "0.1653", "1.2"], "a": 1, "w": "<span class=\"m\">2ε²N = 1.8</span>، و <span class=\"m\">2e<sup>−1.8</sup> = 0.3306</span>."}, {"q": "<bdi>لو الـ bound طلع 1.64:</bdi>", "o": ["الحساب غلط أكيد", "الاحتمال 164%", "الـ bound مش بيقول حاجة"], "a": 2, "w": "الـ bound أكبر من 1 مش مفيد (vacuous)."}, {"q": "<bdi>P.A.C. stands for:</bdi>", "o": ["Probably Approximately Correct", "Probability And Chance", "Perfectly Accurate Classifier"], "a": 0, "w": "غالبًا وتقريبًا."}, {"q": "<bdi>Hoeffding valid for:</bdi>", "o": ["N كبيرة بس", "all N and ε", "ε صغيرة بس"], "a": 1, "w": "Valid for all N and ε."}], "p4": [{"q": "<bdi>كل كورة في الصندوق بتمثل:</bdi>", "o": ["دالة f", "نقطة x", "hypothesis"], "a": 1, "w": "Each marble is a point x ∈ X."}, {"q": "<bdi>الكورة الخضرا معناها:</bdi>", "o": ["<span class=\"m\">h(x) ≠ f(x)</span>", "<span class=\"m\">f(x) = 0</span>", "<span class=\"m\">h(x) = f(x)</span>"], "a": 2, "w": "Hypothesis got it right."}, {"q": "<bdi>الكورة الحمرا معناها:</bdi>", "o": ["<span class=\"m\">h(x) = f(x)</span>", "<span class=\"m\">h(x) ≠ f(x)</span>", "النقطة مش في الداتا"], "a": 1, "w": "Hypothesis got it wrong."}, {"q": "<bdi>في الـ bin المجهول رقم، وفي الـ learning المجهول:</bdi>", "o": ["<span class=\"m\">N</span>", "دالة <span class=\"m\">f</span>", "رقم"], "a": 1, "w": "The unknown is a function f: X → Y."}, {"q": "<bdi>إيه اللي اتضاف للـ learning diagram؟</bdi>", "o": ["Probability distribution P on X", "Regularization", "Bias"], "a": 0, "w": "عشان <span class=\"m\">x₁…x<sub>N</sub></span> تتسحب عشوائي."}, {"q": "<bdi>h ثابتة قبل ما نشوف الداتا، ده اسمه:</bdi>", "o": ["verification", "learning", "validation set"], "a": 0, "w": "verification of h, not learning."}, {"q": "<bdi>h غلطت في 12 من 60 عميل. نسبة الغلط في العينة:</bdi>", "o": ["0.12", "0.2", "0.6"], "a": 1, "w": "<span class=\"m\">12/60 = 0.2</span>."}, {"q": "<bdi>ليه h واحدة ثابتة مش كفاية؟</bdi>", "o": ["الداتا قليلة", "No guarantee ν will be small", "Hoeffding غلط"], "a": 1, "w": "لازم نختار من h كتير."}], "p5": [{"q": "<bdi><span class=\"m\">ν</span> في الـ learning اسمها:</bdi>", "o": ["E<sub>out</sub>", "M", "E<sub>in</sub>"], "a": 2, "w": "in-sample."}, {"q": "<bdi><span class=\"m\">μ</span> في الـ learning اسمها:</bdi>", "o": ["E<sub>in</sub>", "E<sub>out</sub>", "g"], "a": 1, "w": "out-of-sample."}, {"q": "<bdi>كل hypothesis بتقابل:</bdi>", "o": ["كورة", "عينة", "صندوق"], "a": 2, "w": "Multiple bins: كل h ليها bin."}, {"q": "<bdi>Hoeffding الأصلية تشتغل على:</bdi>", "o": ["g اللي اخترناها بعد الداتا", "h ثابتة قبل الداتا", "أي h بعد الاختيار"], "a": 1, "w": "Hoeffding doesn't apply to multiple bins."}, {"q": "<bdi>E<sub>in</sub>(h) بيتحسب من:</bdi>", "o": ["الداتا اللي عندنا", "f مباشرة", "كل النقط الممكنة"], "a": 0, "w": "in-sample."}, {"q": "<bdi>نقدر نحسب E<sub>out</sub> مباشرة؟</bdi>", "o": ["أيوه", "لأ، لأنه على كل X و f مجهولة"], "a": 1, "w": "عشان كده محتاجين Hoeffding."}], "p6": [{"q": "<bdi>احتمال 10 Heads لعملة واحدة:</bdi>", "o": ["1/1024", "1/10", "1/2", "1/512"], "a": 0, "w": "<span class=\"m\">(1/2)<sup>10</sup></span>."}, {"q": "<bdi>كنسبة، ده تقريبًا:</bdi>", "o": ["63%", "10%", "0.1%", "1%"], "a": 2, "w": "<span class=\"m\">0.001 = 0.1%</span>."}, {"q": "<bdi>احتمال إن العملة ما تجيبش 10 Heads:</bdi>", "o": ["1/1024", "0.5", "1023/1024"], "a": 2, "w": "المكمل."}, {"q": "<bdi>احتمال ولا عملة من 1000 تجيب 10 Heads:</bdi>", "o": ["<span class=\"m\">(1023/1024)<sup>1000</sup></span>", "<span class=\"m\">(1/1024)<sup>1000</sup></span>", "<span class=\"m\">1000/1024</span>"], "a": 0, "w": "مستقلين فبنضرب."}, {"q": "<bdi>القيمة دي تقريبًا:</bdi>", "o": ["0.623", "0.976", "0.001", "0.377"], "a": 3, "w": "<span class=\"m\">≈ e<sup>−0.976</sup> ≈ 0.377</span>."}, {"q": "<bdi>احتمال عملة واحدة على الأقل:</bdi>", "o": ["0.1%", "100%", "حوالي 62–63%", "37.7%"], "a": 2, "w": "<span class=\"m\">1 − 0.377</span>."}, {"q": "<bdi>ليه بنستخدم المكمل؟</bdi>", "o": ["عشان الأرقام أصغر", "مفيش سبب", "عشان 'على الأقل واحدة' عكس 'ولا واحدة'"], "a": 2, "w": "complementary probability."}, {"q": "<bdi>لو 100 عملة بدل 1000 (10 رميات):</bdi>", "o": ["100%", "حوالي 9.3%", "0.1%", "حوالي 62%"], "a": 1, "w": "<span class=\"m\">1 − (1023/1024)<sup>100</sup> ≈ 0.093</span>."}, {"q": "<bdi>التقريب المستخدم:</bdi>", "o": ["<span class=\"m\">(1−1/n)<sup>k</sup> ≈ 1</span>", "<span class=\"m\">(1−1/n)<sup>k</sup> ≈ e<sup>−k/n</sup></span>", "<span class=\"m\">(1−1/n)<sup>k</sup> ≈ k/n</span>"], "a": 1, "w": "من الـ Appendix."}, {"q": "<bdi>في الربط بالـ learning، 10 Heads تقابل:</bdi>", "o": ["M = 0", "E<sub>in</sub> = 0", "E<sub>out</sub> = 0"], "a": 1, "w": "شكلها مثالية على الداتا."}, {"q": "<bdi>العملات عادلة، يعني E<sub>out</sub> الحقيقي:</bdi>", "o": ["0", "1", "0.5"], "a": 2, "w": "فالعملة 'الممتازة' مش أحسن من غيرها."}], "p7": [{"q": "<bdi>الـ final verdict:</bdi>", "o": ["<span class=\"m\">P[…] ≤ 2Me<sup>−2ε²N</sup></span>", "<span class=\"m\">P[…] = 2M</span>", "<span class=\"m\">P[…] ≤ Me<sup>−ε²N</sup></span>", "<span class=\"m\">P[…] ≤ 2e<sup>−2ε²N</sup></span>"], "a": 0, "w": "ظهر معامل M."}, {"q": "<bdi>الـ M هو:</bdi>", "o": ["عدد الصفات", "عدد النقط", "عدد الـ hypotheses"], "a": 2, "w": "حجم H."}, {"q": "<bdi>الـ Union bound بيقول:</bdi>", "o": ["P(A و B) = 1", "P(A أو B) ≤ P(A) + P(B)", "P(A) = P(B)"], "a": 1, "w": "ده اللي طلع منه Σ."}, {"q": "<bdi>لو M كبرت و N ثابتة، الضمان:</bdi>", "o": ["زي ما هو", "يقوى", "يضعف"], "a": 2, "w": "الـ bound يكبر."}, {"q": "<bdi>احسب <span class=\"m\">2Me<sup>−2ε²N</sup></span> لـ <span class=\"m\">M = 10</span> و <span class=\"m\">N = 1000</span> و <span class=\"m\">ε = 0.05</span>:</bdi>", "o": ["0.27", "1.35", "0.0135", "0.1348"], "a": 3, "w": "<span class=\"m\">10 × 0.0135</span>."}, {"q": "<bdi><span class=\"m\">M = 100</span> و <span class=\"m\">N = 1000</span> و <span class=\"m\">ε = 0.05</span>. الـ bound 1.35 معناه:</bdi>", "o": ["الاحتمال 135%", "ضمان قوي", "مفيش ضمان مفيد"], "a": 2, "w": "أكبر من 1."}, {"q": "<bdi>g لازم تكون:</bdi>", "o": ["واحدة من <span class=\"m\">h₁ … h<sub>M</sub></span>", "بره H", "نفس f"], "a": 0, "w": "<span class=\"m\">g ∈ H</span>."}, {"q": "<bdi>قانون N المطلوبة:</bdi>", "o": ["<span class=\"m\">N ≥ ln(M)</span>", "<span class=\"m\">N ≥ 2Mε</span>", "<span class=\"m\">N ≥ (1/2ε²) ln(2M/δ)</span>"], "a": 2, "w": "من الـ bound ≤ δ."}, {"q": "<bdi><span class=\"m\">ε = 0.1</span> و <span class=\"m\">δ = 0.05</span> و <span class=\"m\">M = 1</span>. أقل N:</bdi>", "o": ["185", "369", "50", "840"], "a": 0, "w": "<span class=\"m\">50 × ln(40) = 184.4</span>، يبقى 185."}, {"q": "<bdi><span class=\"m\">ε = 0.1</span> و <span class=\"m\">δ = 0.05</span> و <span class=\"m\">M = 20</span>. أقل N:</bdi>", "o": ["1000", "335", "500", "185"], "a": 1, "w": "<span class=\"m\">50 × ln(800) = 334.2</span>، يبقى 335."}]};
+
+const KEY="anas-uni-progress-v1",V="v2:";
+const $=id=>document.getElementById(id);
+const loadAll=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return {}}};
+const saveAll=d=>{try{localStorage.setItem(KEY,JSON.stringify(d))}catch{}};
+function L(){const d=loadAll();d[LESSON]=d[LESSON]||{parts:{},answers:{},exam:null};d[LESSON].answers=d[LESSON].answers||{};d[LESSON].parts=d[LESSON].parts||{};return d}
+function setPart(p,on,right,total){const d=L();if(on)d[LESSON].parts[p]={right,total,at:Date.now()};else delete d[LESSON].parts[p];saveAll(d);bar()}
+function bar(){const l=L()[LESSON],t=PARTS.length+(HAS_EXAM?1:0),done=PARTS.filter(p=>l.parts[p]).length+(HAS_EXAM&&l.exam?1:0),p=Math.round(done/t*100);
+ $("pct").textContent=`${p}% · ${done}/${t}`;$("fill").style.width=p+"%";
+ document.querySelectorAll("[data-chip]").forEach(a=>a.classList.toggle("done",a.dataset.chip==="exam"?!!l.exam:!!l.parts[a.dataset.chip]));
+ document.querySelectorAll("[data-done]").forEach(b=>{const on=!!l.parts[b.dataset.done];b.classList.toggle("on",on);b.textContent=on?"خلصت ✓":"علّم إني خلصت"})}
+document.querySelectorAll("[data-done]").forEach(b=>b.onclick=()=>setPart(b.dataset.done,!L()[LESSON].parts[b.dataset.done]));
+document.querySelectorAll("[data-sol]").forEach(b=>b.onclick=()=>{const s=$(b.dataset.sol);s.classList.toggle("show");b.textContent=s.classList.contains("show")?"اخفي الإجابة":b.dataset.label||"اظهر الإجابة"});
+function mcq(box,part,items){
+ const ans=()=>L()[LESSON].answers,k=i=>V+part+":"+i,st=document.createElement("div");st.className="score";
+ function check(){const a=ans(),got=items.filter((_,i)=>a[k(i)]!==undefined).length,r=items.filter((it,i)=>a[k(i)]===it.a).length;
+  st.innerHTML=got===items.length?`<span class="badge">خلصت · ${r}/${items.length}</span>`:`جاوبت ${got} من ${items.length}`;
+  if(got===items.length)setPart(part,true,r,items.length)}
+ items.forEach((it,i)=>{const q=document.createElement("div");q.className="q";
+  const draw=()=>{const g=ans()[k(i)];
+   q.innerHTML=`<div class="stem">${i+1}. ${it.q}</div><div class="opts">${it.o.map((o,j)=>{let c="";if(g!==undefined){if(j===it.a)c="right";else if(j===g)c="wrong"}return `<button type="button" class="opt ${c}" data-j="${j}" ${g!==undefined?"disabled":""}>${o}</button>`}).join("")}</div>${g!==undefined?`<div class="why ${g===it.a?"":"bad"}">${g===it.a?"صح. ":"غلط. "}${it.w}</div>`:""}`};
+  q.onclick=e=>{const b=e.target.closest("[data-j]");if(!b||b.disabled)return;const d=L();d[LESSON].answers[k(i)]=+b.dataset.j;saveAll(d);draw();check()};
+  draw();box.append(q)});
+ const re=document.createElement("button");re.type="button";re.className="btn ghost";re.textContent="أعيد الأسئلة دي";
+ re.onclick=()=>{const d=L();items.forEach((_,i)=>delete d[LESSON].answers[k(i)]);delete d[LESSON].parts[part];saveAll(d);box.innerHTML="";bar();mcq(box,part,items)};
+ box.append(st,re);check();
+}
+document.querySelectorAll("[data-mcq]").forEach(b=>mcq(b,b.dataset.mcq,MCQ[b.dataset.mcq]));
+function parseAns(s){return String(s).replace(/−/g,"-").replace(/[\[\]()]/g," ").split(/[,،\s]+/).filter(Boolean).map(t=>{const m=t.match(/^(-?\d*\.?\d+)\/(\d*\.?\d+)$/);return m?m[1]/m[2]:Number(t)})}
+function guided(box){box.querySelectorAll(".gs").forEach((s,i,all)=>{
+ if(i)s.classList.add("lock");
+ const inp=s.querySelector("input"),a=s.dataset.a?JSON.parse(s.dataset.a):null,tol=+(s.dataset.tol||.01);
+ const nxt=()=>{s.classList.add("open");if(all[i+1])all[i+1].classList.remove("lock")};
+ s.querySelector("[data-check]")?.addEventListener("click",()=>{const v=parseAns(inp.value),ok=a&&v.length===a.length&&v.every((x,j)=>Math.abs(x-a[j])<=tol);inp.className=ok?"ok":"no";if(ok)nxt()});
+ s.querySelector("[data-show]")?.addEventListener("click",nxt)})}
+document.querySelectorAll(".g").forEach(guided);
+function exam(cfg){const box=$(cfg.box),res=$(cfg.res),tEl=$(cfg.timer),go=$(cfg.go),E=cfg.items;let ans={},left=0,tick;
+ const prev=L()[LESSON][cfg.key];if(prev){res.hidden=false;res.textContent=`آخر نتيجة: ${prev.right} / ${prev.total}. تقدر تعيد.`}
+ const show=()=>tEl.textContent=`${String(Math.floor(left/60)).padStart(2,"0")}:${String(left%60).padStart(2,"0")}`;
+ function finish(){clearInterval(tick);const right=E.filter((e,i)=>ans[i]===e.a).length;
+  box.querySelectorAll("button.opt").forEach(b=>b.disabled=true);
+  E.forEach((e,i)=>{const q=box.children[i];q.querySelectorAll("button.opt").forEach((b,j)=>{b.classList.remove("pick");if(j===e.a)b.classList.add("right");else if(j===ans[i])b.classList.add("wrong")});
+   const w=document.createElement("div");w.className="why"+(ans[i]===e.a?"":" bad");w.innerHTML=(ans[i]===e.a?"صح. ":ans[i]===undefined?"ما جاوبتش. ":"غلط. ")+e.w;q.append(w)});
+  const d=L();d[LESSON][cfg.key]={right,total:E.length,at:Date.now()};saveAll(d);bar();
+  res.hidden=false;res.textContent=`النتيجة: ${right} / ${E.length}. `+(right/E.length>=.85?"ممتاز.":right/E.length>=.7?"كويس. راجع اللي غلطت فيه وأعد.":"ارجع للأجزاء اللي غلطت فيها، وأعد.");
+  go.disabled=false;go.textContent="أعد الامتحان";cfg.after&&cfg.after()}
+ go.onclick=()=>{ans={};left=cfg.min*60;box.hidden=false;res.hidden=true;go.disabled=true;
+  box.innerHTML=E.map((e,i)=>`<div class="q"><div class="stem">${i+1}. ${e.q}</div><div class="opts">${e.o.map((o,j)=>`<button type="button" class="opt" data-i="${i}" data-j="${j}">${o}</button>`).join("")}</div></div>`).join("")+`<div class="btns"><button type="button" class="btn" id="${cfg.box}Sub">سلّم</button></div>`;
+  $(cfg.box+"Sub").onclick=finish;show();clearInterval(tick);tick=setInterval(()=>{left--;show();if(left<=0)finish()},1000)};
+ box.addEventListener("click",e=>{const b=e.target.closest("button.opt");if(!b||b.disabled)return;const i=+b.dataset.i;ans[i]=+b.dataset.j;box.children[i].querySelectorAll("button.opt").forEach(x=>x.classList.remove("pick"));b.classList.add("pick")})}
+/* canvas helpers */
+function cv(id,size=400,R=5){const c=$(id),r=window.devicePixelRatio||1;c.width=size*r;c.height=size*r;const x=c.getContext("2d");x.scale(r,r);return {ctx:x,size,R,sx:v=>(v+R)/(2*R)*size,sy:v=>size-(v+R)/(2*R)*size}}
+function base(g){const {ctx,size,R,sx,sy}=g;ctx.clearRect(0,0,size,size);ctx.strokeStyle="#E6E9F0";ctx.lineWidth=1;for(let i=-R;i<=R;i++){ctx.beginPath();ctx.moveTo(sx(i),0);ctx.lineTo(sx(i),size);ctx.moveTo(0,sy(i));ctx.lineTo(size,sy(i));ctx.stroke()}
+ ctx.strokeStyle="#B8BFCC";ctx.beginPath();ctx.moveTo(sx(0),0);ctx.lineTo(sx(0),size);ctx.moveTo(0,sy(0));ctx.lineTo(size,sy(0));ctx.stroke()}
+function wline(g,w,color,dash){const {ctx,R,sx,sy}=g;if(Math.abs(w[1])<1e-9&&Math.abs(w[2])<1e-9)return;ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.setLineDash(dash?[6,6]:[]);ctx.beginPath();
+ if(Math.abs(w[2])>1e-9){const y=x=>-(w[0]+w[1]*x)/w[2];ctx.moveTo(sx(-R),sy(y(-R)));ctx.lineTo(sx(R),sy(y(R)))}else{const x=-w[0]/w[1];ctx.moveTo(sx(x),sy(-R));ctx.lineTo(sx(x),sy(R))}ctx.stroke();ctx.restore()}
+function dots(g,P,w,ring){const {ctx,sx,sy}=g;P.forEach((p,i)=>{ctx.beginPath();ctx.arc(sx(p[0]),sy(p[1]),6,0,7);ctx.fillStyle=p[2]>0?"#4F5BD5":"#C0392B";ctx.fill();
+ if(w&&Math.sign(w[0]+w[1]*p[0]+w[2]*p[1])!==p[2]){ctx.lineWidth=3;ctx.strokeStyle="#E2A400";ctx.stroke()}
+ if(ring===i){ctx.beginPath();ctx.arc(sx(p[0]),sy(p[1]),12,0,7);ctx.lineWidth=2;ctx.strokeStyle="#1E2433";ctx.stroke()}})}
+
+exam({box:"xbox",res:"xres",timer:"clock",go:"go",items:[{"q": "<bdi>Learning an unknown function exactly is:</bdi>", "o": ["Possible with big N", "Impossible, it can take any value outside the data", "Always possible"], "a": 1, "w": "ده نص السلايد."}, {"q": "<bdi><span class=\"m\">ν</span> is:</bdi>", "o": ["the bound", "fraction of red in the bin", "fraction of red in the sample"], "a": 2, "w": "in sample."}, {"q": "<bdi>Hoeffding: <span class=\"m\">P[|ν−μ|>ε] ≤</span></bdi>", "o": ["<span class=\"m\">2Me<sup>−2ε²N</sup></span>", "<span class=\"m\">2e<sup>−2ε²N</sup></span>", "<span class=\"m\">2e<sup>−εN</sup></span>", "<span class=\"m\">e<sup>−2ε²N</sup></span>"], "a": 1, "w": "لـ h ثابتة."}, {"q": "<bdi>The bound depends on <span class=\"m\">μ</span>.</bdi>", "o": ["صح", "غلط"], "a": 1, "w": "Bound does not depend on μ."}, {"q": "<bdi><span class=\"m\">N = 1000</span> و <span class=\"m\">ε = 0.05</span>. الـ bound:</bdi>", "o": ["1.35", "0.27", "0.135", "0.0135"], "a": 3, "w": "<span class=\"m\">2e<sup>−5</sup></span>."}, {"q": "<bdi>الكورة الحمرا:</bdi>", "o": ["<span class=\"m\">h(x) = f(x)</span>", "<span class=\"m\">h(x) ≠ f(x)</span>"], "a": 1, "w": "got it wrong."}, {"q": "<bdi><span class=\"m\">μ</span> corresponds to:</bdi>", "o": ["M", "E<sub>in</sub>", "E<sub>out</sub>"], "a": 2, "w": "out of sample."}, {"q": "<bdi>Fixed h gives:</bdi>", "o": ["verification", "regularization", "learning"], "a": 0, "w": "verification of h."}, {"q": "<bdi>Hoeffding applies directly to multiple bins.</bdi>", "o": ["صح", "غلط"], "a": 1, "w": "doesn't apply."}, {"q": "<bdi>10 رميات لعملة، احتمال 10 Heads:</bdi>", "o": ["≈ 10%", "≈ 0.1%", "≈ 63%", "≈ 1%"], "a": 1, "w": "<span class=\"m\">1/1024</span>."}, {"q": "<bdi>1000 عملة، احتمال عملة على الأقل:</bdi>", "o": ["≈ 62–63%", "≈ 0.1%", "≈ 99%", "≈ 38%"], "a": 0, "w": "<span class=\"m\">1 − 0.377</span>."}, {"q": "<bdi>Final verdict:</bdi>", "o": ["<span class=\"m\">2M/N</span>", "<span class=\"m\">Me<sup>−2εN</sup></span>", "<span class=\"m\">2Me<sup>−2ε²N</sup></span>", "<span class=\"m\">2e<sup>−2ε²N</sup></span>"], "a": 2, "w": "union bound."}, {"q": "<bdi>Bigger <span class=\"m\">M</span> with same N:</bdi>", "o": ["stronger guarantee", "weaker guarantee", "no change"], "a": 1, "w": "الـ bound يكبر."}, {"q": "<bdi><span class=\"m\">M</span> = 10، <span class=\"m\">N</span> = 500، <span class=\"m\">ε</span> = 0.1. الـ bound:</bdi>", "o": ["0.09", "0.009", "0.0009", "0.9"], "a": 2, "w": "<span class=\"m\">20e<sup>−10</sup> = 0.0009</span>."}, {"q": "<bdi>The statement <span class=\"m\">μ = ν</span> is:</bdi>", "o": ["always false", "always true", "P.A.C."], "a": 2, "w": "probably approximately correct."}, {"q": "<bdi>أقل N لـ <span class=\"m\">ε=0.05</span> و <span class=\"m\">δ=0.03</span> و <span class=\"m\">M=1</span>:</bdi>", "o": ["840", "420", "1761", "200"], "a": 0, "w": "<span class=\"m\">200 × 4.2 = 840</span>."}, {"q": "<bdi>g is chosen:</bdi>", "o": ["before seeing the data", "after seeing the data"], "a": 1, "w": "وعشان كده Hoeffding البسيطة مش كفاية."}, {"q": "<bdi>الإضافة للـ diagram:</bdi>", "o": ["y = 0", "h ثابتة", "P on X"], "a": 2, "w": "probability distribution on X."}],min:18,key:"exam"});
+
+(function(){const f=()=>{$("bmv").textContent=(+$("bm").value).toFixed(2);$("bnv").textContent=$("bn").value;$("bev").textContent=(+$("be").value).toFixed(2)};
+ const samp=(m,n)=>{let r=0;for(let i=0;i<n;i++)if(Math.random()<m)r++;return r/n};
+ ["bm","bn","be"].forEach(i=>$(i).oninput=f);f();
+ $("bgo").onclick=()=>{const m=+$("bm").value,n=+$("bn").value,v=samp(m,n);$("br").textContent=`ν = ${v.toFixed(3)}   μ = ${m.toFixed(2)}   |ν−μ| = ${Math.abs(v-m).toFixed(3)}`};
+ $("brun").onclick=()=>{const m=+$("bm").value,n=+$("bn").value,e=+$("be").value;let b=0;const T=10000;for(let t=0;t<T;t++)if(Math.abs(samp(m,n)-m)>e)b++;const B=2*Math.exp(-2*e*e*n);$("br").textContent=`actual P[|ν−μ|>ε] ≈ ${(b/T).toFixed(4)}   Hoeffding bound = ${B.toFixed(4)}`}})();
+(function(){const u=()=>{const n=+$("hn").value,e=+$("he").value,x=2*e*e*n,b=2*Math.exp(-x);$("hr").textContent=`2ε²N = ${x.toFixed(3)}   bound = 2e^(−${x.toFixed(3)}) = ${b.toFixed(4)}${b>=1?"   (≥ 1: no information)":""}`};$("hn").oninput=u;$("he").oninput=u;u()})();
+(function(){const u=()=>{const n=+$("cn").value,t=+$("ct").value,p=Math.pow(.5,t),a=Math.pow(1-p,n);$("cr").textContent=`p = (1/2)^${t} = ${p.toFixed(6)}   none = ${a.toFixed(4)}   at least one = ${(1-a).toFixed(4)}`};$("cn").oninput=u;$("ct").oninput=u;u();
+ $("cg").onclick=()=>{const n=Math.min(+$("cn").value,5000),t=Math.min(+$("ct").value,20),T=2000,p=Math.pow(.5,t);let h=0;for(let r=0;r<T;r++){let got=false;for(let c=0;c<n&&!got;c++)if(Math.random()<p)got=true;if(got)h++}$("cs").textContent=`simulated: ${h} / ${T} = ${(h/T).toFixed(3)}`}})();
+(function(){const u=()=>{const n=+$("un").value,e=+$("ue").value,m=+$("um").value,d=+$("ud").value,b=2*m*Math.exp(-2*e*e*n),N=Math.log(2*m/d)/(2*e*e);$("ur").textContent=`bound = 2Me^(−2ε²N) = ${b.toFixed(4)}${b>=1?" (no information)":""}   |   N ≥ ${Math.ceil(N)}`};["un","ue","um","ud"].forEach(i=>$(i).oninput=u);u()})();
+
+bar();
+</script>
+</body>
+</html>

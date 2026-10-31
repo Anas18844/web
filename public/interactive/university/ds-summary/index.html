@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Data Science · المراجعة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=Readex+Pro:wght@300;400;500;600&display=swap">
+<style>
+:root{color-scheme:light;--bg:#F4F6FA;--card:#FFFFFF;--ink:#1E2433;--soft:#5D6679;--faint:#8C94A6;--line:#E6E9F0;
+--c:#4F5BD5;--tint:#EDEFFB;--pos:#1F8A4C;--pos-tint:#E5F5EC;--neg:#C0392B;--neg-tint:#FDECEA;--amber:#B45309;--amber-tint:#FFF6E5;
+--f-head:"Alexandria","Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;--f-body:"Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;
+--f-math:"Cambria Math","Cambria","Times New Roman",serif;--shadow:0 1px 2px rgba(30,36,51,.04),0 6px 24px rgba(30,36,51,.06)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:2;padding:0 16px 80px}
+.wrap{max-width:820px;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--f-head);font-weight:700;margin:0;line-height:1.45}
+p{margin:0;max-width:68ch}a{color:var(--c)}button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.m{font-family:var(--f-math);direction:ltr;unicode-bidi:isolate;font-size:1.1em;white-space:nowrap}
+.mb{font-family:var(--f-math);direction:ltr;text-align:center;font-size:21px;background:var(--tint);border-radius:12px;padding:12px;overflow-x:auto}
+.bar{position:sticky;top:0;z-index:10;background:rgba(244,246,250,.96);padding:8px 16px;margin-inline:-16px;border-bottom:1px solid var(--line)}
+.bar .in{max-width:820px;margin-inline:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px}
+.bar a{text-decoration:none;color:var(--soft);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:1px 10px;white-space:nowrap}
+.bar a.done{background:var(--pos-tint);border-color:var(--pos);color:var(--pos)}
+.bar .sp{margin-inline-start:auto;color:var(--soft)}
+.track{flex-basis:100%;height:5px;background:var(--line);border-radius:6px;overflow:hidden}.track i{display:block;height:100%;width:0;background:var(--c)}
+.hero{background:var(--tint);border-radius:22px;padding:22px 24px;display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.hero h1{font-size:clamp(25px,5vw,34px)}.hero .meta{font-size:14px;color:var(--c);font-weight:600}
+.part{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;gap:16px;scroll-margin-top:64px}
+.part .num{font-size:13px;color:var(--c);font-weight:600}.part h2{font-size:23px}
+.part h3{font-size:18px;margin-top:10px;padding-top:12px;border-top:1px solid var(--line)}
+.idea{background:var(--tint);border-radius:14px;padding:12px 16px;font-weight:500}
+.trick{background:var(--pos-tint);border-radius:14px;padding:12px 16px}.trick b:first-child{color:var(--pos)}
+.trap{background:var(--amber-tint);border-radius:14px;padding:12px 16px;color:#5A3505}.trap b:first-child{color:var(--amber)}
+.examw{border:2px solid var(--c);border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:6px}.examw>b:first-child{color:var(--c)}
+.ex{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}.ex>b:first-child{color:var(--c)}
+.list{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:8px}
+.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.steps li{counter-increment:s;position:relative;background:var(--bg);border-radius:12px;padding:10px 14px;padding-inline-start:46px}
+.steps li::before{content:counter(s);position:absolute;inset-inline-start:12px;top:12px;width:24px;height:24px;border-radius:50%;background:var(--c);color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.tbl{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:15.5px}
+th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:start;vertical-align:top}th{color:var(--soft);font-size:14px;background:var(--bg)}
+.lab{border:2px dashed #B9C0EE;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.lab .tag{font-size:14px;font-weight:600;color:var(--c)}
+.ctl{display:flex;flex-wrap:wrap;gap:12px;align-items:end;direction:ltr}
+.ctl label{display:flex;flex-direction:column;font-size:13px;color:var(--soft);gap:2px}
+.ctl input,.ctl select{font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:10px;padding:4px 8px;background:var(--card);direction:ltr;width:130px}
+.ctl input[type=range]{padding:0;width:170px;accent-color:var(--c)}
+.ctl input.wide{width:240px}
+.read{font-family:var(--f-math);direction:ltr;text-align:center;font-size:17px;line-height:1.8;overflow-x:auto}
+.rd{text-align:center;font-size:15px;color:var(--soft)}
+canvas{width:100%;max-width:400px;aspect-ratio:1;background:#FBFCFE;border:1px solid var(--line);border-radius:14px;display:block;margin-inline:auto;touch-action:none}
+canvas.wide{max-width:100%;aspect-ratio:5/2}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.two figure{margin:0;display:flex;flex-direction:column;gap:4px;text-align:center;font-size:14px;color:var(--soft)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:0;background:var(--c);color:#fff;border-radius:999px;padding:6px 16px;font-size:15px;min-height:40px}
+.btn.ghost{background:var(--card);color:var(--c);border:1.5px solid var(--c)}.btn.on{background:var(--pos);color:#fff;border-color:var(--pos)}.btn:disabled{opacity:.5;cursor:default}
+.qs{display:flex;flex-direction:column;gap:12px}.qk{font-size:14px;font-weight:600;color:var(--c);margin-top:6px}
+.q{background:var(--bg);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.q .stem{font-weight:500}.opts{display:flex;flex-direction:column;gap:6px}
+.opt{text-align:start;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:8px 12px;font-size:15.5px;line-height:1.7}
+.opt:hover:not(:disabled){border-color:var(--c)}.opt:disabled{cursor:default}.opt.pick{border-color:var(--c);background:var(--tint)}
+.opt.right{background:var(--pos-tint);border-color:var(--pos)}.opt.wrong{background:var(--neg-tint);border-color:var(--neg)}
+.why{font-size:15px;color:var(--soft);border-inline-start:3px solid var(--c);padding-inline-start:10px}.why.bad{border-color:var(--neg)}
+.score{font-size:14px;color:var(--soft)}.badge{background:var(--pos-tint);color:var(--pos);border-radius:999px;padding:2px 12px;font-size:14px;font-weight:600}
+.prob{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.sol{display:none;background:var(--bg);border-radius:12px;padding:12px 14px;flex-direction:column;gap:8px}.sol.show{display:flex}
+.g{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}.g>b{color:var(--c)}
+.gs{background:var(--bg);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:8px}
+.gs .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.gs input{font:inherit;font-size:16px;width:170px;border:1.5px solid var(--line);border-radius:10px;padding:4px 8px;direction:ltr;text-align:center}
+.gs input.ok{border-color:var(--pos);background:var(--pos-tint)}.gs input.no{border-color:var(--neg);background:var(--neg-tint)}
+.gs .ans{display:none;color:var(--soft);font-size:15.5px}.gs.open .ans{display:block}.gs.lock{display:none}
+.timer{font-family:var(--f-head);font-size:28px;color:var(--c);direction:ltr}
+.result{background:var(--tint);border-radius:14px;padding:12px 16px;font-weight:500}
+.exam{border:2px solid var(--c)}
+.next{display:flex;gap:8px;flex-wrap:wrap}.next a{background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:6px 16px;text-decoration:none}
+@media (max-width:640px){.part{padding:18px 16px}.two{grid-template-columns:1fr}.m{white-space:normal}}
+@media print{.bar,.next,.btn{display:none}body{background:#fff}.part{box-shadow:none;break-inside:avoid}.sol{display:flex}}
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="in"><a href="/interactive/university/midterm">الخريطة</a><a href="#sheet" data-chip="sheet">المعادلات</a><a href="#kinds" data-chip="kinds">أنواع الأسئلة</a><a href="#exam" data-chip="exam">تجريبي 1</a><a href="#exam2" data-chip="m2">تجريبي 2</a><span class="sp" id="pct"></span><div class="track"><i id="fill"></i></div></div></div>
+<div class="wrap"><header class="hero"><div class="meta">مقدمة في علم البيانات · قبل الامتحان</div><h1>المراجعة والامتحان التجريبي</h1><p>التلات محاضرات كلهم بيجاوبوا على سؤال واحد: إزاي نتعلم من الداتا، وإمتى نثق في النتيجة؟</p></header>
+<section class="part" id="sheet"><div class="num">ورقة المعادلات</div><h2>كل اللي لازم يبقى في دماغك</h2>
+<div class="tbl"><table><tr><th>الموضوع</th><th>المعادلة</th></tr>
+<tr><td>Perceptron</td><td class="m">h(x) = sign(wᵀx) , x₀ = 1 , w₀ = −threshold</td></tr>
+<tr><td>PLA</td><td class="m">w ← w + yₙxₙ</td></tr>
+<tr><td>Hoeffding</td><td class="m">P[|ν−μ|&gt;ε] ≤ 2e<sup>−2ε²N</sup></td></tr>
+<tr><td>Learning</td><td class="m">P[|E<sub>in</sub>(h)−E<sub>out</sub>(h)|&gt;ε] ≤ 2e<sup>−2ε²N</sup></td></tr>
+<tr><td>Final verdict</td><td class="m">P[|E<sub>in</sub>(g)−E<sub>out</sub>(g)|&gt;ε] ≤ 2Me<sup>−2ε²N</sup></td></tr>
+<tr><td>أقل N</td><td class="m">N ≥ (1/2ε²) ln(2M/δ)</td></tr>
+<tr><td>على الأقل واحدة</td><td class="m">1 − (1−p)<sup>n</sup></td></tr>
+<tr><td>تقريب</td><td class="m">(1−1/n)<sup>k</sup> ≈ e<sup>−k/n</sup></td></tr>
+<tr><td>E<sub>in</sub> للـ regression</td><td class="m">(1/N)Σ(wᵀxₙ−yₙ)² = (1/N)‖Xw−y‖²</td></tr>
+<tr><td>Gradient</td><td class="m">(2/N)Xᵀ(Xw−y) = 0</td></tr>
+<tr><td>الحل</td><td class="m">w = X†y , X† = (XᵀX)⁻¹Xᵀ</td></tr>
+<tr><td>الأبعاد</td><td class="m">X: N×(d+1) , XᵀX: (d+1)×(d+1) , X†: (d+1)×N</td></tr>
+<tr><td>Transform</td><td class="m">Φ(x₁,x₂) = (x₁²,x₂²)</td></tr></table></div>
+<div><button type="button" class="btn ghost" data-done="sheet"></button></div></section>
+<section class="part" id="kinds"><div class="num">أنواع الأسئلة</div><h2>لو شفت ده، اعمل ده</h2>
+<div class="tbl"><table><tr><th>لو شفت</th><th>اعمل</th></tr>
+<tr><td>هل ينفع ML؟</td><td>راجع الشروط التلاتة، وقول أنهي شرط ناقص.</td></tr>
+<tr><td>PLA iteration</td><td>ضيف <span class="m">x₀</span>، واحسب <span class="m">wᵀx</span>، وقارن sign بـ y، وعدّل <span class="m">w + yx</span>.</td></tr>
+<tr><td>Hoeffding bound</td><td>احسب <span class="m">2ε²N</span> الأول، وبعدين <span class="m">2e<sup>−…</sup></span>، وترجم المعنى.</td></tr>
+<tr><td>فيه M</td><td>اضرب في M. ولو طلع أكبر من 1 قول مفيش ضمان.</td></tr>
+<tr><td>أقل N</td><td><span class="m">(1/2ε²) ln(2M/δ)</span>، وقرّب لفوق.</td></tr>
+<tr><td>عملات</td><td>p، وبعدين "ولا واحدة" <span class="m">(1−p)<sup>n</sup></span>، وبعدين المكمل.</td></tr>
+<tr><td>Linear regression</td><td><span class="m">XᵀX = [N Σx ; Σx Σx²]</span>، و <span class="m">Xᵀy = [Σy ; Σxy]</span>، واعكس.</td></tr>
+<tr><td>E<sub>in</sub></td><td>فروق، وبعدين تربيع، وبعدين جمع، وبعدين قسمة على N.</td></tr>
+<tr><td>أبعاد</td><td>X طولها N وعرضها d+1، والباقي من الضرب.</td></tr>
+<tr><td>Nonlinear</td><td>ربّع، وعوّض في الخط، وطلّع الـ sign.</td></tr></table></div>
+<div><button type="button" class="btn ghost" data-done="kinds"></button></div></section>
+<section class="part exam" id="exam"><div class="num">امتحان تجريبي 1</div><h2>30 دقيقة: MCQ وبعدين ورقة</h2><p>ده امتحان تقديري مني، مش امتحان سابق. التايمر 30 دقيقة للكل. خلص الـ MCQ (14 سؤال) في 12 دقيقة، والباقي للأسئلة اللي على الورقة.</p><div class="btns"><button type="button" class="btn" id="go">ابدأ التايمر</button><span class="timer" id="clock"></span></div><div class="qs" id="xbox" hidden></div><div class="result" id="xres" hidden></div><div class="qk">أسئلة الورقة</div><div class="prob"><div><b>سؤال 1 (مقالي)</b></div><div>اكتب مكونات الـ learning لمثال الـ credit approval. وما الفرق بين الـ Supervised والـ Reinforcement؟</div><div><button type="button" class="btn ghost" data-sol="examp0">اظهر الحل</button></div><div class="sol" id="examp0"><p>x، و y، و f (unknown)، و data، و g ≈ f، و H، و A. والـ learning model = H + A.</p><p>Supervised: (input، correct output). Reinforcement: (input، some output، grade).</p></div></div><div class="prob"><div><b>سؤال 2 (مسألة)</b></div><div><span class="m">w=[0,0,0]</span>، والنقط <span class="m">A=(2,0), y=+1</span> و <span class="m">B=(0,2), y=−1</span>. طبق الـ PLA.</div><div><button type="button" class="btn ghost" data-sol="examp1">اظهر الحل</button></div><div class="sol" id="examp1"><p>A: <span class="m">wᵀx=0</span> غلط ← <span class="m">w=[1,2,0]</span>.</p><p>B: <span class="m">x=[1,0,2]</span>، و <span class="m">wᵀx=1</span>، و sign = +1 ≠ −1 ← <span class="m">w=[1,2,0]−[1,0,2]=[0,2,−2]</span>.</p><p>A: <span class="m">4</span> ✓. B: <span class="m">−4</span> ✓. النهاية <span class="m">w=[0,2,−2]</span>.</p></div></div><div class="prob"><div><b>سؤال 3 (مسألة)</b></div><div>نقط (0, 1) و (1, 2) و (2, 2). طلّع w، و E<sub>in</sub>.</div><div><button type="button" class="btn ghost" data-sol="examp2">اظهر الحل</button></div><div class="sol" id="examp2"><p><span class="m">XᵀX=[3 3 ; 3 5]</span>، و <span class="m">Xᵀy=[5 ; 6]</span>، والمحدد 6.</p><p><span class="m">w=(1/6)[5(5)−3(6) ; −3(5)+3(6)]=(1/6)[7 ; 3]</span>، يعني <span class="m">w₀=7/6</span> و <span class="m">w₁=1/2</span>.</p><p>التوقعات: 7/6، و 5/3، و 13/6. والفروق: 1/6، و −1/3، و 1/6. و <span class="m">E<sub>in</sub>=(1/36+4/36+1/36)/3=1/18</span>.</p></div></div></section>
+<section class="part exam" id="exam2"><div class="num">امتحان تجريبي 2</div><h2>30 دقيقة: MCQ وبعدين ورقة</h2><p>ده امتحان تقديري مني، مش امتحان سابق. التايمر 30 دقيقة للكل. خلص الـ MCQ (14 سؤال) في 12 دقيقة، والباقي للأسئلة اللي على الورقة.</p><div class="btns"><button type="button" class="btn" id="go2">ابدأ التايمر</button><span class="timer" id="clock2"></span></div><div class="qs" id="ybox" hidden></div><div class="result" id="yres" hidden></div><div class="qk">أسئلة الورقة</div><div class="prob"><div><b>سؤال 1 (مقالي)</b></div><div>اشرح ليه Hoeffding مش بتتطبق مباشرة على g، وازاي الـ union bound بيحل المشكلة. واكتب النتيجة.</div><div><button type="button" class="btn ghost" data-sol="exam2p0">اظهر الحل</button></div><div class="sol" id="exam2p0"><p>g اتاختارت بعد الداتا من M hypotheses، زي اختيار أحسن عملة. وبما إن g واحدة منهم، الحدث بتاعها جوه اتحاد أحداث الـ <span class="m">h<sub>m</sub></span>، فبالـ union bound: <span class="m">≤ 2Me<sup>−2ε²N</sup></span>.</p></div></div><div class="prob"><div><b>سؤال 2 (مسألة)</b></div><div>2000 عملة، 10 رميات. استخدم التقريب واحسب احتمال عملة على الأقل تجيب 10 Heads.</div><div><button type="button" class="btn ghost" data-sol="exam2p1">اظهر الحل</button></div><div class="sol" id="exam2p1"><p><span class="m">p=1/1024</span>. و <span class="m">(1−1/1024)<sup>2000</sup>≈e<sup>−2000/1024</sup>=e<sup>−1.953</sup>≈0.142</span>. والمطلوب <span class="m">1−0.142=0.858</span>.</p></div></div><div class="prob"><div><b>سؤال 3 (مسألة)</b></div><div><span class="m">ε=0.05</span> و <span class="m">δ=0.05</span> و <span class="m">M=1</span>: أقل N؟ وكمان <span class="m">M=100</span>؟</div><div><button type="button" class="btn ghost" data-sol="exam2p2">اظهر الحل</button></div><div class="sol" id="exam2p2"><p><span class="m">M=1</span>: <span class="m">200 ln(40)=737.8</span>، يبقى 738.</p><p><span class="m">M=100</span>: <span class="m">200 ln(4000)=1658.8</span>، يبقى 1659.</p></div></div></section>
+<div class="next"><a href="/interactive/university/ds-l01">Lec 1</a><a href="/interactive/university/ds-l02">Lec 2</a><a href="/interactive/university/ds-l03">Lec 3</a></div></div><script>
+const LESSON="ds-summary",PARTS=["sheet","kinds","m2"],HAS_EXAM=true,MCQ={};
+
+const KEY="anas-uni-progress-v1",V="v2:";
+const $=id=>document.getElementById(id);
+const loadAll=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return {}}};
+const saveAll=d=>{try{localStorage.setItem(KEY,JSON.stringify(d))}catch{}};
+function L(){const d=loadAll();d[LESSON]=d[LESSON]||{parts:{},answers:{},exam:null};d[LESSON].answers=d[LESSON].answers||{};d[LESSON].parts=d[LESSON].parts||{};return d}
+function setPart(p,on,right,total){const d=L();if(on)d[LESSON].parts[p]={right,total,at:Date.now()};else delete d[LESSON].parts[p];saveAll(d);bar()}
+function bar(){const l=L()[LESSON],t=PARTS.length+(HAS_EXAM?1:0),done=PARTS.filter(p=>l.parts[p]).length+(HAS_EXAM&&l.exam?1:0),p=Math.round(done/t*100);
+ $("pct").textContent=`${p}% · ${done}/${t}`;$("fill").style.width=p+"%";
+ document.querySelectorAll("[data-chip]").forEach(a=>a.classList.toggle("done",a.dataset.chip==="exam"?!!l.exam:!!l.parts[a.dataset.chip]));
+ document.querySelectorAll("[data-done]").forEach(b=>{const on=!!l.parts[b.dataset.done];b.classList.toggle("on",on);b.textContent=on?"خلصت ✓":"علّم إني خلصت"})}
+document.querySelectorAll("[data-done]").forEach(b=>b.onclick=()=>setPart(b.dataset.done,!L()[LESSON].parts[b.dataset.done]));
+document.querySelectorAll("[data-sol]").forEach(b=>b.onclick=()=>{const s=$(b.dataset.sol);s.classList.toggle("show");b.textContent=s.classList.contains("show")?"اخفي الإجابة":b.dataset.label||"اظهر الإجابة"});
+function mcq(box,part,items){
+ const ans=()=>L()[LESSON].answers,k=i=>V+part+":"+i,st=document.createElement("div");st.className="score";
+ function check(){const a=ans(),got=items.filter((_,i)=>a[k(i)]!==undefined).length,r=items.filter((it,i)=>a[k(i)]===it.a).length;
+  st.innerHTML=got===items.length?`<span class="badge">خلصت · ${r}/${items.length}</span>`:`جاوبت ${got} من ${items.length}`;
+  if(got===items.length)setPart(part,true,r,items.length)}
+ items.forEach((it,i)=>{const q=document.createElement("div");q.className="q";
+  const draw=()=>{const g=ans()[k(i)];
+   q.innerHTML=`<div class="stem">${i+1}. ${it.q}</div><div class="opts">${it.o.map((o,j)=>{let c="";if(g!==undefined){if(j===it.a)c="right";else if(j===g)c="wrong"}return `<button type="button" class="opt ${c}" data-j="${j}" ${g!==undefined?"disabled":""}>${o}</button>`}).join("")}</div>${g!==undefined?`<div class="why ${g===it.a?"":"bad"}">${g===it.a?"صح. ":"غلط. "}${it.w}</div>`:""}`};
+  q.onclick=e=>{const b=e.target.closest("[data-j]");if(!b||b.disabled)return;const d=L();d[LESSON].answers[k(i)]=+b.dataset.j;saveAll(d);draw();check()};
+  draw();box.append(q)});
+ const re=document.createElement("button");re.type="button";re.className="btn ghost";re.textContent="أعيد الأسئلة دي";
+ re.onclick=()=>{const d=L();items.forEach((_,i)=>delete d[LESSON].answers[k(i)]);delete d[LESSON].parts[part];saveAll(d);box.innerHTML="";bar();mcq(box,part,items)};
+ box.append(st,re);check();
+}
+document.querySelectorAll("[data-mcq]").forEach(b=>mcq(b,b.dataset.mcq,MCQ[b.dataset.mcq]));
+function parseAns(s){return String(s).replace(/−/g,"-").replace(/[\[\]()]/g," ").split(/[,،\s]+/).filter(Boolean).map(t=>{const m=t.match(/^(-?\d*\.?\d+)\/(\d*\.?\d+)$/);return m?m[1]/m[2]:Number(t)})}
+function guided(box){box.querySelectorAll(".gs").forEach((s,i,all)=>{
+ if(i)s.classList.add("lock");
+ const inp=s.querySelector("input"),a=s.dataset.a?JSON.parse(s.dataset.a):null,tol=+(s.dataset.tol||.01);
+ const nxt=()=>{s.classList.add("open");if(all[i+1])all[i+1].classList.remove("lock")};
+ s.querySelector("[data-check]")?.addEventListener("click",()=>{const v=parseAns(inp.value),ok=a&&v.length===a.length&&v.every((x,j)=>Math.abs(x-a[j])<=tol);inp.className=ok?"ok":"no";if(ok)nxt()});
+ s.querySelector("[data-show]")?.addEventListener("click",nxt)})}
+document.querySelectorAll(".g").forEach(guided);
+function exam(cfg){const box=$(cfg.box),res=$(cfg.res),tEl=$(cfg.timer),go=$(cfg.go),E=cfg.items;let ans={},left=0,tick;
+ const prev=L()[LESSON][cfg.key];if(prev){res.hidden=false;res.textContent=`آخر نتيجة: ${prev.right} / ${prev.total}. تقدر تعيد.`}
+ const show=()=>tEl.textContent=`${String(Math.floor(left/60)).padStart(2,"0")}:${String(left%60).padStart(2,"0")}`;
+ function finish(){clearInterval(tick);const right=E.filter((e,i)=>ans[i]===e.a).length;
+  box.querySelectorAll("button.opt").forEach(b=>b.disabled=true);
+  E.forEach((e,i)=>{const q=box.children[i];q.querySelectorAll("button.opt").forEach((b,j)=>{b.classList.remove("pick");if(j===e.a)b.classList.add("right");else if(j===ans[i])b.classList.add("wrong")});
+   const w=document.createElement("div");w.className="why"+(ans[i]===e.a?"":" bad");w.innerHTML=(ans[i]===e.a?"صح. ":ans[i]===undefined?"ما جاوبتش. ":"غلط. ")+e.w;q.append(w)});
+  const d=L();d[LESSON][cfg.key]={right,total:E.length,at:Date.now()};saveAll(d);bar();
+  res.hidden=false;res.textContent=`النتيجة: ${right} / ${E.length}. `+(right/E.length>=.85?"ممتاز.":right/E.length>=.7?"كويس. راجع اللي غلطت فيه وأعد.":"ارجع للأجزاء اللي غلطت فيها، وأعد.");
+  go.disabled=false;go.textContent="أعد الامتحان";cfg.after&&cfg.after()}
+ go.onclick=()=>{ans={};left=cfg.min*60;box.hidden=false;res.hidden=true;go.disabled=true;
+  box.innerHTML=E.map((e,i)=>`<div class="q"><div class="stem">${i+1}. ${e.q}</div><div class="opts">${e.o.map((o,j)=>`<button type="button" class="opt" data-i="${i}" data-j="${j}">${o}</button>`).join("")}</div></div>`).join("")+`<div class="btns"><button type="button" class="btn" id="${cfg.box}Sub">سلّم</button></div>`;
+  $(cfg.box+"Sub").onclick=finish;show();clearInterval(tick);tick=setInterval(()=>{left--;show();if(left<=0)finish()},1000)};
+ box.addEventListener("click",e=>{const b=e.target.closest("button.opt");if(!b||b.disabled)return;const i=+b.dataset.i;ans[i]=+b.dataset.j;box.children[i].querySelectorAll("button.opt").forEach(x=>x.classList.remove("pick"));b.classList.add("pick")})}
+/* canvas helpers */
+function cv(id,size=400,R=5){const c=$(id),r=window.devicePixelRatio||1;c.width=size*r;c.height=size*r;const x=c.getContext("2d");x.scale(r,r);return {ctx:x,size,R,sx:v=>(v+R)/(2*R)*size,sy:v=>size-(v+R)/(2*R)*size}}
+function base(g){const {ctx,size,R,sx,sy}=g;ctx.clearRect(0,0,size,size);ctx.strokeStyle="#E6E9F0";ctx.lineWidth=1;for(let i=-R;i<=R;i++){ctx.beginPath();ctx.moveTo(sx(i),0);ctx.lineTo(sx(i),size);ctx.moveTo(0,sy(i));ctx.lineTo(size,sy(i));ctx.stroke()}
+ ctx.strokeStyle="#B8BFCC";ctx.beginPath();ctx.moveTo(sx(0),0);ctx.lineTo(sx(0),size);ctx.moveTo(0,sy(0));ctx.lineTo(size,sy(0));ctx.stroke()}
+function wline(g,w,color,dash){const {ctx,R,sx,sy}=g;if(Math.abs(w[1])<1e-9&&Math.abs(w[2])<1e-9)return;ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.setLineDash(dash?[6,6]:[]);ctx.beginPath();
+ if(Math.abs(w[2])>1e-9){const y=x=>-(w[0]+w[1]*x)/w[2];ctx.moveTo(sx(-R),sy(y(-R)));ctx.lineTo(sx(R),sy(y(R)))}else{const x=-w[0]/w[1];ctx.moveTo(sx(x),sy(-R));ctx.lineTo(sx(x),sy(R))}ctx.stroke();ctx.restore()}
+function dots(g,P,w,ring){const {ctx,sx,sy}=g;P.forEach((p,i)=>{ctx.beginPath();ctx.arc(sx(p[0]),sy(p[1]),6,0,7);ctx.fillStyle=p[2]>0?"#4F5BD5":"#C0392B";ctx.fill();
+ if(w&&Math.sign(w[0]+w[1]*p[0]+w[2]*p[1])!==p[2]){ctx.lineWidth=3;ctx.strokeStyle="#E2A400";ctx.stroke()}
+ if(ring===i){ctx.beginPath();ctx.arc(sx(p[0]),sy(p[1]),12,0,7);ctx.lineWidth=2;ctx.strokeStyle="#1E2433";ctx.stroke()}})}
+
+exam({box:"xbox",res:"xres",timer:"clock",go:"go",items:[{"q": "<bdi>الـ ML ينفع لما:</bdi>", "o": ["pattern + no formula + data", "مفيش داتا", "formula موجودة"], "a": 0, "w": "الشروط التلاتة."}, {"q": "<bdi>The learning model:</bdi>", "o": ["f + g", "H + A", "x + y"], "a": 1, "w": "H و A."}, {"q": "<bdi><span class=\"m\">w=[0,2,−1]</span> و <span class=\"m\">x=(1,3)</span> و <span class=\"m\">y=−1</span>. النقطة:</bdi>", "o": ["misclassified", "صح"], "a": 1, "w": "<span class=\"m\">0+2−3 = −1</span> = y."}, {"q": "<bdi><span class=\"m\">w=[1,0,2]</span> و <span class=\"m\">x=(2,−1)</span> و <span class=\"m\">y=+1</span>. بعد الـ update:</bdi>", "o": ["<span class=\"m\">[0,−2,3]</span>", "<span class=\"m\">[2,2,1]</span>", "<span class=\"m\">[1,0,2]</span>"], "a": 1, "w": "<span class=\"m\">wᵀx = −1</span>، و <span class=\"m\">w+[1,2,−1] = [2,2,1]</span>."}, {"q": "<bdi>Unsupervised data:</bdi>", "o": ["(input, ?)", "(input, output, grade)", "(input, correct output)"], "a": 0, "w": "ده التعريف."}, {"q": "<bdi>Hoeffding bound لـ <span class=\"m\">N=100</span> و <span class=\"m\">ε=0.1</span>:</bdi>", "o": ["0.27", "0.0135", "1.35"], "a": 0, "w": "<span class=\"m\">2e<sup>−2</sup></span>."}, {"q": "<bdi>E<sub>in</sub> corresponds to:</bdi>", "o": ["M", "ν", "μ"], "a": 1, "w": "in sample."}, {"q": "<bdi>Fixed h is:</bdi>", "o": ["verification", "learning"], "a": 0, "w": "مش learning."}, {"q": "<bdi><span class=\"m\">2Me<sup>−2ε²N</sup></span> لـ <span class=\"m\">M=10</span> و <span class=\"m\">N=100</span> و <span class=\"m\">ε=0.1</span>:</bdi>", "o": ["2.7", "0.027", "0.27"], "a": 0, "w": "<span class=\"m\">10 × 0.27</span>."}, {"q": "<bdi><span class=\"m\">(1/2)<sup>10</sup></span>:</bdi>", "o": ["1/512", "1/1024", "1/100"], "a": 1, "w": "≈ 0.1%."}, {"q": "<bdi><span class=\"m\">X†</span>:</bdi>", "o": ["<span class=\"m\">Xᵀ</span>", "<span class=\"m\">(XᵀX)⁻¹Xᵀ</span>", "<span class=\"m\">X⁻¹</span>"], "a": 1, "w": "pseudo-inverse."}, {"q": "<bdi>Pocket keeps:</bdi>", "o": ["best w", "last w"], "a": 0, "w": "حسب E<sub>in</sub>."}, {"q": "<bdi>Dim <span class=\"m\">XᵀX</span> لـ <span class=\"m\">d = 3</span>:</bdi>", "o": ["N×N", "3×3", "4×4"], "a": 2, "w": "<span class=\"m\">(d+1)×(d+1)</span>."}, {"q": "<bdi>Linear in:</bdi>", "o": ["weights", "x لازم"], "a": 0, "w": "ده السر."}],min:30,key:"exam"});
+exam({box:"ybox",res:"yres",timer:"clock2",go:"go2",items:[{"q": "<bdi>حساب مرتب بقاعدة ثابتة:</bdi>", "o": ["محتاج ML", "مش محتاج ML"], "a": 1, "w": "المعادلة معروفة."}, {"q": "<bdi><span class=\"m\">g</span> is chosen from:</bdi>", "o": ["f", "Data", "H"], "a": 2, "w": "<span class=\"m\">g ∈ H</span>."}, {"q": "<bdi><span class=\"m\">w₀</span> =</bdi>", "o": ["1", "−threshold", "threshold"], "a": 1, "w": "ومعاها <span class=\"m\">x₀=1</span>."}, {"q": "<bdi>PLA converges if:</bdi>", "o": ["N صغيرة", "دايمًا", "linearly separable"], "a": 2, "w": "شرط."}, {"q": "<bdi>ν and μ: the difference is:</bdi>", "o": ["sample vs bin", "bin vs sample", "نفس الشيء"], "a": 0, "w": "ν عينة، μ صندوق."}, {"q": "<bdi>Hoeffding لـ <span class=\"m\">N=400</span> و <span class=\"m\">ε=0.05</span>:</bdi>", "o": ["0.736", "0.27", "0.0135"], "a": 0, "w": "<span class=\"m\">2e<sup>−1</sup></span>."}, {"q": "<bdi>green marble:</bdi>", "o": ["<span class=\"m\">h(x)≠f(x)</span>", "<span class=\"m\">h(x)=f(x)</span>"], "a": 1, "w": "صح."}, {"q": "<bdi>10 Heads ⟷</bdi>", "o": ["E<sub>in</sub> = 0", "E<sub>out</sub> = 0"], "a": 0, "w": "على الداتا."}, {"q": "<bdi>100 عملة، 10 رميات:</bdi>", "o": ["≈ 63%", "≈ 0.1%", "≈ 9.3%"], "a": 2, "w": "<span class=\"m\">1−(1023/1024)<sup>100</sup></span>."}, {"q": "<bdi>أقل N لـ <span class=\"m\">ε=0.1</span> و <span class=\"m\">δ=0.05</span> و <span class=\"m\">M=1</span>:</bdi>", "o": ["185", "369", "50"], "a": 0, "w": "<span class=\"m\">50 ln(40)</span>."}, {"q": "<bdi>256 pixel raw:</bdi>", "o": ["256 weights", "3 weights", "257 weights"], "a": 2, "w": "<span class=\"m\">+x₀</span>."}, {"q": "<bdi>Linear regression is:</bdi>", "o": ["one-step", "iterative"], "a": 0, "w": "<span class=\"m\">w=X†y</span>."}, {"q": "<bdi><span class=\"m\">XᵀXw=</span></bdi>", "o": ["<span class=\"m\">Xᵀy</span>", "<span class=\"m\">0</span>", "<span class=\"m\">y</span>"], "a": 0, "w": "normal equations."}, {"q": "<bdi>±1 are real, so regression gives:</bdi>", "o": ["E<sub>out</sub>", "initial weights"], "a": 1, "w": "للـ PLA."}],min:30,key:"exam2",after:()=>setPart("m2",true)});
+bar();
+</script>
+</body>
+</html>
