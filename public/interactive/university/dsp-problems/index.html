@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>DSP · المسائل</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=Readex+Pro:wght@300;400;500;600&display=swap">
+<style>
+/* Problem sheet: assignments + TA sheets, no answers. Status saved in this browser. */
+:root{
+  color-scheme:light;
+  --bg:#F4F6FA; --card:#FFFFFF; --ink:#1E2433; --soft:#5D6679; --faint:#8C94A6; --line:#E6E9F0;
+  --c:#4F5BD5; --tint:#EDEFFB;
+  --pos:#1F8A4C; --pos-tint:#E5F5EC; --neg:#C0392B; --neg-tint:#FDECEA;
+  --f-head:"Alexandria","Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --f-body:"Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --f-math:"Cambria Math","Cambria","Times New Roman",serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.9;padding:0 16px 80px}
+.wrap{max-width:860px;margin-inline:auto;display:flex;flex-direction:column;gap:16px}
+h1,h2{font-family:var(--f-head);margin:0;line-height:1.45}
+h1{font-size:26px}
+h2{font-size:20px;margin-top:20px}
+p{margin:0}
+.sub{color:var(--soft);font-size:15px}
+.bar{position:sticky;top:0;z-index:10;background:rgba(244,246,250,.95);padding:10px 16px;margin-inline:-16px;border-bottom:1px solid var(--line)}
+.bar .row{max-width:860px;margin-inline:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.count{font-weight:600;font-size:15px;margin-inline-end:auto}
+.track{max-width:860px;margin:8px auto 0;height:6px;border-radius:6px;background:var(--line);overflow:hidden}
+.track i{display:block;height:100%;width:0;background:var(--pos);transition:width .2s}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:9px;padding:6px 12px;font-size:14px;min-height:38px}
+button:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.f[aria-pressed=true]{background:var(--c);border-color:var(--c);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.card.ok{border-color:var(--pos)}
+.card.stuck{border-color:var(--neg)}
+.head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.num{font-family:var(--f-head);font-weight:700;direction:ltr;unicode-bidi:isolate}
+.tag{font-size:12px;color:var(--soft);background:var(--tint);border-radius:6px;padding:0 8px}
+.q{direction:ltr;text-align:left;font-family:var(--f-math);font-size:18px;line-height:1.8;overflow-x:auto}
+.q ol{margin:6px 0 0;padding-left:28px;list-style:lower-alpha}
+.q .d{text-align:center;margin:6px 0}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.ok-b[aria-pressed=true]{background:var(--pos-tint);border-color:var(--pos);color:var(--pos)}
+.st-b[aria-pressed=true]{background:var(--neg-tint);border-color:var(--neg);color:var(--neg)}
+.box{background:var(--tint);border-radius:12px;padding:10px 14px;direction:ltr;text-align:left;font-family:var(--f-math);font-size:17px}
+.hide{display:none}
+@media print{.bar,.acts{display:none}body{background:#fff}.card{break-inside:avoid;border-color:#ccc}}
+</style>
+</head>
+<body>
+<div class="bar">
+  <div class="row">
+    <span class="count" id="count"></span>
+    <button class="f" data-f="all" aria-pressed="true">الكل</button>
+    <button class="f" data-f="p1" aria-pressed="false">الأولوية 1</button>
+    <button class="f" data-f="stuck" aria-pressed="false">اللي وقفت فيها</button>
+    <button id="print">طباعة</button>
+  </div>
+  <div class="track"><i id="fill"></i></div>
+</div>
+<div class="wrap" id="app">
+  <div style="margin-top:16px">
+    <p class="sub"><a href="/interactive/university/midterm">رجوع لخريطة الميدترم</a></p>
+    <h1>DSP: المسائل من غير حلول</h1>
+    <p class="sub">37 مسألة: 20 من أسايمنتات الكتاب (Schaum's Ch.1) و17 من شيتات المعيد. حل في ورقة، ولو وقفت في مسألة علّم عليها "وقفت هنا".</p>
+  </div>
+</div>
+<script>
+const KEY="dsp-problems-v1";
+const P=(id,src,p,q)=>({id,src,p,q});
+const d=s=>`<div class="d">${s}</div>`;
+const ol=a=>`<ol>${a.map(x=>`<li>${x}</li>`).join("")}</ol>`;
+const SECTIONS=[
+ {t:"Lec 2: Signal Classification & Symmetry",items:[
+  P("1.1","Schaum's",2,`Determine whether or not the signals below are periodic and, for each signal that is periodic, determine the fundamental period.`+ol(["x(n) = cos(0.125πn)","x(n) = Re{e<sup>jnπ/12</sup>} + Im{e<sup>jnπ/18</sup>}","x(n) = sin(π + 0.2n)","x(n) = e<sup>j(π/16)n</sup> cos(nπ/17)"])),
+  P("1.2","Schaum's",2,`Find the even and odd parts of the following signals:`+ol(["x(n) = u(n)","x(n) = α<sup>n</sup>u(n)"])),
+  P("1.3","Schaum's",2,`If x<sub>1</sub>(n) is even and x<sub>2</sub>(n) is odd, what is y(n) = x<sub>1</sub>(n) · x<sub>2</sub>(n)?`),
+  P("1.4","Schaum's",3,`If x(n) = 0 for n &lt; 0, derive an expression for x(n) in terms of its even part, x<sub>e</sub>(n), and, using this expression, find x(n) when x<sub>e</sub>(n) = (0.9)<sup>|n|</sup>u(n). Determine whether or not it is possible to derive a similar expression for x(n) in terms of its odd part.`),
+  P("1.5","Schaum's",3,`If x<sub>e</sub>(n) is the conjugate symmetric part of a sequence x(n), what symmetries do the real and imaginary parts of x<sub>e</sub>(n) possess?`),
+  P("1.6","Schaum's",3,`Find the conjugate symmetric part of the sequence x(n) = j e<sup>jnπ/4</sup>.`),
+ ]},
+ {t:"Lec 3: Signal Manipulations & System Properties",items:[
+  P("1.7","Schaum's",2,`Given the sequence x(n) = (6 − n)[u(n) − u(n − 6)], make a sketch of`+ol(["y<sub>1</sub>(n) = x(4 − n)","y<sub>2</sub>(n) = x(2n − 3)","y<sub>3</sub>(n) = x(8 − 3n)","y<sub>4</sub>(n) = x(n² − 2n + 1)"])),
+  P("1.12","Schaum's",1,`For each of the systems below, x(n) is the input and y(n) is the output. Determine which systems are homogeneous, which systems are additive, and which are linear.`+ol(["y(n) = log(x(n))","y(n) = 6x(n + 2) + 4x(n + 1) + 2x(n) + 1","y(n) = 6x(n) + [x(n + 1)x(n − 1)] / x(n)","y(n) = x(n) sin(nπ/2)","y(n) = Re{x(n)}","y(n) = ½[x(n) + x*(−n)]"])),
+  P("1.13","Schaum's",2,`A linear system is one that is both homogeneous and additive.`+ol(["Give an example of a system that is homogeneous but not additive.","Give an example of a system that is additive but not homogeneous."])),
+  P("1.14","Schaum's",1,`Determine whether or not each of the following systems is shift-invariant:`+ol(["y(n) = x(n) + x(n − 1) + x(n − 2)","y(n) = x(n)u(n)","y(n) = Σ<sub>k=−∞</sub><sup>n</sup> x(k)","y(n) = x(n²)","y(n) = x((n))<sub>N</sub> (i.e., y(n) = x(n modulo N))","y(n) = x(−n)"])),
+ ]},
+ {t:"Lec 4: LSI Systems",items:[
+  P("1.15","Schaum's",1,`A linear discrete-time system is characterized by its response h<sub>k</sub>(n) to a delayed unit sample δ(n − k). For each linear system defined below, determine whether or not the system is shift-invariant.`+ol(["h<sub>k</sub>(n) = (n − k)u(n − k)","h<sub>k</sub>(n) = δ(2n − k)","h<sub>k</sub>(n) = δ(n − k − 1) for k even, and 5u(n − k) for k odd"])),
+  P("1.20","Schaum's",1,`Given that x(n) is the system input and y(n) is the system output, which of the following systems are causal?`+ol(["y(n) = x²(n)u(n)","y(n) = x(|n|)","y(n) = x(n) + x(n − 3) + x(n − 10)","y(n) = x(n) − x(n² − n)","y(n) = Π<sub>k=1</sub><sup>N</sup> x(n − k)","y(n) = Σ<sub>k=n</sub><sup>∞</sup> x(n − k)"])),
+  P("1.21","Schaum's",1,`Determine which of the following systems are stable:`+ol(["y(n) = x²(n)","y(n) = e<sup>x(n)</sup> / x(n − 1)","y(n) = cos(x(n))","y(n) = Σ<sub>k=−∞</sub><sup>n</sup> x(k)","y(n) = log(1 + |x(n)|)","y(n) = x(n) * cos(nπ/8)"])),
+  P("1.22","Schaum's",1,`Determine which of the following systems are invertible:`+ol(["y(n) = 2x(n)","y(n) = nx(n)","y(n) = x(n) − x(n − 1)","y(n) = Σ<sub>k=−∞</sub><sup>n</sup> x(k)","y(n) = Re{x(n)}"])),
+  P("1.23","Schaum's",2,`Consider the cascade of two systems, S<sub>1</sub> and S<sub>2</sub>:`+d("x(n) → [ S<sub>1</sub> ] → w(n) → [ S<sub>2</sub> ] → y(n)")+ol(["If both S<sub>1</sub> and S<sub>2</sub> are linear, shift-invariant, stable, and causal, will the cascade also be linear, shift-invariant, stable, and causal?","If both S<sub>1</sub> and S<sub>2</sub> are nonlinear, will the cascade be nonlinear?","If both S<sub>1</sub> and S<sub>2</sub> are shift-varying, will the cascade be shift-varying?"])),
+ ]},
+ {t:"Lec 4: Convolution (الكتاب)",items:[
+  P("1.26","Schaum's",1,`Find the convolution of the two finite-length sequences:`+d("x(n) = 0.5n[u(n) − u(n − 6)]")+d("h(n) = 2 sin(nπ/2)[u(n + 3) − u(n − 4)]")),
+  P("1.28","Schaum's",1,`A linear shift-invariant system has a unit sample response h(n) = u(−n − 1). Find the output if the input is x(n) = −n 3<sup>n</sup> u(−n).`),
+  P("1.30","Schaum's",1,`Prove the commutative property of convolution: x(n) * h(n) = h(n) * x(n).`),
+  P("1.34","Schaum's",1,`Perform the convolution y(n) = x(n) * h(n) when`+d("h(n) = (½)<sup>n</sup> u(n)")+d("x(n) = (⅓)<sup>n</sup> [u(n) − u(n − 101)]")),
+  P("1.36","Schaum's",3,`The correlation of two sequences is an operation defined by the relation x(n) ⋆ h(n) = Σ<sub>k=−∞</sub><sup>∞</sup> x(k)h(n + k). Note that ⋆ denotes correlation and * denotes convolution.`+ol(["Find the correlation between the sequence x(n) = u(n) − u(n − 6) and h(n) = u(n − 2) − u(n − 5).","Find the correlation of x(n) = α<sup>n</sup>u(n) with itself (i.e., h(n) = x(n)). This is known as the autocorrelation of x(n). Assume that |α| &lt; 1."])),
+ ]},
+ {t:"Lec 4: شيت Convolution (المعيد)",note:"Show your steps and keep the time indices clear. Check the output length: L<sub>y</sub> = L<sub>x</sub> + L<sub>h</sub> − 1.",items:[
+  P("C1","شيت Convolution",1,`Given x[n] = {1, 2} and h[n] = {3, 4}. Both sequences start at n = 0. Calculate y[n] = x[n] * h[n]. Find the complete output sequence and its index range.`),
+  P("C2","شيت Convolution",1,`Let x[−1]=2, x[0]=1, x[1]=3, and h[0]=1, h[1]=−1, h[2]=2. Calculate y[n] = x[n] * h[n]. Find every output value and the first and last output indices.`),
+  P("C3","شيت Convolution",1,`Let x[0]=1, x[1]=−2, x[2]=2, and h[2]=2, h[3]=1. Find y[n] = x[n] * h[n]: all output values and the output index range.`),
+  P("C4","شيت Convolution",1,`Given x[n] = u[n] − u[n−4] and h[n] = u[n] − u[n−3], find y[n] = x[n] * h[n]: the nonzero values and a piecewise expression for y[n].`),
+  P("C5","شيت Convolution",1,`Given x[−1]=1, x[0]=3, x[1]=−1, x[2]=2 and h[n] = 2δ[n] − δ[n−1], use the impulse-shifting property to find y[n], with correct time indices.`),
+  P("C6","شيت Convolution",1,`Let x[0]=1, x[1]=2, x[2]=1 and h[0]=1, h[1]=0, h[2]=−1. Compute the full linear convolution y[n]: all output samples from n = 0 to n = 4.`),
+  P("C7","شيت Convolution",1,`Let x[n] = a<sup>n</sup>u[n] and h[n] = u[n], where a is a real constant. Find y[n] = x[n] * h[n] for a ≠ 1, then state the result when a = 1. Give a closed-form expression, including the case n &lt; 0.`),
+ ]},
+ {t:"Lec 5: شيت Magnitude & Phase (المعيد)",note:"For each system, find H(e<sup>jω</sup>), |H(e<sup>jω</sup>)|, and ∠H(e<sup>jω</sup>). Use H(e<sup>jω</sup>) = Σ<sub>k</sub> h[k]e<sup>−jωk</sup>. Assume h[k] = 0 for all samples not listed. Mention any frequencies where the phase is undefined.<br>Formulas: |H| = √(H<sub>r</sub>² + H<sub>i</sub>²) · ∠H = atan2(H<sub>i</sub>, H<sub>r</sub>) · |e<sup>jθ</sup>| = 1 · 1 + e<sup>−jω</sup> = 2 cos(ω/2)e<sup>−jω/2</sup>",items:[
+  P("M1","شيت Magnitude",1,`Given h[0] = 1 and h[1] = 1/2, find H(e<sup>jω</sup>), |H(e<sup>jω</sup>)|, and ∠H(e<sup>jω</sup>).`),
+  P("M2","شيت Magnitude",1,`Given h[0] = 1/2 and h[1] = 1/2, find H(e<sup>jω</sup>), magnitude, and phase. (Lecture example)`),
+  P("M3","شيت Magnitude",1,`Given h[0] = 1/3, h[1] = 1/3, and h[2] = 1/3, find H(e<sup>jω</sup>), magnitude, and phase. Simplify where possible.`),
+  P("M4","شيت Magnitude",1,`Given h[0] = 1 and h[1] = −1, find H(e<sup>jω</sup>), magnitude, and phase.`),
+  P("M5","شيت Magnitude",1,`Given h[0] = 1/2 and h[1] = −1/2, find H(e<sup>jω</sup>), magnitude, and phase.`),
+  P("M6","شيت Magnitude",1,`Given h[2] = 1 and all other samples are zero, find H(e<sup>jω</sup>), magnitude, and phase.`),
+  P("M7","شيت Magnitude",1,`A system has H(e<sup>jω</sup>) = 1 + j. Find its magnitude and phase.`),
+  P("M8","شيت Magnitude",1,`Given H(e<sup>jω</sup>) = 1 − e<sup>−jω</sup>, rewrite it in a form that makes the magnitude and phase easier to identify. Then find both.`),
+  P("M9","شيت Magnitude",1,`For h[0] = 1/2 and h[1] = 1/2, evaluate H, magnitude, and phase at ω = π/2.`),
+  P("M10","شيت Magnitude",1,`Given h[0] = 1/4, h[1] = 1/2, and h[2] = 1/4, find H(e<sup>jω</sup>), magnitude, and phase. Identify frequencies where the magnitude is zero and phase is undefined.`),
+ ]},
+];
+const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return {}}};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch{}};
+let S=load(),filter="all";
+const app=document.getElementById("app"),ALL=SECTIONS.flatMap(s=>s.items);
+SECTIONS.forEach(s=>{
+  const sec=document.createElement("section");
+  sec.style.cssText="display:flex;flex-direction:column;gap:12px";
+  sec.innerHTML=`<h2>${s.t}</h2>`+(s.note?`<div class="box">${s.note}</div>`:"");
+  s.items.forEach(it=>{
+    const c=document.createElement("article");
+    c.className="card";c.dataset.id=it.id;c.dataset.p=it.p;
+    c.innerHTML=`<div class="head"><span class="num">${it.id}</span><span class="tag">${it.src}</span><span class="tag">أولوية ${it.p}</span></div>
+      <div class="q">${it.q}</div>
+      <div class="acts"><button class="ok-b" aria-pressed="false">حليتها ✓</button><button class="st-b" aria-pressed="false">وقفت هنا</button></div>`;
+    c.querySelector(".ok-b").onclick=()=>mark(it.id,"ok");
+    c.querySelector(".st-b").onclick=()=>mark(it.id,"stuck");
+    sec.append(c);
+  });
+  app.append(sec);
+});
+function mark(id,v){ if(S[id]===v) delete S[id]; else S[id]=v; save(); render(); }
+function render(){
+  document.querySelectorAll(".card").forEach(c=>{
+    const v=S[c.dataset.id];
+    c.classList.toggle("ok",v==="ok");c.classList.toggle("stuck",v==="stuck");
+    c.querySelector(".ok-b").setAttribute("aria-pressed",v==="ok");
+    c.querySelector(".st-b").setAttribute("aria-pressed",v==="stuck");
+    c.classList.toggle("hide",(filter==="p1"&&c.dataset.p!=="1")||(filter==="stuck"&&v!=="stuck"));
+  });
+  document.querySelectorAll("section").forEach(s=>s.classList.toggle("hide",!s.querySelector(".card:not(.hide)")));
+  const done=ALL.filter(i=>S[i.id]==="ok").length,stuck=ALL.filter(i=>S[i.id]==="stuck").length;
+  document.getElementById("count").textContent=`${done}/${ALL.length} اتحلت · ${stuck} وقفت فيها`;
+  document.getElementById("fill").style.width=(done/ALL.length*100)+"%";
+}
+document.querySelectorAll(".f").forEach(b=>b.onclick=()=>{
+  filter=b.dataset.f;
+  document.querySelectorAll(".f").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  render();
+});
+document.getElementById("print").onclick=()=>window.print();
+render();
+</script>
+</body>
+</html>
