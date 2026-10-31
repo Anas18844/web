@@ -64,51 +64,149 @@ svg{width:100%;height:auto;display:block;background:#FBFCFE;border:1px solid var
 <div class="bar"><div class="in"><a href="/interactive/university/midterm">الخريطة</a><a href="/interactive/university/dsp-problems">المسائل</a><span class="sp"></span><span id="pct"></span><div class="track"><i id="fill"></i></div></div></div>
 
 <div class="wrap">
-<header class="hero"><div class="meta">DSP · Lec 3</div><h1>تحريك الإشارات وخصايص الـ System</h1><p>نص الدرس بيعلمك تحرك الإشارة، والنص التاني بيعلمك تختبر الـ system: هل هو linear؟ وهل shift-invariant؟</p></header>
-<section class="part" id="p1"><div class="num">الجزء 1</div><h2>تحريك الـ index</h2>
-<div class="tbl"><table><tr><th>العملية</th><th>الشكل</th><th>المعنى</th></tr>
-<tr><td>Delay</td><td class="m">x[n − n₀]</td><td>يمين بـ <span class="m">n₀</span></td></tr>
-<tr><td>Advance</td><td class="m">x[n + n₀]</td><td>شمال بـ <span class="m">n₀</span></td></tr>
-<tr><td>Reversal</td><td class="m">x[−n]</td><td>مراية حوالين <span class="m">n = 0</span></td></tr>
-<tr><td>Downsampling</td><td class="m">x[Mn]</td><td>بناخد كل M-th عينة</td></tr>
-<tr><td>Upsampling</td><td class="m">x[n/L]</td><td>صفار بين العينات</td></tr></table></div>
-<div class="ex"><b>مثال</b><p>Downsample: <span class="m">x = {5,1,4,2,7,3}</span>، و<span class="m">x[2n]</span> بتاخد 0 و2 و4: <span class="m">{5, 4, 7}</span>.</p><p>Upsample: <span class="m">x = {3,6,2}</span> تبقى <span class="m">{3,0,6,0,2}</span>.</p></div>
-<div class="trick"><b>تريك الامتحان (جدول الـ index):</b> في <span class="m">x(4−n)</span> أو <span class="m">x(2n−3)</span> ما تتخيلش. اعمل جدول: كل n، واحسب الجوة، وهات قيمة x. ده بيحل 1.7 كلها.</div>
-<div class="ex"><b>مثال محلول</b><p><span class="m">x = {2,1,3}</span> عند <span class="m">n = 0,1,2</span>، و<span class="m">y[n] = x[3−n]</span>:</p><p class="m">n=1 → x[2]=3 &nbsp; n=2 → x[1]=1 &nbsp; n=3 → x[0]=2</p></div>
-<div class="trap"><b>فخ:</b> Reversal بتغير مكان العينة بس، ما بتغيرش إشارتها. ولاحظ إن عنوان السلايدز دي مكتوب عليه Lecture 2 بالغلط.</div>
+<header class="hero"><div class="meta">DSP · Lec 3</div><h1>تحريك الإشارات وخصايص الـ System</h1><p>هنمشي على مرحلتين: الأولى إزاي نحرك الإشارة، والتانية إزاي نختبر الـ system. وكل فكرة هتبدأ بأرقام، وبعدها القاعدة، وبعدها طريقة حلها في الامتحان.</p></header>
+<section class="part" id="p1"><div class="num">الجزء 1</div><h2>الأساس: حاجتين لازم تفرق بينهم</h2>
+<p>أي إشارة زي جدول فيه عمودين. مثال: <span class="m">x = {2, 1, 3, 0}</span>، وأول قيمة عند <span class="m">n = 0</span>.</p>
+<div class="tbl"><table><tr><th>n (المكان)</th><td class="m">0</td><td class="m">1</td><td class="m">2</td><td class="m">3</td></tr><tr><th>x[n] (القيمة)</th><td class="m">2</td><td class="m">1</td><td class="m">3</td><td class="m">0</td></tr></table></div>
+<ul class="list"><li><span class="m">n</span> هو <b>المكان</b>، زي رقم الكرسي.</li><li><span class="m">x[n]</span> هي <b>القيمة</b> اللي قاعدة على الكرسي.</li></ul>
+<p>يعني <span class="m">x[2] = 3</span> معناها: روح للمكان 2 وهات القيمة اللي فيه.</p>
+<div class="idea">كل عمليات الدرس نوعين: نوع بيغير <b>الأماكن</b> (الجزء 2 لحد 5)، ونوع بيغير <b>القيم</b> (الجزء 6).</div>
+<div><button class="btn ghost" data-done="p1"></button></div></section>
+<section class="part" id="p2"><div class="num">الجزء 2</div><h2>Shifting: نزيح الإشارة</h2>
+<p>ناخد <span class="m">x = {1, 2, 3}</span> عند <span class="m">n = 0, 1, 2</span>، ونحسب <span class="m">y[n] = x[n−2]</span>. هنعوّض مكان مكان:</p>
+<div class="tbl"><table dir="ltr"><tr><th>n</th><th>y[n] = x[n−2]</th><th>القيمة</th></tr>
+<tr><td class="m">1</td><td class="m">x[−1]</td><td class="m">0</td></tr><tr><td class="m">2</td><td class="m">x[0]</td><td class="m">1</td></tr><tr><td class="m">3</td><td class="m">x[1]</td><td class="m">2</td></tr><tr><td class="m">4</td><td class="m">x[2]</td><td class="m">3</td></tr></table></div>
+<p>القيمة 1 كانت عند 0، وبقت عند 2. يعني الإشارة راحت <b>يمين بـ 2</b>. ده اسمه <b>Delay</b>، لأن الإشارة وصلت متأخر.</p>
+<p>وبنفس الطريقة، <span class="m">y[n] = x[n+1]</span> بتروح <b>شمال بـ 1</b>، وده اسمه <b>Advance</b>.</p>
+<div class="trap"><b>فخ:</b> السالب يمين، والموجب شمال. الإحساس بيقول العكس، فلو نسيت عوّض بجدول زي اللي فوق.</div>
+<div><button class="btn ghost" data-done="p2"></button></div></section>
+<section class="part" id="p3"><div class="num">الجزء 3</div><h2>Reversal: نعكس الإشارة</h2>
+<p>ناخد <span class="m">x[0]=4, x[1]=2, x[2]=7</span>، ونحسب <span class="m">y[n] = x[−n]</span>:</p>
+<div class="tbl"><table dir="ltr"><tr><th>n</th><th>y[n] = x[−n]</th><th>القيمة</th></tr>
+<tr><td class="m">−2</td><td class="m">x[2]</td><td class="m">7</td></tr><tr><td class="m">−1</td><td class="m">x[1]</td><td class="m">2</td></tr><tr><td class="m">0</td><td class="m">x[0]</td><td class="m">4</td></tr></table></div>
+<p>الإشارة اتعكست زي المراية حوالين <span class="m">n = 0</span>.</p>
+<div class="trap"><b>فخ:</b> اللي بيتعكس هو المكان، مش إشارة القيمة. القيمة 7 بتفضل 7، ومش بتبقى −7.</div>
+<div><button class="btn ghost" data-done="p3"></button></div></section>
+<section class="part" id="p4"><div class="num">الجزء 4</div><h2>Time Scaling: نختار عينات أو نضيف صفار</h2>
+<h3>Downsampling: <span class="m">y[n] = x[2n]</span></h3>
+<p>لو <span class="m">x = {5,1,4,2,7,3}</span>:</p>
+<p class="m">y[0] = x[0] = 5 &nbsp; y[1] = x[2] = 4 &nbsp; y[2] = x[4] = 7</p>
+<p>يعني أخدنا عينة وسبنا عينة، والنتيجة <span class="m">{5, 4, 7}</span>.</p>
+<h3>Upsampling: نزود صفار</h3>
+<p>لو <span class="m">x = {3,6,2}</span>، بنحط صفر بين كل عينتين: <span class="m">{3, 0, 6, 0, 2}</span>.</p>
+<div><button class="btn ghost" data-done="p4"></button></div></section>
+<section class="part" id="p5"><div class="num">الجزء 5</div><h2>المسائل المركبة: طريقة ثابتة بـ 3 خطوات</h2>
+<p>مسألة زي <span class="m">x[4−n]</span> أو <span class="m">x[2n−3]</span> ما تحلهاش في دماغك. الطريقة دي بتحل أي شكل:</p>
+<ol class="list"><li>اكتب x جدول: كل n وقيمتها.</li><li>لكل n جرب، احسب اللي جوه القوس.</li><li>هات قيمة x عند الناتج. لو برة الجدول، تبقى صفر.</li></ol>
+<div class="ex"><b>مثال كامل</b><p><span class="m">x = {2, 1, 3}</span> عند <span class="m">n = 0, 1, 2</span>، والمطلوب <span class="m">y[n] = x[3−n]</span>.</p>
+<div class="tbl"><table dir="ltr"><tr><th>n</th><th>3−n</th><th>y[n]</th></tr><tr><td class="m">0</td><td class="m">3</td><td class="m">x[3] = 0</td></tr><tr><td class="m">1</td><td class="m">2</td><td class="m">x[2] = 3</td></tr><tr><td class="m">2</td><td class="m">1</td><td class="m">x[1] = 1</td></tr><tr><td class="m">3</td><td class="m">0</td><td class="m">x[0] = 2</td></tr><tr><td class="m">4</td><td class="m">−1</td><td class="m">x[−1] = 0</td></tr></table></div>
+<p>النتيجة: <span class="m">y = {3, 1, 2}</span> عند <span class="m">n = 1, 2, 3</span>.</p></div>
+<div class="trick"><b>تريك:</b> عشان تعرف تجرب أنهي n: خلي اللي جوه القوس يساوي أول مكان وآخر مكان في x.</div>
 
 <div class="lab"><div class="tag">جرّب بنفسك: <span class="m">x = {2, 1, 3, 1}</span> عند <span class="m">n = 0…3</span></div>
 <div class="ctl"><label>y[n] = x[a·n + b]: a<select id="l3a"><option>1</option><option>-1</option><option>2</option><option>-2</option></select></label><label>b = <output id="l3bv">0</output><input id="l3b" type="range" min="-4" max="4" value="0"></label></div>
-<div id="l3x"></div><div id="l3y"></div><div class="read" id="l3r"></div></div><div><button class="btn ghost" data-done="p1"></button></div></section>
-<section class="part" id="p2"><div class="num">الجزء 2</div><h2>تغيير الـ amplitude</h2>
-<p>كلها نقطة بنقطة عند نفس الـ n: <b>Addition</b> <span class="m">x₁[n] + x₂[n]</span>، و<b>Multiplication</b> <span class="m">x₁[n]x₂[n]</span>، و<b>Scaling</b> <span class="m">c·x[n]</span>.</p>
-<div class="ex"><b>مثال</b><p><span class="m">x = {2,4,6,8}</span> و<span class="m">m = {1,0,1,0}</span>، يبقى <span class="m">y = {2,0,6,0}</span>. الـ mask ده بيقفل عينات.</p></div>
-<div class="trap"><b>فخ:</b> الضرب هنا مش convolution. ده عند نفس الـ index بس.</div>
-<div><button class="btn ghost" data-done="p2"></button></div></section>
-<section class="part" id="p3"><div class="num">الجزء 3</div><h2>الـ System وخصايصه</h2>
-<p>الـ <b>system</b> <span class="m">T{·}</span> قاعدة بتاخد <span class="m">x[n]</span> وتطلّع <span class="m">y[n]</span>.</p>
-<p><b>Memoryless:</b> y بتعتمد على <span class="m">x[n]</span> عند نفس الـ n بس. <span class="m">y[n] = 2x[n]</span> memoryless، و<span class="m">y[n] = x[n] + x[n−1]</span> with memory.</p>
-<h3>الـ Linearity</h3>
-<div class="mb">Additivity: T{x₁+x₂} = T{x₁}+T{x₂} &nbsp;&nbsp; Homogeneity: T{cx} = cT{x}</div>
-<p><b>Linear = الاتنين مع بعض</b>:</p>
-<div class="mb">T{ax₁ + bx₂} = aT{x₁} + bT{x₂}</div>
-<div class="trick"><b>تريك:</b> لو فيه constant لوحده (زي <span class="m">+1</span>)، يبقى مش linear. ولو <span class="m">x</span> داخل دالة (<span class="m">log، x²، |x|</span>)، غالبًا nonlinear. أما <span class="m">sin(nπ/2)</span> معامل في n، فما بيبوظش الـ linearity.</div>
-<div class="trap"><b>فخ 1.12:</b> <span class="m">Re{x}</span> additive بس مش homogeneous، لأن c ممكن تكون complex. وكسر زي <span class="m">x(n+1)x(n−1)/x(n)</span> homogeneous بس مش additive.</div>
-<h3>الـ Shift-Invariance</h3>
-<p>لو أزحت الدخل، الخرج لازم يتزاح بنفس المقدار. والاختبار خطوتين:</p>
-<ol class="list"><li>عوّض <span class="m">x[n−n₀]</span> في الـ system واحسب <span class="m">y₁[n]</span>.</li><li>احسب <span class="m">y[n−n₀]</span> (بدّل كل n بـ <span class="m">n−n₀</span>).</li></ol>
-<p>لو الاتنين زي بعض، يبقى shift-invariant.</p>
-<div class="ex"><b>مثال محلول</b><p><span class="m">y[n] = x[2n]</span>: <span class="m">y₁[n] = x[2n − n₀]</span>، لكن <span class="m">y[n−n₀] = x[2n − 2n₀]</span>. مختلفين، يبقى <b>shift-varying</b>.</p></div>
-<div class="trick"><b>تريك:</b> لو n ظاهرة برة x كمعامل (<span class="m">n·x[n]</span>، <span class="m">x[n]u[n]</span>)، أو n مضروبة جوه (<span class="m">x[2n]</span>، <span class="m">x[−n]</span>، <span class="m">x[n²]</span>)، يبقى shift-varying.</div>
-<div class="trick"><b>ربط:</b> الخصايص مستقلة. <span class="m">x²</span> shift-invariant وnonlinear، و<span class="m">x[n]sin(nπ/2)</span> linear وshift-varying.</div>
-<div><button class="btn ghost" data-done="p3"></button></div></section>
+<div id="l3x"></div><div id="l3y"></div><div class="read" id="l3r"></div></div><div><button class="btn ghost" data-done="p5"></button></div></section>
+<section class="part" id="p6"><div class="num">الجزء 6</div><h2>تغيير القيم</h2>
+<p>هنا الأماكن ثابتة، والقيم بس اللي بتتغير. وبنشتغل عند <b>نفس الـ n</b>:</p>
+<div class="tbl"><table dir="ltr"><tr><th></th><th>x₁</th><th>x₂</th><th>النتيجة</th></tr>
+<tr><td>Addition</td><td class="m">{1,2,0}</td><td class="m">{3,−1,4}</td><td class="m">{4,1,4}</td></tr>
+<tr><td>Multiplication</td><td class="m">{2,4,6,8}</td><td class="m">{1,0,1,0}</td><td class="m">{2,0,6,0}</td></tr>
+<tr><td>Scaling (c = 0.5)</td><td class="m">{−2,1,3}</td><td></td><td class="m">{−1,0.5,1.5}</td></tr></table></div>
+<div><button class="btn ghost" data-done="p6"></button></div></section>
+<section class="part" id="p7"><div class="num">الجزء 7</div><h2>يعني إيه System؟</h2>
+<p>الـ <b>system</b> ماكينة: بتدخل لها إشارة <span class="m">x[n]</span>، فتطلع إشارة <span class="m">y[n]</span>. والمعادلة هي <b>طريقة شغل الماكينة</b>.</p>
+<div class="mb">x[n] → [ T ] → y[n]</div>
+<div class="ex"><b>مثال</b><p>ماكينة <span class="m">y[n] = x[n] + x[n−1]</span> بتجمع القيمة الحالية مع اللي قبلها. لو <span class="m">x = {1, 2, 3}</span>:</p>
+<p class="m">y[0] = 1 + 0 = 1 &nbsp; y[1] = 2 + 1 = 3 &nbsp; y[2] = 3 + 2 = 5 &nbsp; y[3] = 0 + 3 = 3</p></div>
+<h3>أول خاصية: Memoryless</h3>
+<p>الماكينة بتحتاج تفتكر حاجة؟ لو الخرج بيعتمد على <span class="m">x[n]</span> عند نفس اللحظة بس، تبقى <b>Memoryless</b>. ولو استخدمت قيمة تانية، زي <span class="m">x[n−1]</span>، تبقى <b>with memory</b>.</p>
+<p class="m">y[n] = 2x[n] → memoryless &nbsp;&nbsp; y[n] = x[n] + x[n−1] → with memory</p>
+<div><button class="btn ghost" data-done="p7"></button></div></section>
+<section class="part" id="p8"><div class="num">الجزء 8</div><h2>يعني إيه Linear؟ (أهم جزء)</h2>
+<div class="idea">الـ Linear معناها إن الماكينة <b>عادلة ومتوقعة</b>: لو ضاعفت الدخل، الخرج يتضاعف بالظبط. ولو دخلت حاجتين مع بعض، الخرج هو مجموع خرج كل واحدة لوحدها.</div>
+<h3>الشرط الأول: Homogeneity (الضرب)</h3>
+<p>جرب <span class="m">y = 2x</span> بأرقام:</p>
+<p class="m">x = 3 → y = 6 &nbsp;&nbsp; ولو ضاعفنا: x = 6 → y = 12 = 2 × 6 ✓</p>
+<p>دلوقتي جرب <span class="m">y = x + 1</span>:</p>
+<p class="m">x = 3 → y = 4 &nbsp;&nbsp; ولو ضاعفنا: x = 6 → y = 7 ≠ 2 × 4 ✗</p>
+<p>بالرموز: لازم <span class="m">T{c·x} = c·T{x}</span>.</p>
+<h3>الشرط التاني: Additivity (الجمع)</h3>
+<p>جرب <span class="m">y = x²</span> بـ <span class="m">x₁ = 1</span> و<span class="m">x₂ = 2</span>:</p>
+<p class="m">T{1+2} = 3² = 9 &nbsp;&nbsp; T{1} + T{2} = 1 + 4 = 5 ✗</p>
+<p>بالرموز: لازم <span class="m">T{x₁+x₂} = T{x₁} + T{x₂}</span>.</p>
+<p><b>Linear = الشرطين الاتنين مع بعض.</b></p>
+<h3>إزاي تعرفها من المعادلة في 3 أسئلة؟</h3>
+<ol class="list"><li><b>فيه رقم لوحده من غير x؟</b> زي <span class="m">+1</span>. يبقى <b>Nonlinear</b>.</li><li><b>x جوه دالة، أو مضروبة في x تانية، أو في مقام؟</b> زي <span class="m">x²</span> أو <span class="m">log(x)</span> أو <span class="m">|x|</span> أو <span class="m">x[n]x[n−1]</span>. يبقى <b>Nonlinear</b>.</li><li><b>كل حد شكله (معامل) × x[حاجة]؟</b> يبقى <b>Linear</b>.</li></ol>
+<div class="trick"><b>المعامل مسموح يكون فيه n:</b> <span class="m">n·x[n]</span> و<span class="m">x[n]sin(nπ/2)</span> الاتنين Linear، لأن الدالة واقعة على n، مش على x.</div>
+<div class="tbl"><table dir="ltr"><tr><th>المعادلة</th><th>السبب</th><th>النتيجة</th></tr>
+<tr><td class="m">y = 3x[n]</td><td>coefficient × x</td><td>Linear</td></tr>
+<tr><td class="m">y = x[n] + x[n−1]</td><td>every term × x</td><td>Linear</td></tr>
+<tr><td class="m">y = n·x[n]</td><td>coefficient is n</td><td>Linear</td></tr>
+<tr><td class="m">y = x[n] + 5</td><td>lone constant</td><td>Nonlinear</td></tr>
+<tr><td class="m">y = x[n]²</td><td>x × x</td><td>Nonlinear</td></tr>
+<tr><td class="m">y = log(x[n])</td><td>x inside a function</td><td>Nonlinear</td></tr></table></div>
+<h3>وفي الامتحان بتكتب إزاي؟</h3>
+<p>الأسئلة الـ 3 بتعرفك الإجابة، بس الإثبات لازم يتكتب. ومسألة <span class="m">y[n] = 2x[n] + x[n−1]</span> بتتكتب كده:</p>
+<div class="ex"><b>Homogeneity</b><p class="m">T{c x[n]} = 2c x[n] + c x[n−1] = c(2x[n] + x[n−1]) = c T{x[n]} ✓</p>
+<b>Additivity</b><p class="m">T{x₁+x₂} = 2(x₁[n]+x₂[n]) + (x₁[n−1]+x₂[n−1])</p><p class="m">= (2x₁[n]+x₁[n−1]) + (2x₂[n]+x₂[n−1]) = T{x₁}+T{x₂} ✓</p>
+<p>الشرطين اتحققوا، يبقى <b>Linear</b>.</p></div>
+<p>ولو الـ system <b>مش</b> linear، مثال بأرقام واحد بيكفي:</p>
+<div class="ex"><b>مثال عكسي</b><p><span class="m">y[n] = x[n] + 5</span>: خد <span class="m">x = 1, c = 2</span>:</p><p class="m">T{2·1} = 7 &nbsp; 2·T{1} = 12 &nbsp; 7 ≠ 12 → Nonlinear</p></div>
+<div><button class="btn ghost" data-done="p8"></button></div></section>
+<section class="part" id="p9"><div class="num">الجزء 9</div><h2>يعني إيه Invariant و Variant؟</h2>
+<div class="idea">الـ Shift-Invariant معناها إن الماكينة <b>ما بتتغيرش مع الوقت</b>. لو شغلتها النهارده أو بكرة بنفس الدخل، هتطلع نفس الخرج، بس بتأخير. و<b>Variant</b> عكسها: الماكينة بتتصرف بشكل مختلف حسب اللحظة.</div>
+<p>مثال من الحياة: آلة حاسبة بتدي نفس النتيجة في أي وقت، فهي Invariant. لكن مكيف بيقلل قوته كل ساعة أكتر، فهو Variant، لأن رده بيعتمد على الوقت.</p>
+<h3>نشوفها بأرقام</h3>
+<p>نختبر <span class="m">y[n] = n·x[n]</span> بنبضة قيمتها 1:</p>
+<p class="m">النبضة عند n = 1: y[1] = 1×1 = 1</p>
+<p class="m">النبضة عند n = 5: y[5] = 5×1 = 5</p>
+<p>نفس النبضة، بس الخرج اتغير من 1 لـ 5 لمجرد إننا غيرنا الوقت. يبقى <b>Shift-Variant</b>.</p>
+<p>نختبر <span class="m">y[n] = 2x[n]</span>: النبضة عند <span class="m">n = 1</span> تطلع 2، وعند <span class="m">n = 5</span> تطلع 2. نفس الرد، يبقى <b>Shift-Invariant</b>.</p>
+<h3>إزاي تعرفها من المعادلة؟</h3>
+<p>بص على <span class="m">n</span> فين. عندك علامتين للـ <b>Variant</b>:</p>
+<ol class="list"><li><b>n ظاهرة برة x كمعامل:</b> زي <span class="m">n·x[n]</span> و<span class="m">x[n]u[n]</span> و<span class="m">x[n]sin(nπ/2)</span>.</li><li><b>n جوه x مش بشكل n − رقم:</b> زي <span class="m">x[2n]</span> و<span class="m">x[−n]</span> و<span class="m">x[n²]</span>.</li></ol>
+<p>لو n موجودة بس بشكل <span class="m">x[n − رقم]</span> من غير أي معامل فيه n، يبقى <b>Invariant</b>.</p>
+<div class="tbl"><table dir="ltr"><tr><th>المعادلة</th><th>النتيجة</th></tr>
+<tr><td class="m">y = x[n] + x[n−1]</td><td>Invariant</td></tr><tr><td class="m">y = x[n]²</td><td>Invariant (rule has no n)</td></tr><tr><td class="m">y = x[n−3] + 5</td><td>Invariant</td></tr>
+<tr><td class="m">y = n·x[n]</td><td>Variant</td></tr><tr><td class="m">y = x[2n]</td><td>Variant</td></tr><tr><td class="m">y = x[−n]</td><td>Variant</td></tr></table></div>
+<div class="trap"><b>Linear وInvariant سؤالين منفصلين:</b> <span class="m">x²</span> Nonlinear بس Invariant. و<span class="m">n·x[n]</span> Linear بس Variant.</div>
+<h3>وفي الامتحان بتكتب إزاي؟</h3>
+<p>الاختبار هو مقارنة طريقين:</p>
+<ul class="list"><li><b>الطريق الأول <span class="m">y₁[n]</span>:</b> أزيح الدخل. بدّل <b>x</b> بس، و<b>n اللي برة تفضل زي ما هي</b>.</li><li><b>الطريق التاني <span class="m">y[n−n₀]</span>:</b> أزيح الخرج. بدّل <b>كل n</b> بـ <span class="m">n−n₀</span>.</li></ul>
+<p>لو الطريقين زي بعض، تبقى Invariant.</p>
+<div class="ex"><b>مثال 1: <span class="m">y[n] = x[n] + x[n−1]</span></b><p class="m">y₁[n] = x[n−n₀] + x[n−1−n₀]</p><p class="m">y[n−n₀] = x[n−n₀] + x[n−n₀−1]</p><p>زي بعض، يبقى <b>Invariant</b>.</p></div>
+<div class="ex"><b>مثال 2: <span class="m">y[n] = n·x[n]</span></b><p class="m">y₁[n] = n·x[n−n₀]</p><p class="m">y[n−n₀] = (n−n₀)·x[n−n₀]</p><p>مختلفين، يبقى <b>Variant</b>.</p></div>
+<div class="ex"><b>مثال 3: <span class="m">y[n] = x[2n]</span></b><p class="m">y₁[n] = x[2n−n₀]</p><p class="m">y[n−n₀] = x[2(n−n₀)] = x[2n−2n₀]</p><p>مختلفين، يبقى <b>Variant</b>.</p></div>
+<div class="trap"><b>فخ مثال 3:</b> في <span class="m">y₁</span> الإزاحة بتتحط على n مباشرة جوه x، من غير ما تتضرب في 2.</div>
+<div><button class="btn ghost" data-done="p9"></button></div></section>
+<section class="part" id="p10"><div class="num">الجزء 10</div><h2>جرب بإيدك</h2>
+<p>اختار system، وغيّر الأرقام، وشوف الاختبارات. ولاحظ: مثال واحد ناجح مش إثبات، بس مثال واحد فاشل كفاية إنه ينفي الخاصية.</p>
+
+<div class="lab"><div class="tag">معمل الاختبار: اختار system وشوف النتيجة بنفسك</div>
+<div class="ctl"><label>system<select id="sy">
+<option value="a">y[n] = 2x[n]</option><option value="d">y[n] = x[n] + x[n−1]</option><option value="h">y[n] = x[n−2]</option>
+<option value="b">y[n] = x[n] + 1</option><option value="c">y[n] = x[n]²</option><option value="e">y[n] = n·x[n]</option>
+<option value="f">y[n] = x[2n]</option><option value="g">y[n] = x[−n]</option></select></label>
+<label>x₁ (from n=0)<input id="sx1" value="1,2,3"></label><label>x₂ (from n=0)<input id="sx2" value="2,0,1"></label><label>c<input id="sc" type="number" value="2"></label><label>n₀<input id="sn" type="number" value="1"></label></div>
+<div class="tbl" id="st"></div></div><div><button class="btn ghost" data-done="p10"></button></div></section>
+<section class="part" id="p11"><div class="num">الجزء 11</div><h2>حل موجّه لمسائل الشيت</h2>
+<p>حاول الأول بالأسئلة اللي فوق، وبعدين افتح الحل. الحل مكتوب بالشكل اللي ينفع في الامتحان.</p>
+<h3>مسألة 1.7: <span class="m">x(n) = (6−n)[u(n) − u(n−6)]</span></h3>
+<p>الجدول: <span class="m">x = {6,5,4,3,2,1}</span> عند <span class="m">n = 0…5</span>.</p>
+<div class="prob"><div>(a) <span class="m">y₁(n) = x(4−n)</span></div><div><button class="btn ghost" data-sol="g1">اظهر الحل</button></div><div class="sol" id="g1"><span class="m">4−n</span> من 0 لـ 5 يعني <span class="m">n</span> من 4 لـ −1.<br><span class="m">y₁ = {1,2,3,4,5,6}</span> عند <span class="m">n = −1…4</span>.</div></div><div class="prob"><div>(b) <span class="m">y₂(n) = x(2n−3)</span></div><div><button class="btn ghost" data-sol="g2">اظهر الحل</button></div><div class="sol" id="g2"><span class="m">n=2 → x(1)=5</span>، و<span class="m">n=3 → x(3)=3</span>، و<span class="m">n=4 → x(5)=1</span>. وعند <span class="m">n=1</span> الجوة −1، فالقيمة صفر.</div></div><div class="prob"><div>(c) <span class="m">y₃(n) = x(8−3n)</span></div><div><button class="btn ghost" data-sol="g3">اظهر الحل</button></div><div class="sol" id="g3"><span class="m">n=1 → x(5)=1</span>، و<span class="m">n=2 → x(2)=4</span>. وعند <span class="m">n=0</span> الجوة 8، وعند <span class="m">n=3</span> الجوة −1، فالاتنين صفر.</div></div><div class="prob"><div>(d) <span class="m">y₄(n) = x(n²−2n+1)</span></div><div><button class="btn ghost" data-sol="g4">اظهر الحل</button></div><div class="sol" id="g4">اللي جوه هو <span class="m">(n−1)²</span>. <span class="m">n=1 → x(0)=6</span>، و<span class="m">n=0,2 → x(1)=5</span>، و<span class="m">n=−1,3 → x(4)=2</span>. وباقي القيم صفر.</div></div>
+<h3>مسألة 1.12: homogeneous؟ additive؟ linear؟</h3>
+<div class="prob"><div>(a) <span class="m">y(n) = log(x(n))</span></div><div><button class="btn ghost" data-sol="g5">اظهر الحل</button></div><div class="sol" id="g5"><span class="m">log(cx) = log c + log x ≠ c·log x</span>، يبقى مش homogeneous.<br><span class="m">log(x₁+x₂) ≠ log x₁ + log x₂</span>، يبقى مش additive. والنتيجة <b>Nonlinear</b>.</div></div><div class="prob"><div>(b) <span class="m">y(n) = 6x(n+2) + 4x(n+1) + 2x(n) + 1</span></div><div><button class="btn ghost" data-sol="g6">اظهر الحل</button></div><div class="sol" id="g6">فيه <span class="m">+1</span> لوحده. <span class="m">T{cx} = c[…] + 1</span> و<span class="m">cT{x} = c[…] + c</span>، فمش homogeneous.<br><span class="m">T{x₁+x₂} = y₁ + y₂ − 1</span>، فمش additive. والنتيجة <b>Nonlinear</b>.</div></div><div class="prob"><div>(c) <span class="m">y(n) = 6x(n) + x(n+1)x(n−1)/x(n)</span></div><div><button class="btn ghost" data-sol="g7">اظهر الحل</button></div><div class="sol" id="g7">لو ضربنا x في c: الكسر فوق فيه <span class="m">c²</span> وتحت c، فيفضل c واحدة. يبقى <b>homogeneous</b>.<br>لكن الكسر ما بيتقسمش على مجموع، فمش additive. والنتيجة <b>Nonlinear</b>.</div></div><div class="prob"><div>(d) <span class="m">y(n) = x(n) sin(nπ/2)</span></div><div><button class="btn ghost" data-sol="g8">اظهر الحل</button></div><div class="sol" id="g8"><span class="m">T{ax₁+bx₂} = [ax₁+bx₂]sin(nπ/2) = ay₁ + by₂</span>. يبقى <b>Linear</b>، يعني الاتنين homogeneous وadditive.</div></div><div class="prob"><div>(e) <span class="m">y(n) = Re{x(n)}</span></div><div><button class="btn ghost" data-sol="g9">اظهر الحل</button></div><div class="sol" id="g9"><span class="m">Re{x₁+x₂} = Re{x₁} + Re{x₂}</span>، يبقى <b>additive</b>.<br>لكن لو c complex، <span class="m">Re{cx} ≠ c·Re{x}</span>. مثال: <span class="m">c = j</span> و<span class="m">x = 1</span> بتدي 0 مقابل j. فمش homogeneous، والنتيجة <b>Nonlinear</b>.</div></div><div class="prob"><div>(f) <span class="m">y(n) = ½[x(n) + x*(−n)]</span></div><div><button class="btn ghost" data-sol="g10">اظهر الحل</button></div><div class="sol" id="g10">الجمع بيتوزع عادي، يبقى <b>additive</b>.<br>لكن <span class="m">(cx)* = c*x*</span>، فـ <span class="m">T{cx} = ½[cx(n) + c*x*(−n)] ≠ cT{x}</span>. فمش homogeneous، والنتيجة <b>Nonlinear</b>.</div></div>
+<h3>مسألة 1.13: مثالين</h3>
+<div class="prob"><div>(a) homogeneous بس مش additive. (b) additive بس مش homogeneous.</div><div><button class="btn ghost" data-sol="g11">اظهر الحل</button></div><div class="sol" id="g11">(a) <span class="m">y(n) = x(n−1)x(n)/x(n+1)</span>: الـ c بتطلع مرة واحدة، بس الكسر ما بيتوزعش.<br>(b) <span class="m">y(n) = Im{x(n)}</span>: الجمع بيتوزع، بس <span class="m">Im{jx} ≠ j·Im{x}</span>.</div></div>
+<h3>مسألة 1.14: shift-invariant؟</h3>
+<div class="prob"><div>(a) <span class="m">y(n) = x(n) + x(n−1) + x(n−2)</span></div><div><button class="btn ghost" data-sol="g12">اظهر الحل</button></div><div class="sol" id="g12"><span class="m">y₁(n) = x(n−n₀) + x(n−n₀−1) + x(n−n₀−2) = y(n−n₀)</span>. يبقى <b>Invariant</b>.</div></div><div class="prob"><div>(b) <span class="m">y(n) = x(n)u(n)</span></div><div><button class="btn ghost" data-sol="g13">اظهر الحل</button></div><div class="sol" id="g13"><span class="m">y₁(n) = x(n−n₀)u(n)</span>، و<span class="m">y(n−n₀) = x(n−n₀)u(n−n₀)</span>. مختلفين، يبقى <b>Variant</b>. المعامل <span class="m">u(n)</span> بيتغير مع n.</div></div><div class="prob"><div>(c) <span class="m">y(n) = Σₖ₌₋∞ⁿ x(k)</span></div><div><button class="btn ghost" data-sol="g14">اظهر الحل</button></div><div class="sol" id="g14"><span class="m">y₁(n) = Σₖ₌₋∞ⁿ x(k−n₀)</span>. وبتعويض <span class="m">l = k−n₀</span> تبقى <span class="m">Σₗ₌₋∞ⁿ⁻ⁿ⁰ x(l) = y(n−n₀)</span>. يبقى <b>Invariant</b>.</div></div><div class="prob"><div>(d) <span class="m">y(n) = x(n²)</span></div><div><button class="btn ghost" data-sol="g15">اظهر الحل</button></div><div class="sol" id="g15">مثال عكسي: <span class="m">x = δ(n)</span> تدي <span class="m">y = δ(n)</span>. لكن <span class="m">x = δ(n−2)</span> تدي <span class="m">δ(n²−2) = 0</span>، ومش بتساوي <span class="m">y(n−2)</span>. يبقى <b>Variant</b>.</div></div><div class="prob"><div>(e) <span class="m">y(n) = x((n))<sub>N</sub></span></div><div><button class="btn ghost" data-sol="g16">اظهر الحل</button></div><div class="sol" id="g16">لو زحنا الدخل بـ N: <span class="m">y₁(n) = x((n−N))<sub>N</sub> = x((n))<sub>N</sub></span>، يعني نفس الخرج الأصلي، ومش مزاح. يبقى <b>Variant</b>.</div></div><div class="prob"><div>(f) <span class="m">y(n) = x(−n)</span></div><div><button class="btn ghost" data-sol="g17">اظهر الحل</button></div><div class="sol" id="g17"><span class="m">y₁(n) = x(−n−n₀)</span>، و<span class="m">y(n−n₀) = x(−n+n₀)</span>. مختلفين، يبقى <b>Variant</b>.</div></div><div><button class="btn ghost" data-done="p11"></button></div></section>
 <section class="part" id="warm"><div class="num">تسخين</div><h2>5 أسئلة سريعة</h2><div id="mcq" style="display:flex;flex-direction:column;gap:10px"></div></section>
-<section class="part" id="twins"><div class="num">مسائل بأرقام جديدة</div><h2>حل بالورقة الأول</h2><div class="prob"><div>1. <span class="m">x[n] = (5−n)[u(n) − u(n−5)]</span>. أوجد <span class="m">y[n] = x[2n−2]</span>.</div><div><button class="btn ghost" data-sol="s0">اظهر الحل</button></div><div class="sol" id="s0"><span class="m">x = {5,4,3,2,1}</span> عند <span class="m">n = 0…4</span>. الجدول: <span class="m">n=1 → x[0]=5</span>، و<span class="m">n=2 → x[2]=3</span>، و<span class="m">n=3 → x[4]=1</span>. يبقى <span class="m">y = {5, 3, 1}</span> عند <span class="m">n = 1…3</span>.</div></div><div class="prob"><div>2. هل <span class="m">y[n] = 2x[n] + x[n−1] + 3</span> linear؟</div><div><button class="btn ghost" data-sol="s1">اظهر الحل</button></div><div class="sol" id="s1">لأ: <span class="m">T{cx} = c(2x[n] + x[n−1]) + 3</span> مش بتساوي <span class="m">cT{x} = c(2x[n] + x[n−1]) + 3c</span>. والـ additivity برضه بتفشل، لأن الـ 3 بتتحسب مرتين.</div></div><div class="prob"><div>3. هل <span class="m">y[n] = x[n]cos(πn)</span> homogeneous، additive، linear، shift-invariant؟</div><div><button class="btn ghost" data-sol="s2">اظهر الحل</button></div><div class="sol" id="s2">Homogeneous وadditive، يبقى linear. لكن المعامل <span class="m">cos(πn)</span> بيتغير مع n، فهو <b>shift-varying</b>.</div></div><div class="prob"><div>4. هل <span class="m">y[n] = x[−n]</span> shift-invariant؟</div><div><button class="btn ghost" data-sol="s3">اظهر الحل</button></div><div class="sol" id="s3"><span class="m">y₁[n] = x[−n−n₀]</span>، و<span class="m">y[n−n₀] = x[−n+n₀]</span>. مختلفين، يبقى <b>shift-varying</b>.</div></div><div><button class="btn ghost" data-done="twins"></button></div></section>
+<section class="part" id="twins"><div class="num">مسائل بأرقام جديدة</div><h2>حل بالورقة الأول</h2><div class="prob"><div>1. أوجد <span class="m">y[n] = x[2−n]</span> لـ <span class="m">x = {3, 1, 4}</span> عند <span class="m">n = 0, 1, 2</span>.</div><div><button class="btn ghost" data-sol="s0">اظهر الحل</button></div><div class="sol" id="s0"><span class="m">n=0 → x[2]=4</span>، و<span class="m">n=1 → x[1]=1</span>، و<span class="m">n=2 → x[0]=3</span>. يبقى <span class="m">y = {4, 1, 3}</span> عند <span class="m">n = 0, 1, 2</span>.</div></div><div class="prob"><div>2. <span class="m">x[n] = (5−n)[u(n) − u(n−5)]</span>. أوجد <span class="m">y[n] = x[2n−2]</span>.</div><div><button class="btn ghost" data-sol="s1">اظهر الحل</button></div><div class="sol" id="s1"><span class="m">x = {5,4,3,2,1}</span>. <span class="m">n=1 → x[0]=5</span>، و<span class="m">n=2 → x[2]=3</span>، و<span class="m">n=3 → x[4]=1</span>. يبقى <span class="m">y = {5, 3, 1}</span> عند <span class="m">n = 1…3</span>.</div></div><div class="prob"><div>3. اثبت إن <span class="m">y[n] = 3x[n] + x[n−2]</span> Linear.</div><div><button class="btn ghost" data-sol="s2">اظهر الحل</button></div><div class="sol" id="s2"><span class="m">T{cx} = 3cx[n] + cx[n−2] = cT{x}</span> ✓<br><span class="m">T{x₁+x₂} = (3x₁[n]+x₁[n−2]) + (3x₂[n]+x₂[n−2]) = T{x₁}+T{x₂}</span> ✓<br>يبقى Linear.</div></div><div class="prob"><div>4. اثبت إن <span class="m">y[n] = x[n]² </span> مش Linear بمثال.</div><div><button class="btn ghost" data-sol="s3">اظهر الحل</button></div><div class="sol" id="s3"><span class="m">x = 1, c = 2</span>: <span class="m">T{2} = 4</span> و<span class="m">2T{1} = 2</span>. مختلفين، يبقى Nonlinear.</div></div><div class="prob"><div>5. حدد Invariant أو Variant: <span class="m">y[n] = x[n]cos(πn)</span>.</div><div><button class="btn ghost" data-sol="s4">اظهر الحل</button></div><div class="sol" id="s4"><span class="m">y₁[n] = x[n−n₀]cos(πn)</span>، و<span class="m">y[n−n₀] = x[n−n₀]cos(π(n−n₀))</span>. مختلفين، يبقى Variant.</div></div><div class="prob"><div>6. حدد Invariant أو Variant: <span class="m">y[n] = x[n−1] + 4</span>.</div><div><button class="btn ghost" data-sol="s5">اظهر الحل</button></div><div class="sol" id="s5"><span class="m">y₁[n] = x[n−n₀−1] + 4 = y[n−n₀]</span>. يبقى Invariant. والـ 4 بتخليه Nonlinear، بس دي خاصية تانية.</div></div><div><button class="btn ghost" data-done="twins"></button></div></section>
 <section class="part"><div class="num">مسائل الشيت</div><h2>1.7 و1.12 و1.13 و1.14</h2><div class="next"><a href="/interactive/university/dsp-problems">افتح صفحة المسائل</a></div></section>
-<section class="part"><div class="num">الملخص</div><h2>5 سطور تراجعهم قبل الامتحان</h2><ol class="list"><li><span class="m">x[n−n₀]</span> يمين، و<span class="m">x[n+n₀]</span> شمال، و<span class="m">x[−n]</span> مراية.</li><li>أي تحريك مركب: جدول n ← الجوة ← القيمة.</li><li>Linear = Additive + Homogeneous، وأي constant بيكسرها.</li><li>Shift-invariant: قارن <span class="m">T{x[n−n₀]}</span> بـ <span class="m">y[n−n₀]</span>.</li><li>الخصايص مستقلة، فاختبر كل واحدة لوحدها.</li></ol></section>
+<section class="part"><div class="num">الملخص</div><h2>5 سطور تراجعهم قبل الامتحان</h2><ol class="list"><li><span class="m">x[n−a]</span> يمين، و<span class="m">x[n+a]</span> شمال، و<span class="m">x[−n]</span> مراية.</li><li>أي تحريك مركب: جدول n ← اللي جوه القوس ← القيمة.</li><li>Linear: مفيش constant لوحده، وx مش جوه دالة ومش مضروبة في x. والمعامل n مسموح.</li><li>Invariant: n موجودة بس بشكل <span class="m">x[n − رقم]</span>. ولو n معامل، أو <span class="m">x[2n]</span> أو <span class="m">x[−n]</span>، تبقى Variant.</li><li>الإثبات: Linear بشرطين، وInvariant بمقارنة <span class="m">y₁[n]</span> بـ <span class="m">y[n−n₀]</span>، والنفي بمثال عكسي.</li></ol></section>
 <div class="next"><a href="/interactive/university/dsp-l02">الدرس اللي فات</a><a href="/interactive/university/dsp-l04">اللي بعده</a></div></div>
 <script>
-const LESSON="dsp-l03",PARTS=["p1", "p2", "p3", "warm", "twins"];
+const LESSON="dsp-l03",PARTS=["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9", "p10", "p11", "warm", "twins"];
 
 const KEY="anas-uni-progress-v1";
 const loadAll=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return {}}};
@@ -140,12 +238,21 @@ function stem(id,pts,lo,hi){const W=620,H=170,mid=H-32,pad=26,vals=Object.values
 const $=id=>document.getElementById(id);
 const gcd=(a,b)=>b?gcd(b,a%b):a;
 
-mcq(document.getElementById("mcq"),"warm",[{"q": "y[n] = x[n+2] معناها", "o": ["إزاحة يمين بـ 2", "إزاحة شمال بـ 2", "Reversal"], "a": 1, "w": "+ معناها advance، يعني شمال."}, {"q": "x = {4,3,2,1} و y[n] = x[2n]", "o": ["{4,2}", "{3,1}", "{4,0,3,0,2}"], "a": 0, "w": "بناخد index 0 و2."}, {"q": "y[n] = 3x[n] + 2", "o": ["Linear", "Nonlinear بسبب +2", "Nonlinear بسبب 3"], "a": 1, "w": "الثابت بيكسر الـ homogeneity."}, {"q": "y[n] = n x[n]", "o": ["Linear و shift-invariant", "Linear و shift-varying", "Nonlinear و shift-invariant"], "a": 1, "w": "عوامل n برة x بتخليه shift-varying، وهو لسه linear."}, {"q": "y[n] = x[n]²", "o": ["Linear و shift-invariant", "Nonlinear و shift-invariant", "Nonlinear و shift-varying"], "a": 1, "w": "التربيع nonlinear، والقاعدة مش بتعتمد على n."}]);
+mcq(document.getElementById("mcq"),"warm",[{"q": "y[n] = x[n−3] معناها إن الإشارة راحت", "o": ["يمين بـ 3", "شمال بـ 3", "اتعكست"], "a": 0, "w": "القيمة اللي عند 0 بتوصل عند n = 3."}, {"q": "أنهي واحد Linear؟", "o": ["y = x[n] + 2", "y = n·x[n]", "y = x[n]²"], "a": 1, "w": "المعامل n مسموح، لأن x ما اتربعتش ومفيش constant لوحده."}, {"q": "y = cos(x[n])", "o": ["Linear", "Nonlinear"], "a": 1, "w": "x جوه دالة."}, {"q": "أنهي واحد Shift-Invariant؟", "o": ["y = x[n−4] + x[n]", "y = x[3n]", "y = n·x[n]"], "a": 0, "w": "n موجودة بس بشكل x[n − رقم]."}, {"q": "y = x[n]³", "o": ["Linear و Invariant", "Nonlinear و Invariant", "Nonlinear و Variant"], "a": 1, "w": "التكعيب nonlinear، والقاعدة ما فيهاش n."}]);
 
 function l3(){const X={0:2,1:1,2:3,3:1},a=+$("l3a").value,b=+$("l3b").value,y={};$("l3bv").textContent=b;const u=[];
  for(let n=-8;n<=8;n++){const i=a*n+b;if(X[i]!==undefined){y[n]=X[i];u.push(`n=${n} ← x[${i}]`)}}
  stem("l3x",X,-8,8);stem("l3y",y,-8,8);$("l3r").textContent=u.join("   ")||"no overlap"}
 $("l3a").onchange=l3;$("l3b").oninput=l3;l3();
+
+const SYS={a:(x,n)=>2*x(n),b:(x,n)=>x(n)+1,c:(x,n)=>x(n)**2,d:(x,n)=>x(n)+x(n-1),e:(x,n)=>n*x(n),f:(x,n)=>x(2*n),g:(x,n)=>x(-n),h:(x,n)=>x(n-2)};
+function sys(){const pr=s=>s.split(/[ ,]+/).filter(Boolean).map(Number),a=pr($("sx1").value),b=pr($("sx2").value),c=+$("sc").value||0,n0=+$("sn").value||0;
+ if(a.some(isNaN)||b.some(isNaN))return;const T=SYS[$("sy").value],A=n=>a[n]||0,B=n=>b[n]||0,R=[];for(let n=-8;n<=12;n++)R.push(n);
+ const v=(f)=>R.map(f),txt=arr=>{const t=[];arr.forEach((u,i)=>{if(Math.abs(u)>1e-9)t.push(`[${R[i]}]=${+u.toFixed(2)}`)});return t.join("  ")||"all 0"},same=(p,q)=>p.every((u,i)=>Math.abs(u-q[i])<1e-9);
+ const l1=v(n=>T(m=>c*A(m),n)),r1=v(n=>c*T(A,n)),l2=v(n=>T(m=>A(m)+B(m),n)),r2=v(n=>T(A,n)+T(B,n)),l3=v(n=>T(m=>A(m-n0),n)),r3=v(n=>T(A,n-n0));
+ const row=(name,l,r,ok)=>`<tr><td>${name}</td><td class="m">${txt(l)}</td><td class="m">${txt(r)}</td><td><b style="color:${ok?"var(--pos)":"var(--neg)"}">${ok?"زي بعض":"مختلفين"}</b></td></tr>`;
+ $("st").innerHTML=`<table><tr><th>الاختبار</th><th>الطريق الأول</th><th>الطريق التاني</th><th>النتيجة</th></tr>${row("Homogeneity: T{c·x} و c·T{x}",l1,r1,same(l1,r1))}${row("Additivity: T{x₁+x₂} و T{x₁}+T{x₂}",l2,r2,same(l2,r2))}${row("Shift: T{x[n−n₀]} و y[n−n₀]",l3,r3,same(l3,r3))}</table>`}
+["sy","sx1","sx2","sc","sn"].forEach(i=>$(i).oninput=sys);sys();
 
 bar();
 </script>
