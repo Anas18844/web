@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>DSP · Lec 4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=Readex+Pro:wght@300;400;500;600&display=swap">
+<style>
+:root{color-scheme:light;--bg:#F4F6FA;--card:#FFFFFF;--ink:#1E2433;--soft:#5D6679;--faint:#8C94A6;--line:#E6E9F0;
+--c:#0E7C86;--tint:#E3F4F5;--pos:#1F8A4C;--pos-tint:#E5F5EC;--neg:#C0392B;--neg-tint:#FDECEA;--amber:#B45309;--amber-tint:#FFF6E5;
+--f-head:"Alexandria","Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;--f-body:"Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;
+--f-math:"Cambria Math","Cambria","Times New Roman",serif;--shadow:0 1px 2px rgba(30,36,51,.04),0 6px 24px rgba(30,36,51,.06)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:2;padding:0 16px 80px}
+.wrap{max-width:860px;margin-inline:auto;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--f-head);font-weight:700;margin:0;line-height:1.45}
+p{margin:0}a{color:var(--c)}button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.m{font-family:var(--f-math);direction:ltr;unicode-bidi:isolate;font-size:1.08em}
+.mb{font-family:var(--f-math);direction:ltr;text-align:center;font-size:19px;background:var(--tint);border-radius:12px;padding:10px 12px;overflow-x:auto}
+.bar{position:sticky;top:0;z-index:10;background:rgba(244,246,250,.95);padding:10px 16px;margin-inline:-16px;border-bottom:1px solid var(--line)}
+.bar .in{max-width:860px;margin-inline:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px}
+.bar .sp{margin-inline-end:auto;color:var(--soft)}
+.track{flex-basis:100%;height:6px;background:var(--line);border-radius:6px;overflow:hidden}.track i{display:block;height:100%;width:0;background:var(--c)}
+.hero{background:var(--tint);border-radius:22px;padding:22px 24px;display:flex;flex-direction:column;gap:6px;margin-top:16px}
+.hero h1{font-size:clamp(25px,5vw,34px)}.hero .meta{font-size:14px;color:var(--c);font-weight:600}
+.part{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:22px 24px;display:flex;flex-direction:column;gap:14px;scroll-margin-top:70px}
+.part .num{font-size:13px;color:var(--c);font-weight:600}.part h2{font-size:22px}.part h3{font-size:18px}
+.idea{background:var(--tint);border-radius:14px;padding:10px 16px;font-weight:500}
+.trick{background:var(--pos-tint);border-radius:14px;padding:10px 16px}.trick b:first-child{color:var(--pos)}
+.trap{background:var(--amber-tint);border-radius:14px;padding:10px 16px;color:#5A3505}.trap b:first-child{color:var(--amber)}
+.ex{border:1px solid var(--line);border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.ex>b:first-child{color:var(--c)}
+.list{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:4px}
+.tbl{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:15.5px}
+th,td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:start;vertical-align:top}th{color:var(--soft);font-size:14px;background:var(--bg)}
+.lab{border:2px dashed #9CD3D8;border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.lab .tag{font-size:13px;font-weight:600;color:var(--c)}
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:end;direction:ltr}
+.ctl label{display:flex;flex-direction:column;font-size:13px;color:var(--soft);gap:2px}
+.ctl input,.ctl select{font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:10px;padding:4px 8px;background:var(--card);direction:ltr;max-width:190px}
+.ctl input[type=range]{padding:0;width:190px;accent-color:var(--c)}
+svg{width:100%;height:auto;display:block;background:#FBFCFE;border:1px solid var(--line);border-radius:12px}
+.read{font-family:var(--f-math);direction:ltr;text-align:center;font-size:17px;overflow-x:auto}
+.btn{border:0;background:var(--c);color:#fff;border-radius:999px;padding:6px 16px;font-size:15px;min-height:40px}
+.btn.ghost{background:var(--card);color:var(--c);border:1.5px solid var(--c)}.btn.on{background:var(--pos);border-color:var(--pos);color:#fff}
+.q{background:var(--bg);border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.q .stem{font-weight:500}.opts{display:flex;flex-direction:column;gap:6px}
+.opt{text-align:start;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:7px 12px;font-size:15.5px;line-height:1.7}
+.opt:disabled{cursor:default}.opt.right{background:var(--pos-tint);border-color:var(--pos)}.opt.wrong{background:var(--neg-tint);border-color:var(--neg)}
+.why{font-size:15px;color:var(--soft);border-inline-start:3px solid var(--c);padding-inline-start:10px}
+.prob{border:1px solid var(--line);border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.sol{display:none;background:var(--bg);border-radius:12px;padding:10px 14px}.sol.show{display:block}
+.next{display:flex;gap:8px;flex-wrap:wrap}.next a{background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:6px 16px;text-decoration:none}
+.timer{font-family:var(--f-head);font-size:30px;text-align:center;direction:ltr}
+@media print{.bar,.next,.btn{display:none}body{background:#fff}.part{box-shadow:none;break-inside:avoid}.sol{display:block}}
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="in"><a href="/interactive/university/midterm">الخريطة</a><a href="/interactive/university/dsp-problems">المسائل</a><span class="sp"></span><span id="pct"></span><div class="track"><i id="fill"></i></div></div></div>
+
+<div class="wrap">
+<header class="hero"><div class="meta">DSP · Lec 4</div><h1>LSI Systems و Convolution</h1><p>لو الـ system خطي وثابت مع الوقت، يبقى h[n] لوحدها بتوصفه بالكامل، والخرج بييجي من Convolution. ده أهم درس في الامتحان.</p></header>
+<section class="part" id="p1"><div class="num">الجزء 1</div><h2>باقي خصايص الـ System</h2>
+<p>الـ <b>LSI</b> = Linear + Shift-Invariant. مثال: <span class="m">y[n] = 0.5x[n] + 0.5x[n−1]</span>.</p>
+<div class="tbl"><table><tr><th>الخاصية</th><th>المعنى</th><th>لو LSI</th></tr>
+<tr><td>Causal</td><td>مفيش مستقبل في x</td><td class="m">h[n] = 0 for n &lt; 0</td></tr>
+<tr><td>BIBO Stable</td><td>دخل محدود ← خرج محدود</td><td class="m">Σ|h[n]| &lt; ∞</td></tr>
+<tr><td>Invertible</td><td>ترجع x من y بشكل وحيد</td><td>لاقي inverse أو دخلين بنفس الخرج</td></tr></table></div>
+<div class="trick"><b>تريك Causal:</b> جرب n سالبة. <span class="m">x[|n|]</span> عند <span class="m">n = −1</span> عايزة <span class="m">x[1]</span>، يبقى non-causal. ونفس الفكرة مع <span class="m">x[n²−n]</span> عند <span class="m">n = −1</span>.</div>
+<div class="trick"><b>تريك Stable:</b> لإثبات عدم الاستقرار هات دخل محدود خرجه بيكبر، زي <span class="m">x = u[n]</span>. والمجمّع <span class="m">Σx(k)</span> unstable لأن خرجه <span class="m">n+1</span>.</div>
+<div class="trick"><b>تريك Invertible:</b> لنفي الخاصية هات دخلين مختلفين بنفس الخرج. <span class="m">x[n]</span> و<span class="m">x[n]+c</span> بيدوا نفس الفرق في <span class="m">x[n]−x[n−1]</span>. ولإثباتها اكتب الـ inverse: معكوس <span class="m">Σx(k)</span> هو <span class="m">y[n] − y[n−1]</span>.</div>
+<div><button class="btn ghost" data-done="p1"></button></div></section>
+<section class="part" id="p2"><div class="num">الجزء 2</div><h2>الـ Convolution</h2>
+<div class="idea">كل عينة في x بتشغّل نسخة من h، مزاحة لمكانها ومضروبة في قيمتها. والخرج هو مجموع النسخ دي.</div>
+<div class="mb">y[n] = x[n] * h[n] = Σₖ x[k] h[n−k]</div>
+<ol class="list"><li>اكتب القيم ومعاها الـ indices.</li><li>بداية الخرج = بداية x + بداية h.</li><li>الطول: <span class="m">Lᵧ = Lₓ + Lₕ − 1</span>.</li><li>احسب كل <span class="m">y[n]</span>: مجموع كل حاصل ضرب مجموع indices بتاعه = n.</li></ol>
+<div class="ex"><b>مثال محلول</b><p><span class="m">x = [1, 2]</span> و<span class="m">h = [3, 4]</span>:</p><p class="m">y[0] = 1×3 = 3</p><p class="m">y[1] = 1×4 + 2×3 = 10</p><p class="m">y[2] = 2×4 = 8</p></div>
+<div class="trick"><b>تريك السرعة (الضرب بدون حمل):</b> اعمل جدول، x فوق وh على الجنب، واضرب كل خانة، واجمع الأقطار. أسرع طريقة في نص ساعة.</div>
+<div class="trick"><b>تريك المراجعة:</b> <span class="m">Σy = Σx · Σh</span>. ده بيكشف أي غلطة حسابية في ثواني.</div>
+<div class="trick"><b>تريك الـ impulse:</b> <span class="m">x[n] * δ[n−n₀] = x[n−n₀]</span>. فـ <span class="m">h = 2δ[n] − δ[n−1]</span> معناها <span class="m">y[n] = 2x[n] − x[n−1]</span>، من غير أي flip.</div>
+<div class="trap"><b>فخ:</b> لو الإشارة مبتدية عند <span class="m">n = −1</span>، خد بالك من الـ index. دي أكتر غلطة في الشيت.</div>
+
+<div class="lab"><div class="tag">جرّب بنفسك: Convolution خطوة بخطوة</div>
+<div class="ctl"><label>x values<input id="l4x" value="1,2,3"></label><label>x starts at n =<input id="l4xs" type="number" value="0"></label><label>h values<input id="l4h" value="1,-1"></label><label>h starts at n =<input id="l4hs" type="number" value="0"></label></div>
+<div class="tbl" id="l4t"></div><div id="l4p"></div><div class="read" id="l4r"></div></div><div><button class="btn ghost" data-done="p2"></button></div></section>
+<section class="part" id="p3"><div class="num">الجزء 3</div><h2>الخصايص والمسائل المغلقة</h2>
+<div class="tbl"><table><tr><th>الخاصية</th><th>القانون</th><th>المعنى العملي</th></tr>
+<tr><td>Commutative</td><td class="m">x*h = h*x</td><td>اختار الأسهل تعكسه</td></tr>
+<tr><td>Associative</td><td class="m">(x*h₁)*h₂ = x*(h₁*h₂)</td><td>فلاتر ورا بعض (cascade)</td></tr>
+<tr><td>Distributive</td><td class="m">x*(h₁+h₂) = x*h₁ + x*h₂</td><td>فلاتر جنب بعض (parallel)</td></tr></table></div>
+<div class="ex"><b>إثبات Commutative (1.30)</b><p>عوّض <span class="m">l = n−k</span> في الـ sum:</p><p class="m">Σₖ x[k]h[n−k] = Σₗ x[n−l]h[l] = h*x</p></div>
+<h3>الإشارات اللا نهائية</h3>
+<p>لما يكون فيه <span class="m">u</span>، حدد الـ limits من شروط الـ steps، وبعدين استخدم الـ geometric series:</p>
+<div class="mb">Σₖ₌₀ⁿ aᵏ = (1 − aⁿ⁺¹) / (1 − a), &nbsp; a ≠ 1</div>
+<div class="ex"><b>مثال محلول</b><p><span class="m">x = aⁿu[n]</span> و<span class="m">h = u[n]</span>: <span class="m">u[k]</span> بتدي <span class="m">k ≥ 0</span>، و<span class="m">u[n−k]</span> بتدي <span class="m">k ≤ n</span>.</p>
+<p class="m">y[n] = Σₖ₌₀ⁿ aᵏ = ((1 − aⁿ⁺¹)/(1 − a)) u[n]</p><p>ولو <span class="m">a = 1</span>: <span class="m">y[n] = (n+1)u[n]</span>.</p></div>
+<div class="trick"><b>تريك 1.34:</b> لما تكون إشارة محدودة، قسّم حالات: <span class="m">n &lt; 0</span>، ووسط الفترة، وبعد نهايتها. والـ limit العليا بتبقى الأصغر من n ونهاية الفترة.</div>
+<div class="trap"><b>الـ Correlation (1.36):</b> مش في السلايدز، بس مطلوب. <span class="m">x ⋆ h = Σ x(k)h(n+k)</span>: نفس الـ convolution بس من غير flip لـ h.</div>
+<div><button class="btn ghost" data-done="p3"></button></div></section>
+<section class="part" id="warm"><div class="num">تسخين</div><h2>5 أسئلة سريعة</h2><div id="mcq" style="display:flex;flex-direction:column;gap:10px"></div></section>
+<section class="part" id="twins"><div class="num">مسائل بأرقام جديدة</div><h2>حل بالورقة الأول</h2><div class="prob"><div>1. أوجد <span class="m">y[n] = x[n] * h[n]</span> لـ <span class="m">x[−1]=1, x[0]=2</span> و<span class="m">h[1]=3, h[2]=1</span>.</div><div><button class="btn ghost" data-sol="s0">اظهر الحل</button></div><div class="sol" id="s0">البداية <span class="m">−1 + 1 = 0</span>، والطول 3.<br><span class="m">y[0] = 1×3 = 3</span>، <span class="m">y[1] = 1×1 + 2×3 = 7</span>، <span class="m">y[2] = 2×1 = 2</span>.<br><span class="m">y = {3, 7, 2}</span>. مراجعة: <span class="m">12 = 3 × 4</span> ✓</div></div><div class="prob"><div>2. أوجد <span class="m">[u[n] − u[n−3]] * [u[n] − u[n−2]]</span>، واكتبها piecewise.</div><div><button class="btn ghost" data-sol="s1">اظهر الحل</button></div><div class="sol" id="s1"><span class="m">{1,1,1} * {1,1} = {1, 2, 2, 1}</span> عند <span class="m">n = 0…3</span>.<br>Piecewise: <span class="m">n+1</span> لـ <span class="m">0≤n≤1</span>، و2 عند <span class="m">n=2</span>، و1 عند <span class="m">n=3</span>، و0 غير كده.</div></div><div class="prob"><div>3. أوجد <span class="m">(½)ⁿu[n] * u[n]</span>.</div><div><button class="btn ghost" data-sol="s2">اظهر الحل</button></div><div class="sol" id="s2"><span class="m">y[n] = Σₖ₌₀ⁿ (½)ᵏ = 2(1 − (½)ⁿ⁺¹)u[n] = (2 − (½)ⁿ)u[n]</span></div></div><div class="prob"><div>4. <span class="m">h[n] = (0.5)ⁿu[n]</span>: هل الـ system causal و stable؟</div><div><button class="btn ghost" data-sol="s3">اظهر الحل</button></div><div class="sol" id="s3">Causal لأن <span class="m">h = 0</span> لـ <span class="m">n &lt; 0</span>. وstable لأن <span class="m">Σ(0.5)ⁿ = 2 &lt; ∞</span>.</div></div><div class="prob"><div>5. هل <span class="m">y[n] = x[n²]</span> causal؟</div><div><button class="btn ghost" data-sol="s4">اظهر الحل</button></div><div class="sol" id="s4">لأ: عند <span class="m">n = 2</span>، الخرج عايز <span class="m">x[4]</span>، وده مستقبل.</div></div><div><button class="btn ghost" data-done="twins"></button></div></section>
+<section class="part"><div class="num">مسائل الشيت</div><h2>1.15 و1.20 و1.21 و1.22 و1.23 و1.26 و1.28 و1.30 و1.34 و1.36، وشيت Convolution كله</h2><div class="next"><a href="/interactive/university/dsp-problems">افتح صفحة المسائل</a></div></section>
+<section class="part"><div class="num">الملخص</div><h2>5 سطور تراجعهم قبل الامتحان</h2><ol class="list"><li>LSI معناها h[n] بتوصف الـ system كله.</li><li>Causal: <span class="m">h[n] = 0</span> لـ <span class="m">n &lt; 0</span>. Stable: <span class="m">Σ|h| &lt; ∞</span>.</li><li><span class="m">y[n] = Σ x[k]h[n−k]</span>، والبداية مجموع البدايتين، والطول <span class="m">Lₓ + Lₕ − 1</span>.</li><li>استخدم جدول الضرب وراجع بـ <span class="m">Σy = Σx·Σh</span>.</li><li>الإشارات اللا نهائية: حدد limits من الـ steps وبعدين geometric series.</li></ol></section>
+<div class="next"><a href="/interactive/university/dsp-l03">الدرس اللي فات</a><a href="/interactive/university/dsp-l05">اللي بعده</a></div></div>
+<script>
+const LESSON="dsp-l04",PARTS=["p1", "p2", "p3", "warm", "twins"];
+
+const KEY="anas-uni-progress-v1";
+const loadAll=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return {}}};
+const saveAll=d=>{try{localStorage.setItem(KEY,JSON.stringify(d))}catch{}};
+function L(){const d=loadAll();d[LESSON]=d[LESSON]||{parts:{},answers:{},exam:null};return d}
+function setPart(p,on,right,total){const d=L();if(on)d[LESSON].parts[p]={right,total,at:Date.now()};else delete d[LESSON].parts[p];saveAll(d);bar()}
+function bar(){const l=L()[LESSON],done=Object.keys(l.parts).length,t=PARTS.length,p=Math.round(done/t*100);
+ document.getElementById("pct").textContent=`${p}% · ${done}/${t}`;document.getElementById("fill").style.width=p+"%";
+ document.querySelectorAll("[data-done]").forEach(b=>{const on=!!l.parts[b.dataset.done];b.classList.toggle("on",on);b.textContent=on?"خلصت الجزء ✓":"خلصت الجزء"})}
+document.querySelectorAll("[data-done]").forEach(b=>b.onclick=()=>{setPart(b.dataset.done,!L()[LESSON].parts[b.dataset.done]);});
+document.querySelectorAll("[data-sol]").forEach(b=>b.onclick=()=>{const s=document.getElementById(b.dataset.sol);s.classList.toggle("show");b.textContent=s.classList.contains("show")?"اخفي الحل":"اظهر الحل"});
+function mcq(box,part,items){
+ const ans=()=>L()[LESSON].answers;
+ function check(){const a=ans(),got=items.filter((_,i)=>a[part+i]!==undefined).length;
+  if(got===items.length)setPart(part,true,items.filter((it,i)=>a[part+i]===it.a).length,items.length)}
+ items.forEach((it,i)=>{const q=document.createElement("div");q.className="q";
+  const draw=()=>{const g=ans()[part+i];
+   q.innerHTML=`<div class="stem">${i+1}. ${it.q}</div><div class="opts">${it.o.map((o,j)=>{let c="";if(g!==undefined){if(j===it.a)c="right";else if(j===g)c="wrong"}return `<button class="opt ${c}" data-j="${j}" ${g!==undefined?"disabled":""}>${o}</button>`}).join("")}</div>${g!==undefined?`<div class="why">${g===it.a?"صح. ":"غلط. "}${it.w}</div>`:""}`};
+  q.onclick=e=>{const b=e.target.closest("[data-j]");if(!b||b.disabled)return;const d=L();d[LESSON].answers[part+i]=+b.dataset.j;saveAll(d);draw();check()};
+  draw();box.append(q)});
+}
+function stem(id,pts,lo,hi){const W=620,H=170,mid=H-32,pad=26,vals=Object.values(pts),mx=Math.max(1,...vals.map(Math.abs)),hasNeg=vals.some(v=>v<0);
+ const base=hasNeg?(H-22)/2+6:mid,sc=(hasNeg?base-22:base-24)/mx,sx=(W-2*pad)/Math.max(1,hi-lo);let s=`<line x1="${pad-10}" y1="${base}" x2="${W-pad+10}" y2="${base}" stroke="#8C94A6"/>`;
+ for(let n=lo;n<=hi;n++){const x=pad+(n-lo)*sx,v=pts[n]||0,y=base-v*sc;
+  s+=`<text x="${x}" y="${H-6}" font-size="12" text-anchor="middle" fill="#5D6679">${n}</text>`;
+  s+=`<line x1="${x}" y1="${base}" x2="${x}" y2="${y}" stroke="#0E7C86" stroke-width="2"/><circle cx="${x}" cy="${y}" r="4.5" fill="${v?'#0E7C86':'#C9CED8'}"/>`;
+  if(v)s+=`<text x="${x}" y="${v>0?y-8:y+16}" font-size="12" text-anchor="middle" fill="#1E2433">${+v.toFixed(2)}</text>`}
+ const el=document.getElementById(id);el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="stem plot">${s}</svg>`}
+const $=id=>document.getElementById(id);
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+
+mcq(document.getElementById("mcq"),"warm",[{"q": "لـ LSI system، الـ causality معناها", "o": ["h[n] = 0 for n &lt; 0", "Σ|h[n]| &lt; ∞", "h[n] finite"], "a": 0, "w": "ما ينفعش يكون فيه رد قبل n = 0."}, {"q": "h[n] = u[n]", "o": ["Stable", "Unstable"], "a": 1, "w": "Σ|h[n]| = ∞."}, {"q": "y[n] = x[n]²", "o": ["Invertible", "Not invertible"], "a": 1, "w": "+2 و−2 بيدوا نفس الخرج."}, {"q": "طول الخرج لـ Lₓ = 4 و Lₕ = 3", "o": ["7", "6", "12"], "a": 1, "w": "4 + 3 − 1 = 6."}, {"q": "x[n] * δ[n−3] =", "o": ["x[n]", "x[n−3]", "3x[n]"], "a": 1, "w": "الـ impulse المزاحة بتزيح الإشارة."}]);
+
+function l4(){const pr=s=>s.split(/[ ,]+/).filter(Boolean).map(Number),x=pr($("l4x").value),h=pr($("l4h").value),xs=+$("l4xs").value||0,hs=+$("l4hs").value||0;
+ if(!x.length||!h.length||x.some(isNaN)||h.some(isNaN)){$("l4r").textContent="اكتب أرقام بينها فاصلة";return}
+ const len=x.length+h.length-1,y=Array(len).fill(0),st=xs+hs;let rows="";
+ for(let i=0;i<len;i++){const t=[];x.forEach((a,k)=>{const j=i-k;if(j>=0&&j<h.length){y[i]+=a*h[j];t.push(`(${a})(${h[j]})`)}});
+  rows+=`<tr><td class="m">y[${st+i}]</td><td class="m">${t.join(" + ")}</td><td class="m"><b>${+y[i].toFixed(3)}</b></td></tr>`}
+ $("l4t").innerHTML=`<table dir="ltr"><tr><th>n</th><th>overlapping products</th><th>value</th></tr>${rows}</table>`;
+ const p={};y.forEach((v,i)=>p[st+i]=v);stem("l4p",p,st-1,st+len);
+ const s=a=>+a.reduce((u,v)=>u+v,0).toFixed(3);$("l4r").textContent=`Check: Σy = ${s(y)},  Σx · Σh = ${s(x)} × ${s(h)} = ${+(s(x)*s(h)).toFixed(3)}   |   L = ${x.length} + ${h.length} − 1 = ${len}`}
+["l4x","l4xs","l4h","l4hs"].forEach(i=>$(i).oninput=l4);l4();
+
+bar();
+</script>
+</body>
+</html>
