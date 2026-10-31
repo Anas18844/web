@@ -64,7 +64,7 @@ svg{width:100%;height:auto;display:block;background:#FBFCFE;border:1px solid var
 <div class="bar"><div class="in"><a href="/interactive/university/midterm">الخريطة</a><a href="/interactive/university/dsp-problems">المسائل</a><span class="sp"></span><span id="pct"></span><div class="track"><i id="fill"></i></div></div></div>
 
 <div class="wrap">
-<header class="hero"><div class="meta">DSP · Lec 5</div><h1>Fourier Analysis: Magnitude و Phase</h1><p>بدل ما نشوف الإشارة عينة بعينة، نشوف فيها إيه من ترددات. ومعاها الـ convolution الصعبة بتبقى ضرب عادي.</p></header>
+<header class="hero"><div class="meta">DSP · Lec 5</div><h1>تحليل Fourier: الـ Magnitude والـ Phase</h1><p>بدل ما نشوف الإشارة عينة بعينة، نشوف فيها إيه من ترددات. ومعاها الـ convolution الصعبة بتبقى ضرب عادي.</p></header>
 <section class="part" id="p1"><div class="num">الجزء 1</div><h2>ليه Fourier؟</h2>
 <p>الإشارة ليها وشين: <b>time domain</b> (بتتغير إزاي)، و<b>frequency domain</b> (فيها أنهي ترددات).</p>
 <div class="mb">y[n] = x[n] * h[n] &nbsp;⇔&nbsp; Y(e<sup>jω</sup>) = X(e<sup>jω</sup>) H(e<sup>jω</sup>)</div>
@@ -73,12 +73,12 @@ svg{width:100%;height:auto;display:block;background:#FBFCFE;border:1px solid var
 <ol class="list"><li>الدخل <span class="m">x[n] = e<sup>jωn</sup></span>.</li><li><span class="m">y[n] = Σₖ h[k] x[n−k] = Σₖ h[k] e<sup>jω(n−k)</sup></span>.</li><li>طلّع <span class="m">e<sup>jωn</sup></span> بره: <span class="m">y[n] = e<sup>jωn</sup> Σₖ h[k] e<sup>−jωk</sup></span>.</li><li>الباقي هو <span class="m">H(e<sup>jω</sup>)</span>، يبقى <span class="m">y[n] = H(e<sup>jω</sup>) e<sup>jωn</sup></span>.</li></ol>
 <div class="trick"><b>المعنى:</b> الـ system بيحتفظ بنفس التردد، وبيغير الـ amplitude والـ phase بس.</div>
 <div><button class="btn ghost" data-done="p1"></button></div></section>
-<section class="part" id="p2"><div class="num">الجزء 2</div><h2>Magnitude و Phase</h2>
+<section class="part" id="p2"><div class="num">الجزء 2</div><h2>الـ Magnitude والـ Phase</h2>
 <div class="mb">H(e<sup>jω</sup>) = Σₖ h[k] e<sup>−jωk</sup></div>
-<div class="mb">H = H_r + jH_i = |H| e<sup>jφ</sup></div>
-<div class="mb">|H| = √(H_r² + H_i²) &nbsp;&nbsp;&nbsp; φ = tan⁻¹(H_i / H_r)</div>
+<div class="mb">H = H<sub>r</sub> + jH<sub>i</sub> = |H| e<sup>jφ</sup></div>
+<div class="mb">|H| = √(H<sub>r</sub>² + H<sub>i</sub>²) &nbsp;&nbsp;&nbsp; φ = tan⁻¹(H<sub>i</sub> / H<sub>r</sub>)</div>
 <p><b>|H|</b>: الـ system بيكبر أو يصغر التردد ده قد إيه. <b>φ</b>: بيزيحه قد إيه.</p>
-<div class="trap"><b>غلطات في السلايدز:</b> سلايد 5 كاتب مقام الـ phase <span class="m">H_j</span> والصح <span class="m">H_r</span>. وسلايد 6 كاتب <span class="m">e<sup>jω(n−k)</sup></span> والصح <span class="m">e<sup>−jωk</sup></span>.</div>
+<div class="trap"><b>غلطات في السلايدز:</b> سلايد 5 كاتب مقام الـ phase <span class="m">H<sub>j</sub></span> والصح <span class="m">H<sub>r</sub></span>. وسلايد 6 كاتب <span class="m">e<sup>jω(n−k)</sup></span> والصح <span class="m">e<sup>−jωk</sup></span>.</div>
 <h3>الخطوات التلاتة في مثال المحاضرة</h3>
 <div class="ex"><b><span class="m">h[0] = ½, h[1] = ½</span></b>
 <p><b>1. H:</b> <span class="m">H = ½ + ½e<sup>−jω</sup> = 0.5(1 + e<sup>−jω</sup>)</span></p>
@@ -91,7 +91,7 @@ svg{width:100%;height:auto;display:block;background:#FBFCFE;border:1px solid var
 <p>ومع <span class="m">θ = 2ω</span> نفس القانون: <span class="m">1 + e<sup>−j2ω</sup> = 2cos(ω) e<sup>−jω</sup></span>.</p>
 <div class="trick"><b>تريك عند ω محددة:</b> عوّض بـ Euler: <span class="m">e<sup>−jθ</sup> = cosθ − j sinθ</span>. وخد بالك: <span class="m">e<sup>−jπ/2</sup> = −j</span>، و<span class="m">e<sup>−jπ</sup> = −1</span>.</div>
 <div class="trap"><b>فخاخ الـ phase:</b>
-<br>• لو الجزء الحقيقي سالب، ربع الدايرة يتغير: <span class="m">H = −1</span> الـ phase بتاعها π مش 0. استخدم <span class="m">atan2(H_i, H_r)</span>.
+<br>• لو الجزء الحقيقي سالب، ربع الدايرة يتغير: <span class="m">H = −1</span> الـ phase بتاعها π مش 0. استخدم <span class="m">atan2(H<sub>i</sub>, H<sub>r</sub>)</span>.
 <br>• لما الـ cos أو sin سالب، ضيف π.
 <br>• لما <span class="m">H = 0</span>، الـ phase <b>undefined</b>.
 <br>• <span class="m">j = e<sup>jπ/2</sup></span>، فـ j بتضيف <span class="m">π/2</span> للـ phase.</div>
@@ -102,7 +102,7 @@ svg{width:100%;height:auto;display:block;background:#FBFCFE;border:1px solid var
 <section class="part" id="warm"><div class="num">تسخين</div><h2>5 أسئلة سريعة</h2><div id="mcq" style="display:flex;flex-direction:column;gap:10px"></div></section>
 <section class="part" id="twins"><div class="num">مسائل بأرقام جديدة</div><h2>حل بالورقة الأول</h2><div class="prob"><div>1. <span class="m">h[0] = 1, h[1] = 1</span>. أوجد H و|H| والـ phase.</div><div><button class="btn ghost" data-sol="s0">اظهر الحل</button></div><div class="sol" id="s0"><span class="m">H = 1 + e<sup>−jω</sup> = 2cos(ω/2)e<sup>−jω/2</sup></span><br><span class="m">|H| = 2|cos(ω/2)|</span><br><span class="m">∠H = −ω/2</span> لما <span class="m">cos(ω/2) &gt; 0</span>، ونضيف π لما يكون سالب، وundefined عند <span class="m">ω = π</span>.</div></div><div class="prob"><div>2. <span class="m">h[0] = 1, h[2] = 1</span>. أوجد H و|H| والـ phase.</div><div><button class="btn ghost" data-sol="s1">اظهر الحل</button></div><div class="sol" id="s1"><span class="m">H = 1 + e<sup>−j2ω</sup> = e<sup>−jω</sup>(e<sup>jω</sup> + e<sup>−jω</sup>) = 2cos(ω)e<sup>−jω</sup></span><br><span class="m">|H| = 2|cos ω|</span>، و<span class="m">∠H = −ω</span> لما <span class="m">cos ω &gt; 0</span>، ونضيف π لما يكون سالب، وundefined عند <span class="m">cos ω = 0</span>.</div></div><div class="prob"><div>3. <span class="m">h[0] = 1, h[1] = −1</span>: احسب H و|H| والـ phase عند <span class="m">ω = π/2</span>.</div><div><button class="btn ghost" data-sol="s2">اظهر الحل</button></div><div class="sol" id="s2"><span class="m">e<sup>−jπ/2</sup> = −j</span>، يبقى <span class="m">H = 1 + j</span>، و<span class="m">|H| = √2</span>، و<span class="m">∠H = π/4</span>.</div></div><div class="prob"><div>4. <span class="m">H = 1 − j</span>، وبعدها <span class="m">H = −1</span>: أوجد المقدار والـ phase.</div><div><button class="btn ghost" data-sol="s3">اظهر الحل</button></div><div class="sol" id="s3">الأولى: <span class="m">√2</span> و<span class="m">−π/4</span>. التانية: 1 وπ، وده مثال على الفخ.</div></div><div><button class="btn ghost" data-done="twins"></button></div></section>
 <section class="part"><div class="num">مسائل الشيت</div><h2>شيت Magnitude & Phase كله (M1 لحد M10)</h2><div class="trap"><b>تنبيه:</b> أسايمنت Lec 5 مكتوب بنفس أرقام أسايمنت Lec 4، وغالبًا اتنسخ بالغلط. عشان كده اعتمادنا هنا على شيت المعيد.</div><div class="next"><a href="/interactive/university/dsp-problems">افتح صفحة المسائل</a></div></section>
-<section class="part"><div class="num">الملخص</div><h2>5 سطور تراجعهم قبل الامتحان</h2><ol class="list"><li>Convolution في الوقت = ضرب في التردد: <span class="m">Y = XH</span>.</li><li><span class="m">H(e<sup>jω</sup>) = Σ h[k]e<sup>−jωk</sup></span>.</li><li><span class="m">|H| = √(H_r²+H_i²)</span> و<span class="m">φ = tan⁻¹(H_i/H_r)</span>.</li><li>طلّع نص الأس: <span class="m">1 ± e<sup>−jθ</sup></span> تبقى cos أو 2j sin.</li><li>الـ cos السالب بيضيف π، و<span class="m">H = 0</span> معناها phase undefined.</li></ol></section>
+<section class="part"><div class="num">الملخص</div><h2>5 سطور تراجعهم قبل الامتحان</h2><ol class="list"><li>Convolution في الوقت = ضرب في التردد: <span class="m">Y = XH</span>.</li><li><span class="m">H(e<sup>jω</sup>) = Σ h[k]e<sup>−jωk</sup></span>.</li><li><span class="m">|H| = √(H<sub>r</sub>²+H<sub>i</sub>²)</span> و<span class="m">φ = tan⁻¹(H<sub>i</sub>/H<sub>r</sub>)</span>.</li><li>طلّع نص الأس: <span class="m">1 ± e<sup>−jθ</sup></span> تبقى cos أو 2j sin.</li><li>الـ cos السالب بيضيف π، و<span class="m">H = 0</span> معناها phase undefined.</li></ol></section>
 <div class="next"><a href="/interactive/university/dsp-l04">الدرس اللي فات</a><a href="/interactive/university/dsp-summary">اللي بعده</a></div></div>
 <script>
 const LESSON="dsp-l05",PARTS=["p1", "p2", "warm", "twins"];
