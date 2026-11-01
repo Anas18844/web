@@ -222,7 +222,7 @@ function mcq(box,part,items){
   if(got===items.length)setPart(part,true,r,items.length)}
  items.forEach((it,i)=>{const q=document.createElement("div");q.className="q";
   const draw=()=>{const g=ans()[k(i)];
-   q.innerHTML=`<div class="stem">${i+1}. ${it.q}</div><div class="opts">${it.o.map((o,j)=>{let c="";if(g!==undefined){if(j===it.a)c="right";else if(j===g)c="wrong"}return `<button type="button" class="opt ${c}" data-j="${j}" ${g!==undefined?"disabled":""}>${o}</button>`}).join("")}</div>${g!==undefined?`<div class="why ${g===it.a?"":"bad"}">${g===it.a?"صح. ":"غلط. "}${it.w}</div>`:""}`};
+   q.innerHTML=`<div class="stem">${i+1}. ${it.q}</div><div class="opts">${it.o.map((o,j)=>{let c="";if(g!==undefined){if(j===it.a)c="right";else if(j===g)c="wrong"}return `<button type="button" class="opt ${c}" data-j="${j}" ${g!==undefined?"disabled":""}>${o}</button>`}).join("")}</div>${g!==undefined?`<div class="why ${g===it.a?"":"bad"}">${g===it.a?"إجابتك صح. ":`إجابتك غلط. الإجابة الصح: ${it.o[it.a]}. `}${it.w}</div>`:""}`};
   q.onclick=e=>{const b=e.target.closest("[data-j]");if(!b||b.disabled)return;const d=L();d[LESSON].answers[k(i)]=+b.dataset.j;saveAll(d);draw();check()};
   draw();box.append(q)});
  const re=document.createElement("button");re.type="button";re.className="btn ghost";re.textContent="أعيد الأسئلة دي";
@@ -244,7 +244,7 @@ function exam(cfg){const box=$(cfg.box),res=$(cfg.res),tEl=$(cfg.timer),go=$(cfg
  function finish(){clearInterval(tick);const right=E.filter((e,i)=>ans[i]===e.a).length;
   box.querySelectorAll("button.opt").forEach(b=>b.disabled=true);
   E.forEach((e,i)=>{const q=box.children[i];q.querySelectorAll("button.opt").forEach((b,j)=>{b.classList.remove("pick");if(j===e.a)b.classList.add("right");else if(j===ans[i])b.classList.add("wrong")});
-   const w=document.createElement("div");w.className="why"+(ans[i]===e.a?"":" bad");w.innerHTML=(ans[i]===e.a?"صح. ":ans[i]===undefined?"ما جاوبتش. ":"غلط. ")+e.w;q.append(w)});
+   const w=document.createElement("div");w.className="why"+(ans[i]===e.a?"":" bad");w.innerHTML=(ans[i]===e.a?"إجابتك صح. ":ans[i]===undefined?`ما جاوبتش. الإجابة الصح: ${e.o[e.a]}. `:`إجابتك غلط. الإجابة الصح: ${e.o[e.a]}. `)+e.w;q.append(w)});
   const d=L();d[LESSON][cfg.key]={right,total:E.length,at:Date.now()};saveAll(d);bar();
   res.hidden=false;res.textContent=`النتيجة: ${right} / ${E.length}. `+(right/E.length>=.85?"ممتاز.":right/E.length>=.7?"كويس. راجع اللي غلطت فيه وأعد.":"ارجع للأجزاء اللي غلطت فيها، وأعد.");
   go.disabled=false;go.textContent="أعد الامتحان";cfg.after&&cfg.after()}
