@@ -273,7 +273,7 @@ const EXAMS = [
   { id:"pl3", c:"#7A4FD0", ar:"برمجة الحاسبات 3", en:"Programming Languages 3 · حسب 313",
     at:[2026,10,2,12,0], day:"الاتنين 2/11", time:"12:00 – 12:30",
     doctor:"أ.د. إسلام جمال", flag:"مشرف مشروع التخرج", lecture:"الاتنين 2–4، مدرج 2 (مجموعة 2)",
-    scope:["Lec 1: Introduction & Language Design Principles","Lec 2: Advanced Type Systems","Lec 3: Functional Programming (F#)، لحد مفهوم الـ Lazy Evaluation","السكاشن 2 و 3 و 4"],
+    scope:["Lec 1: Introduction & Language Design Principles","Lec 2: Advanced Type Systems","Lec 3: Functional Programming (F#)، لحد مفهوم الـ Lazy Evaluation",{t:"السكاشن: مش داخلة",out:true}],
     format:["MCQ"], maybe:[],
     diff:[1,3], diffText:"من سهل لمتوسط، بس هنعامله على إنه صعب",
     grades:[{l:"ميد",v:20,mid:true},{l:"مشروع",v:30}], gradesNote:"باقي التوزيع لسه.",
@@ -525,7 +525,7 @@ function tick(){
 const LESSONS = {
   ds:[{id:"ds-l01",t:"Lec 1: The Learning Problem",url:"/interactive/university/ds-l01",n:10},{id:"ds-l02",t:"Lec 2: Is Learning Feasible?",url:"/interactive/university/ds-l02",n:10},{id:"ds-l03",t:"Lec 3: The Linear Model I",url:"/interactive/university/ds-l03",n:10},{id:"ds-summary",t:"المراجعة والامتحان التجريبي",url:"/interactive/university/ds-summary",n:4}],
   dsp:[{id:"dsp-rapid",t:"المراجعة السريعة وإجابات الشيتات",url:"/interactive/university/dsp-rapid",n:3},{id:"dsp-bank",t:"بنك الأسئلة (ابدأ من هنا)",url:"/interactive/university/dsp-bank",n:10},{id:"dsp-l01",t:"Lec 1: Introduction",url:"/interactive/university/dsp-l01",n:6},{id:"dsp-l02",t:"Lec 2: Discrete-Time Signals",url:"/interactive/university/dsp-l02",n:5},{id:"dsp-l03",t:"Lec 3: Manipulations & Systems",url:"/interactive/university/dsp-l03",n:13},{id:"dsp-l04",t:"Lec 4: LSI & Convolution",url:"/interactive/university/dsp-l04",n:5},{id:"dsp-l05",t:"Lec 5: Fourier Analysis",url:"/interactive/university/dsp-l05",n:4},{id:"dsp-problems",t:"المسائل من غير حلول (37 مسألة)",url:"/interactive/university/dsp-problems"},{id:"dsp-summary",t:"الملخص الكلي والامتحان التجريبي",url:"/interactive/university/dsp-summary",n:3}],
-  pl3:[{id:"pl3-l01",t:"Lec 1: Language Design Principles"},{id:"pl3-l02",t:"Lec 2: Advanced Type Systems"},{id:"pl3-l03",t:"Lec 3: Functional Programming (F#)"},{id:"pl3-sec",t:"السكاشن 2 و 3 و 4"}],
+  pl3:[{id:"pl3-l01",t:"Lec 1: Language Design Principles",url:"/interactive/university/pl3-l01",n:7},{id:"pl3-l02",t:"Lec 2: Advanced Type Systems",url:"/interactive/university/pl3-l02",n:10},{id:"pl3-l03",t:"Lec 3: Functional Programming (F#)",url:"/interactive/university/pl3-l03",n:9},{id:"pl3-summary",t:"المراجعة والامتحانات التجريبية",url:"/interactive/university/pl3-summary",n:3}],
   eth:[{id:"eth-l01",t:"Lec 1: Introduction"},{id:"eth-l23",t:"Lec 2 و 3: Ethical Hacking"},{id:"eth-l05",t:"Lec 5: Cryptography"},{id:"eth-old",t:"الامتحان القديم"}],
   ip:[{id:"ip-a",t:"Part A: Introduction"},{id:"ip-b",t:"Part B: Fundamentals"},{id:"ip-c",t:"Part C: Spatial Enhancement"},{id:"ip-sheets",t:"Ch.2 و Ch.3 Problems"}],
   dl:[{id:"dl-1",t:"LLMs: الفكرة والـ tokens والـ scaling"},{id:"dl-2",t:"الـ pretraining والـ embeddings"},{id:"dl-3",t:"الـ SFT والـ alignment والـ RL"},{id:"dl-4",t:"الـ inference والـ agents والـ safety"},{id:"dl-sec",t:"السكاشن"}]
