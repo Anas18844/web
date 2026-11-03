@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Image · شيت 3 مسايل</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=Readex+Pro:wght@300;400;500;600&display=swap">
+<style>
+:root{color-scheme:light;--bg:#F4F6FA;--card:#FFFFFF;--ink:#1E2433;--soft:#5D6679;--faint:#8C94A6;--line:#E6E9F0;
+--c:#4F5BD5;--tint:#EDEFFB;--pos:#1F8A4C;--pos-tint:#E5F5EC;--neg:#C0392B;--neg-tint:#FDECEA;--amber:#B45309;--amber-tint:#FFF6E5;
+--f-head:"Alexandria","Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;--f-body:"Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;
+--f-math:"Cambria Math","Cambria","Times New Roman",serif;--shadow:0 1px 2px rgba(30,36,51,.04),0 6px 24px rgba(30,36,51,.06)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:2;padding:0 16px 80px}
+.wrap{max-width:820px;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--f-head);font-weight:700;margin:0;line-height:1.45}
+p{margin:0;max-width:68ch}a{color:var(--c)}button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.m{font-family:var(--f-math);direction:ltr;unicode-bidi:isolate;font-size:1.1em;white-space:nowrap}
+.mb{font-family:var(--f-math);direction:ltr;text-align:center;font-size:21px;background:var(--tint);border-radius:12px;padding:12px;overflow-x:auto}
+.bar{position:sticky;top:0;z-index:10;background:rgba(244,246,250,.96);padding:8px 16px;margin-inline:-16px;border-bottom:1px solid var(--line)}
+.bar .in{max-width:820px;margin-inline:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px}
+.bar a{text-decoration:none;color:var(--soft);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:1px 10px;white-space:nowrap}
+.bar a.done{background:var(--pos-tint);border-color:var(--pos);color:var(--pos)}
+.bar .sp{margin-inline-start:auto;color:var(--soft)}
+.track{flex-basis:100%;height:5px;background:var(--line);border-radius:6px;overflow:hidden}.track i{display:block;height:100%;width:0;background:var(--c)}
+.hero{background:var(--tint);border-radius:22px;padding:22px 24px;display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.hero h1{font-size:clamp(25px,5vw,34px)}.hero .meta{font-size:14px;color:var(--c);font-weight:600}
+.part{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;gap:16px;scroll-margin-top:64px}
+.part .num{font-size:13px;color:var(--c);font-weight:600}.part h2{font-size:23px}
+.part h3{font-size:18px;margin-top:10px;padding-top:12px;border-top:1px solid var(--line)}
+.idea{background:var(--tint);border-radius:14px;padding:12px 16px;font-weight:500}
+.trick{background:var(--pos-tint);border-radius:14px;padding:12px 16px}.trick b:first-child{color:var(--pos)}
+.trap{background:var(--amber-tint);border-radius:14px;padding:12px 16px;color:#5A3505}.trap b:first-child{color:var(--amber)}
+.examw{border:2px solid var(--c);border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:6px}.examw>b:first-child{color:var(--c)}
+.ex{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}.ex>b:first-child{color:var(--c)}
+.list{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:8px}
+.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.steps li{counter-increment:s;position:relative;background:var(--bg);border-radius:12px;padding:10px 14px;padding-inline-start:46px}
+.steps li::before{content:counter(s);position:absolute;inset-inline-start:12px;top:12px;width:24px;height:24px;border-radius:50%;background:var(--c);color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.tbl{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:15.5px}
+th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:start;vertical-align:top}th{color:var(--soft);font-size:14px;background:var(--bg)}
+.lab{border:2px dashed #B9C0EE;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.lab .tag{font-size:14px;font-weight:600;color:var(--c)}
+.ctl{display:flex;flex-wrap:wrap;gap:12px;align-items:end;direction:ltr}
+.ctl label{display:flex;flex-direction:column;font-size:13px;color:var(--soft);gap:2px}
+.ctl input,.ctl select{font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:10px;padding:4px 8px;background:var(--card);direction:ltr;width:130px}
+.ctl input[type=range]{padding:0;width:170px;accent-color:var(--c)}
+.ctl input.wide{width:240px}
+.read{font-family:var(--f-math);direction:ltr;text-align:center;font-size:17px;line-height:1.8;overflow-x:auto}
+.rd{text-align:center;font-size:15px;color:var(--soft)}
+canvas{width:100%;max-width:400px;aspect-ratio:1;background:#FBFCFE;border:1px solid var(--line);border-radius:14px;display:block;margin-inline:auto;touch-action:none}
+canvas.wide{max-width:100%;aspect-ratio:5/2}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.two figure{margin:0;display:flex;flex-direction:column;gap:4px;text-align:center;font-size:14px;color:var(--soft)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:0;background:var(--c);color:#fff;border-radius:999px;padding:6px 16px;font-size:15px;min-height:40px}
+.btn.ghost{background:var(--card);color:var(--c);border:1.5px solid var(--c)}.btn.on{background:var(--pos);color:#fff;border-color:var(--pos)}.btn:disabled{opacity:.5;cursor:default}
+.qs{display:flex;flex-direction:column;gap:12px}.qk{font-size:14px;font-weight:600;color:var(--c);margin-top:6px}
+.q{background:var(--bg);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.q .stem{font-weight:500}.opts{display:flex;flex-direction:column;gap:6px}
+.opt{text-align:start;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:8px 12px;font-size:15.5px;line-height:1.7}
+.opt:hover:not(:disabled){border-color:var(--c)}.opt:disabled{cursor:default}.opt.pick{border-color:var(--c);background:var(--tint)}
+.opt.right{background:var(--pos-tint);border-color:var(--pos)}.opt.wrong{background:var(--neg-tint);border-color:var(--neg)}
+.why{font-size:15px;color:var(--soft);border-inline-start:3px solid var(--c);padding-inline-start:10px}.why.bad{border-color:var(--neg)}
+.score{font-size:14px;color:var(--soft)}.badge{background:var(--pos-tint);color:var(--pos);border-radius:999px;padding:2px 12px;font-size:14px;font-weight:600}
+.prob{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.sol{display:none;background:var(--bg);border-radius:12px;padding:12px 14px;flex-direction:column;gap:8px}.sol.show{display:flex}
+.g{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}.g>b{color:var(--c)}
+.gs{background:var(--bg);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:8px}
+.gs .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.gs input{font:inherit;font-size:16px;width:170px;border:1.5px solid var(--line);border-radius:10px;padding:4px 8px;direction:ltr;text-align:center}
+.gs input.ok{border-color:var(--pos);background:var(--pos-tint)}.gs input.no{border-color:var(--neg);background:var(--neg-tint)}
+.gs .ans{display:none;color:var(--soft);font-size:15.5px}.gs.open .ans{display:block}.gs.lock{display:none}
+.timer{font-family:var(--f-head);font-size:28px;color:var(--c);direction:ltr}
+.result{background:var(--tint);border-radius:14px;padding:12px 16px;font-weight:500}
+.exam{border:2px solid var(--c)}
+.next{display:flex;gap:8px;flex-wrap:wrap}.next a{background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:6px 16px;text-decoration:none}
+@media (max-width:640px){.part{padding:18px 16px}.two{grid-template-columns:1fr}.m{white-space:normal}}
+@media print{.bar,.next,.btn{display:none}body{background:#fff}.part{box-shadow:none;break-inside:avoid}.sol{display:flex}}
+</style>
+</head>
+<body>
+<style>:root{--c:#B5671B;--tint:#FBF1E6}.lab{border-color:#E8C79E}
+.pn{display:flex;flex-wrap:wrap;gap:6px}.pn a{font-size:13px;background:var(--tint);color:var(--c);border-radius:999px;padding:1px 10px;text-decoration:none;direction:ltr}
+.prob img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
+.ar2{color:var(--soft);font-size:15.5px}.star{color:var(--amber);font-weight:600;font-size:13px}
+.ptop{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.ptop b{font-family:var(--f-head);font-size:18px;color:var(--c);direction:ltr}
+.idx{display:flex;flex-wrap:wrap;gap:6px}.idx a{font-size:13px;border:1px solid var(--line);border-radius:999px;padding:1px 9px;text-decoration:none;color:var(--soft);direction:ltr}.idx a.done{background:var(--pos-tint);border-color:var(--pos);color:var(--pos)}
+.sol .en{direction:ltr;text-align:left}</style><div class="bar"><div class="in"><a href="/interactive/university/midterm">الخريطة</a><a href="/interactive/university/ip-s2">شيت 2: الأفكار</a><a href="/interactive/university/ip-s2-essay">شيت 2: المسايل</a><a href="/interactive/university/ip-s3">شيت 3: الأفكار</a><a href="/interactive/university/ip-s3-essay">شيت 3: المسايل</a><span class="sp" id="pct"></span><div class="track"><i id="fill"></i></div></div></div><div class="wrap"><header class="hero"><div class="meta">معالجة الصور · شيت Chapter 3</div><h1>شيت 3: المسايل</h1>
+<p>47 مسألة بنفس ترتيب الشيت. حل في ورقة الأول، وبعدين اظهر الحل النموذجي وقارن، وعلّم على اللي خلصته. والمسايل اللي عليها ★ هي الـ starred في الكتاب.</p></header>
+<section class="part"><div class="num">الفهرس</div><div class="idx"><a href="#p3_1" data-p="p3_1">3.1</a><a href="#p3_2" data-p="p3_2">3.2</a><a href="#p3_3" data-p="p3_3">3.3</a><a href="#p3_4" data-p="p3_4">3.4</a><a href="#p3_5" data-p="p3_5">3.5</a><a href="#p3_6" data-p="p3_6">3.6</a><a href="#p3_7" data-p="p3_7">3.7</a><a href="#p3_8" data-p="p3_8">3.8</a><a href="#p3_9" data-p="p3_9">3.9</a><a href="#p3_10" data-p="p3_10">3.10</a><a href="#p3_11" data-p="p3_11">3.11</a><a href="#p3_12" data-p="p3_12">3.12</a><a href="#p3_13" data-p="p3_13">3.13</a><a href="#p3_14" data-p="p3_14">3.14</a><a href="#p3_15" data-p="p3_15">3.15</a><a href="#p3_16" data-p="p3_16">3.16</a><a href="#p3_17" data-p="p3_17">3.17</a><a href="#p3_18" data-p="p3_18">3.18</a><a href="#p3_19" data-p="p3_19">3.19</a><a href="#p3_20" data-p="p3_20">3.20</a><a href="#p3_21" data-p="p3_21">3.21</a><a href="#p3_22" data-p="p3_22">3.22</a><a href="#p3_23" data-p="p3_23">3.23</a><a href="#p3_24" data-p="p3_24">3.24</a><a href="#p3_25" data-p="p3_25">3.25</a><a href="#p3_26" data-p="p3_26">3.26</a><a href="#p3_27" data-p="p3_27">3.27</a><a href="#p3_28" data-p="p3_28">3.28</a><a href="#p3_29" data-p="p3_29">3.29</a><a href="#p3_30" data-p="p3_30">3.30</a><a href="#p3_31" data-p="p3_31">3.31</a><a href="#p3_32" data-p="p3_32">3.32</a><a href="#p3_33" data-p="p3_33">3.33</a><a href="#p3_34" data-p="p3_34">3.34</a><a href="#p3_35" data-p="p3_35">3.35</a><a href="#p3_36" data-p="p3_36">3.36</a><a href="#p3_37" data-p="p3_37">3.37</a><a href="#p3_38" data-p="p3_38">3.38</a><a href="#p3_39" data-p="p3_39">3.39</a><a href="#p3_40" data-p="p3_40">3.40</a><a href="#p3_41" data-p="p3_41">3.41</a><a href="#p3_42" data-p="p3_42">3.42</a><a href="#p3_43" data-p="p3_43">3.43</a><a href="#p3_44" data-p="p3_44">3.44</a><a href="#p3_45" data-p="p3_45">3.45</a><a href="#p3_46" data-p="p3_46">3.46</a><a href="#p3_47" data-p="p3_47">3.47</a></div></section><div class="prob part" id="p3_1"><div class="ptop"><b>Problem 3.1</b></div><div class="ar2">يعني: stretch من 0 لـ L−1.</div>
+<img src="/interactive/university/ip-assets/q3.1.png" alt="problem 3.1" loading="lazy" width="967" height="110">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_1" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_1"></button></div>
+<div class="sol" id="sp3_1"><img src="/interactive/university/ip-assets/a3.1.png" alt="model answer 3.1" loading="lazy" width="967" height="157"></div></div><div class="prob part" id="p3_2"><div class="ptop"><b>Problem 3.2</b><span class="star">★ starred</span></div><div class="ar2">يعني: contrast stretch بالـ E.</div>
+<img src="/interactive/university/ip-assets/q3.2.png" alt="problem 3.2" loading="lazy" width="967" height="229">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_2" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_2"></button></div>
+<div class="sol" id="sp3_2"><img src="/interactive/university/ip-assets/a3.2.png" alt="model answer 3.2" loading="lazy" width="967" height="598"></div></div><div class="prob part" id="p3_3"><div class="ptop"><b>Problem 3.3</b><span class="star">★ starred</span></div><div class="ar2">يعني: دوال الـ bit planes.</div>
+<img src="/interactive/university/ip-assets/q3.3.png" alt="problem 3.3" loading="lazy" width="967" height="327">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_3" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_3"></button></div>
+<div class="sol" id="sp3_3"><img src="/interactive/university/ip-assets/a3.3.png" alt="model answer 3.3" loading="lazy" width="967" height="613"></div></div><div class="prob part" id="p3_4"><div class="ptop"><b>Problem 3.4</b></div><div class="ar2">يعني: طلّع الـ bit planes لصورة 4×4.</div>
+<img src="/interactive/university/ip-assets/q3.4.png" alt="problem 3.4" loading="lazy" width="967" height="309">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_4" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_4"></button></div>
+<div class="sol" id="sp3_4"><img src="/interactive/university/ip-assets/a3.4.png" alt="model answer 3.4" loading="lazy" width="967" height="380"></div></div><div class="prob part" id="p3_5"><div class="ptop"><b>Problem 3.5</b><span class="star">★ starred</span></div><div class="ar2">يعني: تصفير الـ planes الواطية والعالية بيعمل إيه في الـ histogram؟</div>
+<img src="/interactive/university/ip-assets/q3.5.png" alt="problem 3.5" loading="lazy" width="967" height="208">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_5" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_5"></button></div>
+<div class="sol" id="sp3_5"><img src="/interactive/university/ip-assets/a3.5.png" alt="model answer 3.5" loading="lazy" width="967" height="403"></div></div><div class="prob part" id="p3_6"><div class="ptop"><b>Problem 3.6</b></div><div class="ar2">يعني: ليه الـ equalization مش flat؟</div>
+<img src="/interactive/university/ip-assets/q3.6.png" alt="problem 3.6" loading="lazy" width="967" height="109">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_6" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_6"></button></div>
+<div class="sol" id="sp3_6"><img src="/interactive/university/ip-assets/a3.6.png" alt="model answer 3.6" loading="lazy" width="967" height="290"></div></div><div class="prob part" id="p3_7"><div class="ptop"><b>Problem 3.7</b></div><div class="ar2">يعني: Equalization مرتين = مرة.</div>
+<img src="/interactive/university/ip-assets/q3.7.png" alt="problem 3.7" loading="lazy" width="967" height="138">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_7" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_7"></button></div>
+<div class="sol" id="sp3_7"><img src="/interactive/university/ip-assets/a3.7.png" alt="model answer 3.7" loading="lazy" width="967" height="278"></div></div><div class="prob part" id="p3_8"><div class="ptop"><b>Problem 3.8</b></div><div class="ar2">يعني: مثال المعكوس بيفشل.</div>
+<img src="/interactive/university/ip-assets/q3.8.png" alt="problem 3.8" loading="lazy" width="967" height="138">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_8" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_8"></button></div>
+<div class="sol" id="sp3_8"><img src="/interactive/university/ip-assets/a3.8.png" alt="model answer 3.8" loading="lazy" width="967" height="319"></div></div><div class="prob part" id="p3_9"><div class="ptop"><b>Problem 3.9</b><span class="star">★ starred</span></div><div class="ar2">يعني: شروط الـ discrete equalization.</div>
+<img src="/interactive/university/ip-assets/q3.9.png" alt="problem 3.9" loading="lazy" width="967" height="201">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_9" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_9"></button></div>
+<div class="sol" id="sp3_9"><img src="/interactive/university/ip-assets/a3.9.png" alt="model answer 3.9" loading="lazy" width="967" height="316"></div></div><div class="prob part" id="p3_10"><div class="ptop"><b>Problem 3.10</b><span class="star">★ starred</span></div><div class="ar2">يعني: histogram بتاع f+g و f−g و f×g و f÷g.</div>
+<img src="/interactive/university/ip-assets/q3.10.png" alt="problem 3.10" loading="lazy" width="967" height="166">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_10" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_10"></button></div>
+<div class="sol" id="sp3_10"><img src="/interactive/university/ip-assets/a3.10.png" alt="model answer 3.10" loading="lazy" width="967" height="618"></div></div><div class="prob part" id="p3_11"><div class="ptop"><b>Problem 3.11</b><span class="star">★ starred</span></div><div class="ar2">يعني: equalization و specification لـ PDFs معطاة.</div>
+<img src="/interactive/university/ip-assets/q3.11.png" alt="problem 3.11" loading="lazy" width="967" height="327">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_11" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_11"></button></div>
+<div class="sol" id="sp3_11"><img src="/interactive/university/ip-assets/a3.11.png" alt="model answer 3.11" loading="lazy" width="967" height="300"></div></div><div class="prob part" id="p3_12"><div class="ptop"><b>Problem 3.12</b></div><div class="ar2">يعني: specification من خطين مستقيمين.</div>
+<img src="/interactive/university/ip-assets/q3.12.png" alt="problem 3.12" loading="lazy" width="967" height="193">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_12" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_12"></button></div>
+<div class="sol" id="sp3_12"><img src="/interactive/university/ip-assets/a3.12.png" alt="model answer 3.12" loading="lazy" width="967" height="267"></div></div><div class="prob part" id="p3_13"><div class="ptop"><b>Problem 3.13</b><span class="star">★ starred</span></div><div class="ar2">يعني: G⁻¹ مراية G؟</div>
+<img src="/interactive/university/ip-assets/q3.13.png" alt="problem 3.13" loading="lazy" width="967" height="214">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_13" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_13"></button></div>
+<div class="sol" id="sp3_13"><img src="/interactive/university/ip-assets/a3.13.png" alt="model answer 3.13" loading="lazy" width="967" height="208"></div></div><div class="prob part" id="p3_14"><div class="ptop"><b>Problem 3.14</b><span class="star">★ starred</span></div><div class="ar2">يعني: تحديث الـ local histogram.</div>
+<img src="/interactive/university/ip-assets/q3.14.png" alt="problem 3.14" loading="lazy" width="967" height="138">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_14" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_14"></button></div>
+<div class="sol" id="sp3_14"><img src="/interactive/university/ip-assets/a3.14.png" alt="model answer 3.14" loading="lazy" width="967" height="264"></div></div><div class="prob part" id="p3_15"><div class="ptop"><b>Problem 3.15</b></div><div class="ar2">يعني: kernel 1×1 بيعمل إيه؟</div>
+<img src="/interactive/university/ip-assets/q3.15.png" alt="problem 3.15" loading="lazy" width="967" height="82">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_15" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_15"></button></div>
+<div class="sol" id="sp3_15"><img src="/interactive/university/ip-assets/a3.15.png" alt="model answer 3.15" loading="lazy" width="967" height="184"></div></div><div class="prob part" id="p3_16"><div class="ptop"><b>Problem 3.16</b></div><div class="ar2">يعني: تعرف الـ chip بيعمل correlation ولا convolution.</div>
+<img src="/interactive/university/ip-assets/q3.16.png" alt="problem 3.16" loading="lazy" width="967" height="138">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_16" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_16"></button></div>
+<div class="sol" id="sp3_16"><img src="/interactive/university/ip-assets/a3.16.png" alt="model answer 3.16" loading="lazy" width="967" height="228"></div></div><div class="prob part" id="p3_17"><div class="ptop"><b>Problem 3.17</b><span class="star">★ starred</span></div><div class="ar2">يعني: convolution = correlation مع الـ kernel ملفوف.</div>
+<img src="/interactive/university/ip-assets/q3.17.png" alt="problem 3.17" loading="lazy" width="967" height="194">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_17" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_17"></button></div>
+<div class="sol" id="sp3_17"><img src="/interactive/university/ip-assets/a3.17.png" alt="model answer 3.17" loading="lazy" width="967" height="407"></div></div><div class="prob part" id="p3_18"><div class="ptop"><b>Problem 3.18</b><span class="star">★ starred</span></div><div class="ar2">يعني: احسب convolution و correlation للمثال.</div>
+<img src="/interactive/university/ip-assets/q3.18.png" alt="problem 3.18" loading="lazy" width="967" height="522">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_18" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_18"></button></div>
+<div class="sol" id="sp3_18"><img src="/interactive/university/ip-assets/a3.18.png" alt="model answer 3.18" loading="lazy" width="967" height="769"></div></div><div class="prob part" id="p3_19"><div class="ptop"><b>Problem 3.19</b><span class="star">★ starred</span></div><div class="ar2">يعني: أثبت حجم الناتج M + m − 1.</div>
+<img src="/interactive/university/ip-assets/q3.19.png" alt="problem 3.19" loading="lazy" width="967" height="82">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_19" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_19"></button></div>
+<div class="sol" id="sp3_19"><img src="/interactive/university/ip-assets/a3.19.png" alt="model answer 3.19" loading="lazy" width="967" height="258"></div></div><div class="prob part" id="p3_20"><div class="ptop"><b>Problem 3.20</b><span class="star">★ starred</span></div><div class="ar2">يعني: قسّم الـ kernel لـ w₁ و w₂ واحسب.</div>
+<img src="/interactive/university/ip-assets/q3.20.png" alt="problem 3.20" loading="lazy" width="967" height="299">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_20" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_20"></button></div>
+<div class="sol" id="sp3_20"><img src="/interactive/university/ip-assets/a3.20.png" alt="model answer 3.20" loading="lazy" width="967" height="913"></div></div><div class="prob part" id="p3_21"><div class="ptop"><b>Problem 3.21</b></div><div class="ar2">يعني: convolution صورة كلها 1، وفيه bias؟</div>
+<img src="/interactive/university/ip-assets/q3.21.png" alt="problem 3.21" loading="lazy" width="967" height="117">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_21" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_21"></button></div>
+<div class="sol" id="sp3_21"><img src="/interactive/university/ip-assets/a3.21.png" alt="model answer 3.21" loading="lazy" width="967" height="448"></div></div><div class="prob part" id="p3_22"><div class="ptop"><b>Problem 3.22</b><span class="star">★ starred</span></div><div class="ar2">يعني: separable؟ واطلع w₁ و w₂.</div>
+<img src="/interactive/university/ip-assets/q3.22.png" alt="problem 3.22" loading="lazy" width="967" height="235">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_22" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_22"></button></div>
+<div class="sol" id="sp3_22"><img src="/interactive/university/ip-assets/a3.22.png" alt="model answer 3.22" loading="lazy" width="967" height="262"></div></div><div class="prob part" id="p3_23"><div class="ptop"><b>Problem 3.23</b><span class="star">★ starred</span></div><div class="ar2">يعني: الـ Gaussian separable، و v إيه؟</div>
+<img src="/interactive/university/ip-assets/q3.23.png" alt="problem 3.23" loading="lazy" width="967" height="201">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_23" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_23"></button></div>
+<div class="sol" id="sp3_23"><img src="/interactive/university/ip-assets/a3.23.png" alt="model answer 3.23" loading="lazy" width="967" height="290"></div></div><div class="prob part" id="p3_24"><div class="ptop"><b>Problem 3.24</b><span class="star">★ starred</span></div><div class="ar2">يعني: column × row = convolution.</div>
+<img src="/interactive/university/ip-assets/q3.24.png" alt="problem 3.24" loading="lazy" width="967" height="138">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_24" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_24"></button></div>
+<div class="sol" id="sp3_24"><img src="/interactive/university/ip-assets/a3.24.png" alt="model answer 3.24" loading="lazy" width="967" height="373"></div></div><div class="prob part" id="p3_25"><div class="ptop"><b>Problem 3.25</b><span class="star">★ starred</span></div><div class="ar2">يعني: ضرب و convolution K Gaussians.</div>
+<img src="/interactive/university/ip-assets/q3.25.png" alt="problem 3.25" loading="lazy" width="967" height="208">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_25" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_25"></button></div>
+<div class="sol" id="sp3_25"><img src="/interactive/university/ip-assets/a3.25.png" alt="model answer 3.25" loading="lazy" width="967" height="254"></div></div><div class="prob part" id="p3_26"><div class="ptop"><b>Problem 3.26</b><span class="star">★ starred</span></div><div class="ar2">يعني: صورتين بنفس الـ histogram بعد الـ blur.</div>
+<img src="/interactive/university/ip-assets/q3.26.png" alt="problem 3.26" loading="lazy" width="967" height="236">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_26" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_26"></button></div>
+<div class="sol" id="sp3_26"><img src="/interactive/university/ip-assets/a3.26.png" alt="model answer 3.26" loading="lazy" width="967" height="602"></div></div><div class="prob part" id="p3_27"><div class="ptop"><b>Problem 3.27</b><span class="star">★ starred</span></div><div class="ar2">يعني: 4 مرات Gaussian: الحجم والـ σ.</div>
+<img src="/interactive/university/ip-assets/q3.27.png" alt="problem 3.27" loading="lazy" width="967" height="173">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_27" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_27"></button></div>
+<div class="sol" id="sp3_27"><img src="/interactive/university/ip-assets/a3.27.png" alt="model answer 3.27" loading="lazy" width="967" height="124"></div></div><div class="prob part" id="p3_28"><div class="ptop"><b>Problem 3.28</b><span class="star">★ starred</span></div><div class="ar2">يعني: 3 Gaussians مختلفين.</div>
+<img src="/interactive/university/ip-assets/q3.28.png" alt="problem 3.28" loading="lazy" width="967" height="201">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_28" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_28"></button></div>
+<div class="sol" id="sp3_28"><img src="/interactive/university/ip-assets/a3.28.png" alt="model answer 3.28" loading="lazy" width="967" height="161"></div></div><div class="prob part" id="p3_29"><div class="ptop"><b>Problem 3.29</b><span class="star">★ starred</span></div><div class="ar2">يعني: تأثير الـ blur المتكرر.</div>
+<img src="/interactive/university/ip-assets/q3.29.png" alt="problem 3.29" loading="lazy" width="967" height="110">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_29" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_29"></button></div>
+<div class="sol" id="sp3_29"><img src="/interactive/university/ip-assets/a3.29.png" alt="model answer 3.29" loading="lazy" width="967" height="236"></div></div><div class="prob part" id="p3_30"><div class="ptop"><b>Problem 3.30</b></div><div class="ar2">يعني: ليه أركان الـ shading غلط؟</div>
+<img src="/interactive/university/ip-assets/q3.30.png" alt="problem 3.30" loading="lazy" width="967" height="182">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_30" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_30"></button></div>
+<div class="sol" id="sp3_30"><img src="/interactive/university/ip-assets/a3.30.png" alt="model answer 3.30" loading="lazy" width="967" height="337"></div></div><div class="prob part" id="p3_31"><div class="ptop"><b>Problem 3.31</b><span class="star">★ starred</span></div><div class="ar2">يعني: Σw = 1 بيحافظ على المجموع.</div>
+<img src="/interactive/university/ip-assets/q3.31.png" alt="problem 3.31" loading="lazy" width="967" height="110">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_31" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_31"></button></div>
+<div class="sol" id="sp3_31"><img src="/interactive/university/ip-assets/a3.31.png" alt="model answer 3.31" loading="lazy" width="967" height="212"></div></div><div class="prob part" id="p3_32"><div class="ptop"><b>Problem 3.32</b></div><div class="ar2">يعني: Σw = 0 المجموع صفر.</div>
+<img src="/interactive/university/ip-assets/q3.32.png" alt="problem 3.32" loading="lazy" width="967" height="110">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_32" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_32"></button></div>
+<div class="sol" id="sp3_32"><img src="/interactive/university/ip-assets/a3.32.png" alt="model answer 3.32" loading="lazy" width="967" height="129"></div></div><div class="prob part" id="p3_33"><div class="ptop"><b>Problem 3.33</b></div><div class="ar2">يعني: ليه Gaussian أحسن للـ defocus.</div>
+<img src="/interactive/university/ip-assets/q3.33.png" alt="problem 3.33" loading="lazy" width="967" height="221">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_33" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_33"></button></div>
+<div class="sol" id="sp3_33"><img src="/interactive/university/ip-assets/a3.33.png" alt="model answer 3.33" loading="lazy" width="967" height="123"></div></div><div class="prob part" id="p3_34"><div class="ptop"><b>Problem 3.34</b></div><div class="ar2">يعني: ليه الخطوط اندمجت مع 25 بس.</div>
+<img src="/interactive/university/ip-assets/q3.34.png" alt="problem 3.34" loading="lazy" width="967" height="249">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_34" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_34"></button></div>
+<div class="sol" id="sp3_34"><img src="/interactive/university/ip-assets/a3.34.png" alt="model answer 3.34" loading="lazy" width="967" height="387"></div></div><div class="prob part" id="p3_35"><div class="ptop"><b>Problem 3.35</b></div><div class="ar2">يعني: حجم box يقلل الأجسام لـ 1/10.</div>
+<img src="/interactive/university/ip-assets/q3.35.png" alt="problem 3.35" loading="lazy" width="967" height="221">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_35" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_35"></button></div>
+<div class="sol" id="sp3_35"><img src="/interactive/university/ip-assets/a3.35.png" alt="model answer 3.35" loading="lazy" width="967" height="278"></div></div><div class="prob part" id="p3_36"><div class="ptop"><b>Problem 3.36</b><span class="star">★ starred</span></div><div class="ar2">يعني: الـ median بيمسح clusters صغيرة.</div>
+<img src="/interactive/university/ip-assets/q3.36.png" alt="problem 3.36" loading="lazy" width="967" height="292">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_36" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_36"></button></div>
+<div class="sol" id="sp3_36"><img src="/interactive/university/ip-assets/a3.36.png" alt="model answer 3.36" loading="lazy" width="967" height="347"></div></div><div class="prob part" id="p3_37"><div class="ptop"><b>Problem 3.37</b><span class="star">★ starred</span></div><div class="ar2">يعني: حساب وتحديث الـ median.</div>
+<img src="/interactive/university/ip-assets/q3.37.png" alt="problem 3.37" loading="lazy" width="967" height="180">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_37" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_37"></button></div>
+<div class="sol" id="sp3_37"><img src="/interactive/university/ip-assets/a3.37.png" alt="model answer 3.37" loading="lazy" width="967" height="396"></div></div><div class="prob part" id="p3_38"><div class="ptop"><b>Problem 3.38</b></div><div class="ar2">يعني: smoothing و Laplacian بالترتيب.</div>
+<img src="/interactive/university/ip-assets/q3.38.png" alt="problem 3.38" loading="lazy" width="967" height="137">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_38" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_38"></button></div>
+<div class="sol" id="sp3_38"><img src="/interactive/university/ip-assets/a3.38.png" alt="model answer 3.38" loading="lazy" width="967" height="143"></div></div><div class="prob part" id="p3_39"><div class="ptop"><b>Problem 3.39</b><span class="star">★ starred</span></div><div class="ar2">يعني: الـ Laplacian isotropic.</div>
+<img src="/interactive/university/ip-assets/q3.39.png" alt="problem 3.39" loading="lazy" width="967" height="166">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_39" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_39"></button></div>
+<div class="sol" id="sp3_39"><img src="/interactive/university/ip-assets/a3.39.png" alt="model answer 3.39" loading="lazy" width="967" height="327"></div></div><div class="prob part" id="p3_40"><div class="ptop"><b>Problem 3.40</b><span class="star">★ starred</span></div><div class="ar2">يعني: ليه −8 أحدّ من −4.</div>
+<img src="/interactive/university/ip-assets/q3.40.png" alt="problem 3.40" loading="lazy" width="967" height="110">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_40" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_40"></button></div>
+<div class="sol" id="sp3_40"><img src="/interactive/university/ip-assets/a3.40.png" alt="model answer 3.40" loading="lazy" width="967" height="198"></div></div><div class="prob part" id="p3_41"><div class="ptop"><b>Problem 3.41</b><span class="star">★ starred</span></div><div class="ar2">يعني: kernel unsharp masking.</div>
+<img src="/interactive/university/ip-assets/q3.41.png" alt="problem 3.41" loading="lazy" width="967" height="110">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_41" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_41"></button></div>
+<div class="sol" id="sp3_41"><img src="/interactive/university/ip-assets/a3.41.png" alt="model answer 3.41" loading="lazy" width="967" height="293"></div></div><div class="prob part" id="p3_42"><div class="ptop"><b>Problem 3.42</b></div><div class="ar2">يعني: طرح الـ Laplacian = unsharp.</div>
+<img src="/interactive/university/ip-assets/q3.42.png" alt="problem 3.42" loading="lazy" width="967" height="110">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_42" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_42"></button></div>
+<div class="sol" id="sp3_42"><img src="/interactive/university/ip-assets/a3.42.png" alt="model answer 3.42" loading="lazy" width="967" height="281"></div></div><div class="prob part" id="p3_43"><div class="ptop"><b>Problem 3.43</b><span class="star">★ starred</span></div><div class="ar2">يعني: الـ gradient isotropic، و |gx|+|gy| لأ.</div>
+<img src="/interactive/university/ip-assets/q3.43.png" alt="problem 3.43" loading="lazy" width="967" height="145">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_43" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_43"></button></div>
+<div class="sol" id="sp3_43"><img src="/interactive/university/ip-assets/a3.43.png" alt="model answer 3.43" loading="lazy" width="967" height="247"></div></div><div class="prob part" id="p3_44"><div class="ptop"><b>Problem 3.44</b><span class="star">★ starred</span></div><div class="ar2">يعني: أنهي kernels separable؟</div>
+<img src="/interactive/university/ip-assets/q3.44.png" alt="problem 3.44" loading="lazy" width="967" height="173">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_44" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_44"></button></div>
+<div class="sol" id="sp3_44"><img src="/interactive/university/ip-assets/a3.44.png" alt="model answer 3.44" loading="lazy" width="967" height="545"></div></div><div class="prob part" id="p3_45"><div class="ptop"><b>Problem 3.45</b><span class="star">★ starred</span></div><div class="ar2">يعني: سد فجوات الحروف.</div>
+<img src="/interactive/university/ip-assets/q3.45.png" alt="problem 3.45" loading="lazy" width="967" height="472">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_45" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_45"></button></div>
+<div class="sol" id="sp3_45"><img src="/interactive/university/ip-assets/a3.45.png" alt="model answer 3.45" loading="lazy" width="967" height="265"></div></div><div class="prob part" id="p3_46"><div class="ptop"><b>Problem 3.46</b></div><div class="ar2">يعني: تختبر جهاز smoothing و sharpening.</div>
+<img src="/interactive/university/ip-assets/q3.46.png" alt="problem 3.46" loading="lazy" width="967" height="221">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_46" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_46"></button></div>
+<div class="sol" id="sp3_46"><img src="/interactive/university/ip-assets/a3.46.png" alt="model answer 3.46" loading="lazy" width="967" height="364"></div></div><div class="prob part" id="p3_47"><div class="ptop"><b>Problem 3.47</b></div><div class="ar2">يعني: توحيد الإضاءة لكاميرا مراقبة.</div>
+<img src="/interactive/university/ip-assets/q3.47.png" alt="problem 3.47" loading="lazy" width="967" height="305">
+<div class="btns"><button type="button" class="btn ghost" data-sol="sp3_47" data-label="اظهر الحل النموذجي">اظهر الحل النموذجي</button><button type="button" class="btn ghost" data-done="p3_47"></button></div>
+<div class="sol" id="sp3_47"><img src="/interactive/university/ip-assets/a3.47.png" alt="model answer 3.47" loading="lazy" width="967" height="137"></div></div><div class="next"><a href="/interactive/university/ip-s3">ارجع لأفكار الشيت</a></div></div><script>
+const LESSON="ip-s3-essay",PARTS=["p3_1", "p3_2", "p3_3", "p3_4", "p3_5", "p3_6", "p3_7", "p3_8", "p3_9", "p3_10", "p3_11", "p3_12", "p3_13", "p3_14", "p3_15", "p3_16", "p3_17", "p3_18", "p3_19", "p3_20", "p3_21", "p3_22", "p3_23", "p3_24", "p3_25", "p3_26", "p3_27", "p3_28", "p3_29", "p3_30", "p3_31", "p3_32", "p3_33", "p3_34", "p3_35", "p3_36", "p3_37", "p3_38", "p3_39", "p3_40", "p3_41", "p3_42", "p3_43", "p3_44", "p3_45", "p3_46", "p3_47"],HAS_EXAM=false,MCQ={};
+
+const KEY="anas-uni-progress-v1",V="v2:";
+const $=id=>document.getElementById(id);
+const loadAll=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return {}}};
+const saveAll=d=>{try{localStorage.setItem(KEY,JSON.stringify(d))}catch{}};
+function L(){const d=loadAll();d[LESSON]=d[LESSON]||{parts:{},answers:{},exam:null};d[LESSON].answers=d[LESSON].answers||{};d[LESSON].parts=d[LESSON].parts||{};return d}
+function setPart(p,on,right,total){const d=L();if(on)d[LESSON].parts[p]={right,total,at:Date.now()};else delete d[LESSON].parts[p];saveAll(d);bar()}
+function bar(){const l=L()[LESSON],t=PARTS.length+(HAS_EXAM?1:0),done=PARTS.filter(p=>l.parts[p]).length+(HAS_EXAM&&l.exam?1:0),p=Math.round(done/t*100);
+ $("pct").textContent=`${p}% · ${done}/${t}`;$("fill").style.width=p+"%";
+ document.querySelectorAll("[data-chip]").forEach(a=>a.classList.toggle("done",a.dataset.chip==="exam"?!!l.exam:!!l.parts[a.dataset.chip]));
+ document.querySelectorAll("[data-done]").forEach(b=>{const on=!!l.parts[b.dataset.done];b.classList.toggle("on",on);b.textContent=on?"خلصت ✓":"علّم إني خلصت"})}
+document.querySelectorAll("[data-done]").forEach(b=>b.onclick=()=>setPart(b.dataset.done,!L()[LESSON].parts[b.dataset.done]));
+document.querySelectorAll("[data-sol]").forEach(b=>b.onclick=()=>{const s=$(b.dataset.sol);s.classList.toggle("show");b.textContent=s.classList.contains("show")?"اخفي الإجابة":b.dataset.label||"اظهر الإجابة"});
+function mcq(box,part,items){
+ const ans=()=>L()[LESSON].answers,k=i=>V+part+":"+i,st=document.createElement("div");st.className="score";
+ function check(){const a=ans(),got=items.filter((_,i)=>a[k(i)]!==undefined).length,r=items.filter((it,i)=>a[k(i)]===it.a).length;
+  st.innerHTML=got===items.length?`<span class="badge">خلصت · ${r}/${items.length}</span>`:`جاوبت ${got} من ${items.length}`;
+  if(got===items.length)setPart(part,true,r,items.length)}
+ items.forEach((it,i)=>{const q=document.createElement("div");q.className="q";
+  const draw=()=>{const g=ans()[k(i)];
+   q.innerHTML=`<div class="stem">${i+1}. ${it.q}</div><div class="opts">${it.o.map((o,j)=>{let c="";if(g!==undefined){if(j===it.a)c="right";else if(j===g)c="wrong"}return `<button type="button" class="opt ${c}" data-j="${j}" ${g!==undefined?"disabled":""}>${o}</button>`}).join("")}</div>${g!==undefined?`<div class="why ${g===it.a?"":"bad"}">${g===it.a?"إجابتك صح. ":`إجابتك غلط. الإجابة الصح: ${it.o[it.a]}. `}${it.w}</div>`:""}`};
+  q.onclick=e=>{const b=e.target.closest("[data-j]");if(!b||b.disabled)return;const d=L();d[LESSON].answers[k(i)]=+b.dataset.j;saveAll(d);draw();check()};
+  draw();box.append(q)});
+ const re=document.createElement("button");re.type="button";re.className="btn ghost";re.textContent="أعيد الأسئلة دي";
+ re.onclick=()=>{const d=L();items.forEach((_,i)=>delete d[LESSON].answers[k(i)]);delete d[LESSON].parts[part];saveAll(d);box.innerHTML="";bar();mcq(box,part,items)};
+ box.append(st,re);check();
+}
+document.querySelectorAll("[data-mcq]").forEach(b=>mcq(b,b.dataset.mcq,MCQ[b.dataset.mcq]));
+function parseAns(s){return String(s).replace(/−/g,"-").replace(/[\[\]()]/g," ").split(/[,،\s]+/).filter(Boolean).map(t=>{const m=t.match(/^(-?\d*\.?\d+)\/(\d*\.?\d+)$/);return m?m[1]/m[2]:Number(t)})}
+function guided(box){box.querySelectorAll(".gs").forEach((s,i,all)=>{
+ if(i)s.classList.add("lock");
+ const inp=s.querySelector("input"),a=s.dataset.a?JSON.parse(s.dataset.a):null,tol=+(s.dataset.tol||.01);
+ const nxt=()=>{s.classList.add("open");if(all[i+1])all[i+1].classList.remove("lock")};
+ s.querySelector("[data-check]")?.addEventListener("click",()=>{const v=parseAns(inp.value),ok=a&&v.length===a.length&&v.every((x,j)=>Math.abs(x-a[j])<=tol);inp.className=ok?"ok":"no";if(ok)nxt()});
+ s.querySelector("[data-show]")?.addEventListener("click",nxt)})}
+document.querySelectorAll(".g").forEach(guided);
+function exam(cfg){const box=$(cfg.box),res=$(cfg.res),tEl=$(cfg.timer),go=$(cfg.go),E=cfg.items;let ans={},left=0,tick;
+ const prev=L()[LESSON][cfg.key];if(prev){res.hidden=false;res.textContent=`آخر نتيجة: ${prev.right} / ${prev.total}. تقدر تعيد.`}
+ const show=()=>tEl.textContent=`${String(Math.floor(left/60)).padStart(2,"0")}:${String(left%60).padStart(2,"0")}`;
+ function finish(){clearInterval(tick);const right=E.filter((e,i)=>ans[i]===e.a).length;
+  box.querySelectorAll("button.opt").forEach(b=>b.disabled=true);
+  E.forEach((e,i)=>{const q=box.children[i];q.querySelectorAll("button.opt").forEach((b,j)=>{b.classList.remove("pick");if(j===e.a)b.classList.add("right");else if(j===ans[i])b.classList.add("wrong")});
+   const w=document.createElement("div");w.className="why"+(ans[i]===e.a?"":" bad");w.innerHTML=(ans[i]===e.a?"إجابتك صح. ":ans[i]===undefined?`ما جاوبتش. الإجابة الصح: ${e.o[e.a]}. `:`إجابتك غلط. الإجابة الصح: ${e.o[e.a]}. `)+e.w;q.append(w)});
+  const d=L();d[LESSON][cfg.key]={right,total:E.length,at:Date.now()};saveAll(d);bar();
+  res.hidden=false;res.textContent=`النتيجة: ${right} / ${E.length}. `+(right/E.length>=.85?"ممتاز.":right/E.length>=.7?"كويس. راجع اللي غلطت فيه وأعد.":"ارجع للأجزاء اللي غلطت فيها، وأعد.");
+  go.disabled=false;go.textContent="أعد الامتحان";cfg.after&&cfg.after()}
+ go.onclick=()=>{ans={};left=cfg.min*60;box.hidden=false;res.hidden=true;go.disabled=true;
+  box.innerHTML=E.map((e,i)=>`<div class="q"><div class="stem">${i+1}. ${e.q}</div><div class="opts">${e.o.map((o,j)=>`<button type="button" class="opt" data-i="${i}" data-j="${j}">${o}</button>`).join("")}</div></div>`).join("")+`<div class="btns"><button type="button" class="btn" id="${cfg.box}Sub">سلّم</button></div>`;
+  $(cfg.box+"Sub").onclick=finish;show();clearInterval(tick);tick=setInterval(()=>{left--;show();if(left<=0)finish()},1000)};
+ box.addEventListener("click",e=>{const b=e.target.closest("button.opt");if(!b||b.disabled)return;const i=+b.dataset.i;ans[i]=+b.dataset.j;box.children[i].querySelectorAll("button.opt").forEach(x=>x.classList.remove("pick"));b.classList.add("pick")})}
+/* canvas helpers */
+function cv(id,size=400,R=5){const c=$(id),r=window.devicePixelRatio||1;c.width=size*r;c.height=size*r;const x=c.getContext("2d");x.scale(r,r);return {ctx:x,size,R,sx:v=>(v+R)/(2*R)*size,sy:v=>size-(v+R)/(2*R)*size}}
+function base(g){const {ctx,size,R,sx,sy}=g;ctx.clearRect(0,0,size,size);ctx.strokeStyle="#E6E9F0";ctx.lineWidth=1;for(let i=-R;i<=R;i++){ctx.beginPath();ctx.moveTo(sx(i),0);ctx.lineTo(sx(i),size);ctx.moveTo(0,sy(i));ctx.lineTo(size,sy(i));ctx.stroke()}
+ ctx.strokeStyle="#B8BFCC";ctx.beginPath();ctx.moveTo(sx(0),0);ctx.lineTo(sx(0),size);ctx.moveTo(0,sy(0));ctx.lineTo(size,sy(0));ctx.stroke()}
+function wline(g,w,color,dash){const {ctx,R,sx,sy}=g;if(Math.abs(w[1])<1e-9&&Math.abs(w[2])<1e-9)return;ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.setLineDash(dash?[6,6]:[]);ctx.beginPath();
+ if(Math.abs(w[2])>1e-9){const y=x=>-(w[0]+w[1]*x)/w[2];ctx.moveTo(sx(-R),sy(y(-R)));ctx.lineTo(sx(R),sy(y(R)))}else{const x=-w[0]/w[1];ctx.moveTo(sx(x),sy(-R));ctx.lineTo(sx(x),sy(R))}ctx.stroke();ctx.restore()}
+function dots(g,P,w,ring){const {ctx,sx,sy}=g;P.forEach((p,i)=>{ctx.beginPath();ctx.arc(sx(p[0]),sy(p[1]),6,0,7);ctx.fillStyle=p[2]>0?"#4F5BD5":"#C0392B";ctx.fill();
+ if(w&&Math.sign(w[0]+w[1]*p[0]+w[2]*p[1])!==p[2]){ctx.lineWidth=3;ctx.strokeStyle="#E2A400";ctx.stroke()}
+ if(ring===i){ctx.beginPath();ctx.arc(sx(p[0]),sy(p[1]),12,0,7);ctx.lineWidth=2;ctx.strokeStyle="#1E2433";ctx.stroke()}})}
+
+document.querySelectorAll(".idx a").forEach(a=>a.classList.toggle("done",!!L()[LESSON].parts[a.dataset.p]));
+document.querySelectorAll("[data-done]").forEach(b=>b.addEventListener("click",()=>document.querySelectorAll(".idx a").forEach(a=>a.classList.toggle("done",!!L()[LESSON].parts[a.dataset.p]))));
+bar();
+</script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Image · شيت 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=Readex+Pro:wght@300;400;500;600&display=swap">
+<style>
+:root{color-scheme:light;--bg:#F4F6FA;--card:#FFFFFF;--ink:#1E2433;--soft:#5D6679;--faint:#8C94A6;--line:#E6E9F0;
+--c:#4F5BD5;--tint:#EDEFFB;--pos:#1F8A4C;--pos-tint:#E5F5EC;--neg:#C0392B;--neg-tint:#FDECEA;--amber:#B45309;--amber-tint:#FFF6E5;
+--f-head:"Alexandria","Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;--f-body:"Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;
+--f-math:"Cambria Math","Cambria","Times New Roman",serif;--shadow:0 1px 2px rgba(30,36,51,.04),0 6px 24px rgba(30,36,51,.06)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:2;padding:0 16px 80px}
+.wrap{max-width:820px;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--f-head);font-weight:700;margin:0;line-height:1.45}
+p{margin:0;max-width:68ch}a{color:var(--c)}button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.m{font-family:var(--f-math);direction:ltr;unicode-bidi:isolate;font-size:1.1em;white-space:nowrap}
+.mb{font-family:var(--f-math);direction:ltr;text-align:center;font-size:21px;background:var(--tint);border-radius:12px;padding:12px;overflow-x:auto}
+.bar{position:sticky;top:0;z-index:10;background:rgba(244,246,250,.96);padding:8px 16px;margin-inline:-16px;border-bottom:1px solid var(--line)}
+.bar .in{max-width:820px;margin-inline:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px}
+.bar a{text-decoration:none;color:var(--soft);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:1px 10px;white-space:nowrap}
+.bar a.done{background:var(--pos-tint);border-color:var(--pos);color:var(--pos)}
+.bar .sp{margin-inline-start:auto;color:var(--soft)}
+.track{flex-basis:100%;height:5px;background:var(--line);border-radius:6px;overflow:hidden}.track i{display:block;height:100%;width:0;background:var(--c)}
+.hero{background:var(--tint);border-radius:22px;padding:22px 24px;display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.hero h1{font-size:clamp(25px,5vw,34px)}.hero .meta{font-size:14px;color:var(--c);font-weight:600}
+.part{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;gap:16px;scroll-margin-top:64px}
+.part .num{font-size:13px;color:var(--c);font-weight:600}.part h2{font-size:23px}
+.part h3{font-size:18px;margin-top:10px;padding-top:12px;border-top:1px solid var(--line)}
+.idea{background:var(--tint);border-radius:14px;padding:12px 16px;font-weight:500}
+.trick{background:var(--pos-tint);border-radius:14px;padding:12px 16px}.trick b:first-child{color:var(--pos)}
+.trap{background:var(--amber-tint);border-radius:14px;padding:12px 16px;color:#5A3505}.trap b:first-child{color:var(--amber)}
+.examw{border:2px solid var(--c);border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:6px}.examw>b:first-child{color:var(--c)}
+.ex{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}.ex>b:first-child{color:var(--c)}
+.list{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:8px}
+.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.steps li{counter-increment:s;position:relative;background:var(--bg);border-radius:12px;padding:10px 14px;padding-inline-start:46px}
+.steps li::before{content:counter(s);position:absolute;inset-inline-start:12px;top:12px;width:24px;height:24px;border-radius:50%;background:var(--c);color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.tbl{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:15.5px}
+th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:start;vertical-align:top}th{color:var(--soft);font-size:14px;background:var(--bg)}
+.lab{border:2px dashed #B9C0EE;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.lab .tag{font-size:14px;font-weight:600;color:var(--c)}
+.ctl{display:flex;flex-wrap:wrap;gap:12px;align-items:end;direction:ltr}
+.ctl label{display:flex;flex-direction:column;font-size:13px;color:var(--soft);gap:2px}
+.ctl input,.ctl select{font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:10px;padding:4px 8px;background:var(--card);direction:ltr;width:130px}
+.ctl input[type=range]{padding:0;width:170px;accent-color:var(--c)}
+.ctl input.wide{width:240px}
+.read{font-family:var(--f-math);direction:ltr;text-align:center;font-size:17px;line-height:1.8;overflow-x:auto}
+.rd{text-align:center;font-size:15px;color:var(--soft)}
+canvas{width:100%;max-width:400px;aspect-ratio:1;background:#FBFCFE;border:1px solid var(--line);border-radius:14px;display:block;margin-inline:auto;touch-action:none}
+canvas.wide{max-width:100%;aspect-ratio:5/2}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.two figure{margin:0;display:flex;flex-direction:column;gap:4px;text-align:center;font-size:14px;color:var(--soft)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:0;background:var(--c);color:#fff;border-radius:999px;padding:6px 16px;font-size:15px;min-height:40px}
+.btn.ghost{background:var(--card);color:var(--c);border:1.5px solid var(--c)}.btn.on{background:var(--pos);color:#fff;border-color:var(--pos)}.btn:disabled{opacity:.5;cursor:default}
+.qs{display:flex;flex-direction:column;gap:12px}.qk{font-size:14px;font-weight:600;color:var(--c);margin-top:6px}
+.q{background:var(--bg);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.q .stem{font-weight:500}.opts{display:flex;flex-direction:column;gap:6px}
+.opt{text-align:start;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:8px 12px;font-size:15.5px;line-height:1.7}
+.opt:hover:not(:disabled){border-color:var(--c)}.opt:disabled{cursor:default}.opt.pick{border-color:var(--c);background:var(--tint)}
+.opt.right{background:var(--pos-tint);border-color:var(--pos)}.opt.wrong{background:var(--neg-tint);border-color:var(--neg)}
+.why{font-size:15px;color:var(--soft);border-inline-start:3px solid var(--c);padding-inline-start:10px}.why.bad{border-color:var(--neg)}
+.score{font-size:14px;color:var(--soft)}.badge{background:var(--pos-tint);color:var(--pos);border-radius:999px;padding:2px 12px;font-size:14px;font-weight:600}
+.prob{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.sol{display:none;background:var(--bg);border-radius:12px;padding:12px 14px;flex-direction:column;gap:8px}.sol.show{display:flex}
+.g{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}.g>b{color:var(--c)}
+.gs{background:var(--bg);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:8px}
+.gs .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.gs input{font:inherit;font-size:16px;width:170px;border:1.5px solid var(--line);border-radius:10px;padding:4px 8px;direction:ltr;text-align:center}
+.gs input.ok{border-color:var(--pos);background:var(--pos-tint)}.gs input.no{border-color:var(--neg);background:var(--neg-tint)}
+.gs .ans{display:none;color:var(--soft);font-size:15.5px}.gs.open .ans{display:block}.gs.lock{display:none}
+.timer{font-family:var(--f-head);font-size:28px;color:var(--c);direction:ltr}
+.result{background:var(--tint);border-radius:14px;padding:12px 16px;font-weight:500}
+.exam{border:2px solid var(--c)}
+.next{display:flex;gap:8px;flex-wrap:wrap}.next a{background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:6px 16px;text-decoration:none}
+@media (max-width:640px){.part{padding:18px 16px}.two{grid-template-columns:1fr}.m{white-space:normal}}
+@media print{.bar,.next,.btn{display:none}body{background:#fff}.part{box-shadow:none;break-inside:avoid}.sol{display:flex}}
+</style>
+</head>
+<body>
+<style>:root{--c:#B5671B;--tint:#FBF1E6}.lab{border-color:#E8C79E}
+.pn{display:flex;flex-wrap:wrap;gap:6px}.pn a{font-size:13px;background:var(--tint);color:var(--c);border-radius:999px;padding:1px 10px;text-decoration:none;direction:ltr}
+.prob img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
+.ar2{color:var(--soft);font-size:15.5px}.star{color:var(--amber);font-weight:600;font-size:13px}
+.ptop{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.ptop b{font-family:var(--f-head);font-size:18px;color:var(--c);direction:ltr}
+.idx{display:flex;flex-wrap:wrap;gap:6px}.idx a{font-size:13px;border:1px solid var(--line);border-radius:999px;padding:1px 9px;text-decoration:none;color:var(--soft);direction:ltr}.idx a.done{background:var(--pos-tint);border-color:var(--pos);color:var(--pos)}
+.sol .en{direction:ltr;text-align:left}</style><div class="bar"><div class="in"><a href="/interactive/university/midterm">الخريطة</a><a href="/interactive/university/ip-s2">شيت 2: الأفكار</a><a href="/interactive/university/ip-s2-essay">شيت 2: المسايل</a><a href="/interactive/university/ip-s3">شيت 3: الأفكار</a><a href="/interactive/university/ip-s3-essay">شيت 3: المسايل</a><span class="sp" id="pct"></span><div class="track"><i id="fill"></i></div></div></div><div class="wrap"><header class="hero"><div class="meta">معالجة الصور · شيت Chapter 3</div><h1>شيت 3: الأفكار</h1><p>الشيت فيه أفكار بتتكرر. هنا كل فكرة بشرحها، والمسايل اللي بتستخدمها، و45 سؤال اختيار للحفظ، وكل إجابة معاها شرحها. وبعدها روح لصفحة المسايل.</p></header><section class="part" id="i1"><div class="num">الفكرة 1 من 8</div><h2>تحويلات الشدة والـ Bit Planes</h2>
+<ul class="list">
+<li><b>Contrast stretch خطي:</b> <span class="m">s = (L−1)(r − r_min)/(r_max − r_min)</span></li>
+<li><b>Contrast stretch ناعم:</b> <span class="m">s = 1/(1 + (m/r)^E)</span>. كل ما E تكبر، بيقرب من thresholding.</li>
+<li><b>Bit plane k:</b> <span class="m">bₖ = ⌊r / 2ᵏ⌋ mod 2</span>. و 8 bits = 8 planes، و 16 bits = 16 plane.</li>
+<li><b>تصفير الـ planes الواطية:</b> الـ histogram بيبقى زي المشط (comb).</li>
+<li><b>تصفير الـ planes العالية:</b> الـ histogram بيتطبق قرب الصفر، والصورة تغمق.</li>
+</ul>
+<div class="ex"><b>مثال 3.4</b><p>13 = 1101. يعني plane3 = 1، و plane2 = 1، و plane1 = 0، و plane0 = 1.</p></div><div class="qk">مسايل الشيت على الفكرة دي</div><div class="pn"><a href="/interactive/university/ip-s3-essay#p3_1">3.1</a><a href="/interactive/university/ip-s3-essay#p3_2">3.2</a><a href="/interactive/university/ip-s3-essay#p3_3">3.3</a><a href="/interactive/university/ip-s3-essay#p3_4">3.4</a><a href="/interactive/university/ip-s3-essay#p3_5">3.5</a></div><div class="qk">اختبر نفسك (7)</div><div class="qs" data-mcq="i1"></div></section><section class="part" id="i2"><div class="num">الفكرة 2 من 8</div><h2>الـ Histogram Equalization والـ Specification</h2>
+<p><b>Equalization:</b> <span class="m">sₖ = (L−1) Σⱼ₌₀ᵏ pᵣ(rⱼ)</span>، والـ continuous: <span class="m">s = (L−1) ∫₀ʳ pᵣ(w) dw</span>.</p>
+<ul class="list">
+<li><b>ليه مش flat في الـ discrete؟</b> القيم بتتقرب، و bin واحد ما بيتقسمش، ومستويات بتتجمع.</li>
+<li><b>Equalization مرتين = مرة:</b> التاني بيرجع كل مستوى لنفسه.</li>
+<li><b>المعكوس:</b> يبقى single-valued بس لو مفيش مستوى ناقص، يعني pᵣ(rₖ) &gt; 0.</li>
+</ul>
+<h3>الـ Specification خطوة خطوة (3.11 و 3.12)</h3>
+<ol class="steps"><li>Equalize الدخل: <span class="m">s = T(r)</span>.</li><li>Equalize الـ PDF المطلوب: <span class="m">G(z)</span>.</li><li>خلّي <span class="m">G(z) = s</span>، وطلع z.</li><li>عوّض s بدلالة r.</li></ol>
+<div class="ex"><b>3.12</b><p><span class="m">pᵣ = 2 − 2r</span>، يبقى <span class="m">s = 2r − r²</span>.</p><p><span class="m">p_z = 2z</span>، يبقى <span class="m">G = z²</span>.</p><p>والنتيجة: <span class="m">z = √(2r − r²)</span>.</p></div><div class="qk">مسايل الشيت على الفكرة دي</div><div class="pn"><a href="/interactive/university/ip-s3-essay#p3_6">3.6</a><a href="/interactive/university/ip-s3-essay#p3_7">3.7</a><a href="/interactive/university/ip-s3-essay#p3_8">3.8</a><a href="/interactive/university/ip-s3-essay#p3_9">3.9</a><a href="/interactive/university/ip-s3-essay#p3_10">3.10</a><a href="/interactive/university/ip-s3-essay#p3_11">3.11</a><a href="/interactive/university/ip-s3-essay#p3_12">3.12</a><a href="/interactive/university/ip-s3-essay#p3_13">3.13</a></div><div class="qk">اختبر نفسك (7)</div><div class="qs" data-mcq="i2"></div></section><section class="part" id="i3"><div class="num">الفكرة 3 من 8</div><h2>الـ Correlation والـ Convolution</h2>
+<div class="tbl"><table><tr><th></th><th>Correlation</th><th>Convolution</th></tr>
+<tr><td>الـ kernel</td><td>زي ما هو</td><td>بيتلف 180°</td></tr>
+<tr><td>الـ impulse</td><td>بيطلّع الـ kernel ملفوف</td><td>بيطلّع الـ kernel زي ما هو</td></tr></table></div>
+<ul class="list">
+<li><b>حجم الناتج الكامل:</b> <span class="m">(M + m − 1) × (N + n − 1)</span>، والـ padding = m − 1 من كل ناحية.</li>
+<li><b>Kernel 1×1:</b> ضرب في ثابت بس.</li>
+<li><b>اختبار chip (3.16):</b> impulse مع kernel مش متماثل. لو الناتج زي الـ kernel يبقى convolution، ولو ملفوف يبقى correlation.</li>
+<li><b>Kernel متماثل</b> زي [1 2 1; 2 4 2; 1 2 1]: الاتنين نفس النتيجة.</li>
+<li><b>Local histogram:</b> شيل عمود وضيف عمود، يعني 2m تحديث بس.</li>
+</ul>
+<div class="ex"><b>3.18 عند (2,3)</b><p>المنطقة <span class="m">[0 0 0; 0 1 0; 0 1 0]</span>.</p><p><span class="m">4·1 + 2·1 = 6</span>، والناتج الكامل 7×7.</p></div><div class="qk">مسايل الشيت على الفكرة دي</div><div class="pn"><a href="/interactive/university/ip-s3-essay#p3_14">3.14</a><a href="/interactive/university/ip-s3-essay#p3_15">3.15</a><a href="/interactive/university/ip-s3-essay#p3_16">3.16</a><a href="/interactive/university/ip-s3-essay#p3_17">3.17</a><a href="/interactive/university/ip-s3-essay#p3_18">3.18</a><a href="/interactive/university/ip-s3-essay#p3_19">3.19</a></div><div class="qk">اختبر نفسك (7)</div><div class="qs" data-mcq="i3"></div></section><section class="part" id="i4"><div class="num">الفكرة 4 من 8</div><h2>الـ Separable Kernels والـ Gaussian</h2>
+<ul class="list">
+<li><b>Separable</b> = rank 1 = كل الصفوف مضاعفات صف واحد = <span class="m">w = v wᵀ</span>.</li>
+<li><span class="m">[1 2 1; 2 4 2; 1 2 1] = [1;2;1] · [1 2 1]</span>، يعني 6 ضربات بدل 9.</li>
+<li><b>Column × row</b> = 2-D convolution بتاعتهم.</li>
+<li><b>Gaussians مع convolution:</b> الـ means بتتجمع، و <b>الـ variances بتتجمع</b>.</li>
+<li><b>حجم convolution الـ kernels:</b> <span class="m">m₁ + m₂ − 1</span>.</li>
+<li><b>Bias (3.21):</b> صورة كلها 1، والحواف بتطلع أقل، بسبب الـ zero padding.</li>
+<li><b>Defocus = Gaussian:</b> الـ impulse بيطلّع الـ kernel، والعدسة بتعمل blob دايري ناعم.</li>
+</ul>
+<div class="ex"><b>3.27 و 3.28</b><p>4 مرات 3×3 بـ σ = 1: الحجم <span class="m">9×9</span>، و <span class="m">σ = √4 = 2</span>.</p><p>3×3 و 5×5 و 7×7 بـ σ = 1.5 و 2 و 4: <span class="m">σ = √22.25 ≈ 4.72</span>، والحجم 13×13.</p></div><div class="qk">مسايل الشيت على الفكرة دي</div><div class="pn"><a href="/interactive/university/ip-s3-essay#p3_20">3.20</a><a href="/interactive/university/ip-s3-essay#p3_21">3.21</a><a href="/interactive/university/ip-s3-essay#p3_22">3.22</a><a href="/interactive/university/ip-s3-essay#p3_23">3.23</a><a href="/interactive/university/ip-s3-essay#p3_24">3.24</a><a href="/interactive/university/ip-s3-essay#p3_25">3.25</a><a href="/interactive/university/ip-s3-essay#p3_27">3.27</a><a href="/interactive/university/ip-s3-essay#p3_28">3.28</a><a href="/interactive/university/ip-s3-essay#p3_33">3.33</a></div><div class="qk">اختبر نفسك (7)</div><div class="qs" data-mcq="i4"></div></section><section class="part" id="i5"><div class="num">الفكرة 5 من 8</div><h2>تأثيرات الـ Smoothing</h2>
+<ul class="list">
+<li><b>3.26:</b> نفس الـ histogram، وبعد الـ box blur بيختلف: الـ checkerboard كله بيبقى رمادي (4/9 و 5/9).</li>
+<li><b>3.29:</b> blur كتير، والصورة بتبقى ثابتة = المتوسط.</li>
+<li><b>3.30:</b> الأركان غلط بسبب الـ padding (border effect).</li>
+<li><b>3.34:</b> الفترة = 5 + 20 = 25. والـ kernel 25 بيلغي النمط تمامًا، وده سبب إن الخطوط اندمجت.</li>
+<li><b>3.35:</b> <span class="m">n ≥ √10 · q</span>، أصغر عدد فردي.</li>
+<li><b>3.45:</b> فجوة 3 pixels، يبقى kernel 5×5، و threshold ≤ 2/25.</li>
+</ul><div class="qk">مسايل الشيت على الفكرة دي</div><div class="pn"><a href="/interactive/university/ip-s3-essay#p3_26">3.26</a><a href="/interactive/university/ip-s3-essay#p3_29">3.29</a><a href="/interactive/university/ip-s3-essay#p3_30">3.30</a><a href="/interactive/university/ip-s3-essay#p3_34">3.34</a><a href="/interactive/university/ip-s3-essay#p3_35">3.35</a><a href="/interactive/university/ip-s3-essay#p3_45">3.45</a></div><div class="qk">اختبر نفسك (6)</div><div class="qs" data-mcq="i5"></div></section><section class="part" id="i6"><div class="num">الفكرة 6 من 8</div><h2>مجموع الـ Kernel والـ Median</h2>
+<ul class="list">
+<li><b>Σw = 1</b> (smoothing): مجموع الصورة بيفضل زي ما هو.</li>
+<li><b>Σw = 0</b> (sharpening): مجموع الصورة بيبقى صفر.</li>
+<li><b>اختبار الجهاز (3.46):</b> ادخله صورة ثابتة أو impulse، وبعدين اجمع الخرج.</li>
+<li><b>Median n×n:</b> بيمسح أي cluster مساحته أقل من n²/2، لأن النص بيقع في الـ background.</li>
+<li><b>تحديث الـ median:</b> histogram، وشيل عمود، وضيف عمود، وحرك الـ median.</li>
+</ul><div class="qk">مسايل الشيت على الفكرة دي</div><div class="pn"><a href="/interactive/university/ip-s3-essay#p3_31">3.31</a><a href="/interactive/university/ip-s3-essay#p3_32">3.32</a><a href="/interactive/university/ip-s3-essay#p3_36">3.36</a><a href="/interactive/university/ip-s3-essay#p3_37">3.37</a><a href="/interactive/university/ip-s3-essay#p3_46">3.46</a></div><div class="qk">اختبر نفسك (4)</div><div class="qs" data-mcq="i6"></div></section><section class="part" id="i7"><div class="num">الفكرة 7 من 8</div><h2>الـ Sharpening</h2>
+<ul class="list">
+<li><b>Smoothing ثم Laplacian = العكس:</b> الاتنين convolution، فالترتيب مش فارق.</li>
+<li><b>الـ Laplacian isotropic:</b> بالـ chain rule، الحدود المتقاطعة بتختفي.</li>
+<li><b>−8 أحسن من −4:</b> بيشوف القطري كمان (كل 45°).</li>
+<li><b>Unsharp في kernel واحد (3.41):</b> النص <span class="m">1 + 8k/9</span>، والباقي <span class="m">−k/9</span>. ومع k = 1: النص 17/9.</li>
+<li><b>f − ∇²f:</b> unsharp masking بـ k = 4.</li>
+<li><b>Gradient:</b> <span class="m">√(gₓ² + gᵧ²)</span> isotropic. أما <span class="m">|gₓ| + |gᵧ|</span> فمش isotropic، ومثال المضاد عند 45°: 1 بقت √2.</li>
+<li><b>Sobel separable، و Laplacian و Roberts لأ.</b></li>
+</ul><div class="qk">مسايل الشيت على الفكرة دي</div><div class="pn"><a href="/interactive/university/ip-s3-essay#p3_38">3.38</a><a href="/interactive/university/ip-s3-essay#p3_39">3.39</a><a href="/interactive/university/ip-s3-essay#p3_40">3.40</a><a href="/interactive/university/ip-s3-essay#p3_41">3.41</a><a href="/interactive/university/ip-s3-essay#p3_42">3.42</a><a href="/interactive/university/ip-s3-essay#p3_43">3.43</a><a href="/interactive/university/ip-s3-essay#p3_44">3.44</a></div><div class="qk">اختبر نفسك (6)</div><div class="qs" data-mcq="i7"></div></section><section class="part" id="i8"><div class="num">الفكرة 8 من 8</div><h2>تطبيق: توحيد الإضاءة</h2>
+<p><b>الموديل:</b> <span class="m">f = i · r</span> (illumination × reflectance).</p>
+<ol class="steps"><li>اكتب الفرضيات: linear range، ومشهد ثابت، وإضاءة ناعمة.</li><li>حط مرجع ثابت (grey card)، وقيس متوسطه m(t) في كل صورة.</li><li>صحّح: <span class="m">g = f · m₀ / m(t)</span>.</li><li>ولو الإضاءة مش منتظمة: lowpass كبير أو log، واقسم عليه.</li></ol><div class="qk">مسايل الشيت على الفكرة دي</div><div class="pn"><a href="/interactive/university/ip-s3-essay#p3_47">3.47</a></div><div class="qk">اختبر نفسك (1)</div><div class="qs" data-mcq="i8"></div></section><div class="next"><a href="/interactive/university/ip-s3-essay">روح لمسايل الشيت</a></div></div><script>
+const LESSON="ip-s3",PARTS=["i1", "i2", "i3", "i4", "i5", "i6", "i7", "i8"],HAS_EXAM=false,MCQ={"i1": [{"q": "<bdi>Value 6 in 4 bits, bit plane 1 is:</bdi><div class=\"ar\">يعني: 6 في plane 1؟</div>", "o": ["<bdi>0</bdi>", "<bdi>1</bdi>"], "a": 1, "w": "<span class=\"m\">6 = 0110</span>، و bit 1 = 1."}, {"q": "<bdi>Value 9 (4 bits), plane 3 (MSB):</bdi><div class=\"ar\">يعني: 9 في plane 3؟</div>", "o": ["<bdi>0</bdi>", "<bdi>1</bdi>"], "a": 1, "w": "<span class=\"m\">9 = 1001</span>."}, {"q": "<bdi>How many bit-plane functions for 16-bit images?</bdi><div class=\"ar\">يعني: صورة 16 bit فيها كام plane؟</div>", "o": ["<bdi>65,536</bdi>", "<bdi>8</bdi>", "<bdi>16</bdi>", "<bdi>4</bdi>"], "a": 2, "w": "مسألة 3.3."}, {"q": "<bdi>Zeroing the lower-order bit planes makes the histogram:</bdi><div class=\"ar\">يعني: تصفير الـ planes الواطية بيعمل إيه في الـ histogram؟</div>", "o": ["<bdi>Flat</bdi>", "<bdi>Unchanged</bdi>", "<bdi>Folded near 0</bdi>", "<bdi>Comb-like (sparse)</bdi>"], "a": 3, "w": "كل القيم بتبقى مضاعفات 2ʲ. (مسألة 3.5)"}, {"q": "<bdi>Zeroing the higher-order planes makes the image:</bdi><div class=\"ar\">يعني: تصفير الـ planes العالية بيخلي الصورة؟</div>", "o": ["<bdi>Binary</bdi>", "<bdi>Dark with low contrast</bdi>", "<bdi>Brighter</bdi>", "<bdi>Unchanged</bdi>"], "a": 1, "w": "r mod 2ʲ. (مسألة 3.5)"}, {"q": "<bdi>Linear stretch maps r_min to:</bdi><div class=\"ar\">يعني: الـ stretch بيحول r_min لـ؟</div>", "o": ["<bdi>L−1</bdi>", "<bdi>1</bdi>", "<bdi>r_max</bdi>", "<bdi>0</bdi>"], "a": 3, "w": "مسألة 3.1."}, {"q": "<bdi>As E → ∞ the contrast-stretching function becomes:</bdi><div class=\"ar\">يعني: لما E تكبر جدًا؟</div>", "o": ["<bdi>Linear</bdi>", "<bdi>Thresholding (step)</bdi>", "<bdi>Log</bdi>", "<bdi>Negative</bdi>"], "a": 1, "w": "مسألة 3.2."}], "i2": [{"q": "<bdi>Discrete equalization gives a flat histogram:</bdi><div class=\"ar\">يعني: الـ discrete equalization بيدي histogram flat؟</div>", "o": ["<bdi>Always</bdi>", "<bdi>Not in general</bdi>"], "a": 1, "w": "مسألة 3.6."}, {"q": "<bdi>Applying equalization a second time:</bdi><div class=\"ar\">يعني: Equalization تاني مرة؟</div>", "o": ["<bdi>Blurs</bdi>", "<bdi>Inverts</bdi>", "<bdi>Improves more</bdi>", "<bdi>Changes nothing</bdi>"], "a": 3, "w": "مسألة 3.7."}, {"q": "<bdi>Inverse of discrete equalization is single-valued only if:</bdi><div class=\"ar\">يعني: المعكوس single-valued إمتى؟</div>", "o": ["<bdi>Image is binary</bdi>", "<bdi>Always</bdi>", "<bdi>L is even</bdi>", "<bdi>No intensity level is missing</bdi>"], "a": 3, "w": "مسألة 3.9."}, {"q": "<bdi>pᵣ = 2r/(L−1)². The equalizing T(r) is:</bdi><div class=\"ar\">يعني: pᵣ = 2r/(L−1)²، الـ T(r)؟</div>", "o": ["<bdi>r²/(L−1)</bdi>", "<bdi>2r</bdi>", "<bdi>r/(L−1)</bdi>", "<bdi>√r</bdi>"], "a": 0, "w": "<span class=\"m\">(L−1)∫₀ʳ 2w/(L−1)² dw</span>. (3.11)"}, {"q": "<bdi>For 3.12 the final mapping is:</bdi><div class=\"ar\">يعني: نتيجة 3.12؟</div>", "o": ["<bdi>z = r²</bdi>", "<bdi>z = 2r</bdi>", "<bdi>z = 1 − r</bdi>", "<bdi>z = √(2r − r²)</bdi>"], "a": 3, "w": "<span class=\"m\">G(z) = s</span>."}, {"q": "<bdi>Histogram of f + c (c constant):</bdi><div class=\"ar\">يعني: histogram بتاع f + c؟</div>", "o": ["<bdi>Same</bdi>", "<bdi>Compressed</bdi>", "<bdi>Flipped</bdi>", "<bdi>Shifted right by c</bdi>"], "a": 3, "w": "مسألة 3.10."}, {"q": "<bdi>G⁻¹ is the mirror of G about the line joining the end points when:</bdi><div class=\"ar\">يعني: G⁻¹ مراية G إمتى؟</div>", "o": ["<bdi>G is strictly monotonic</bdi>", "<bdi>G is constant</bdi>", "<bdi>Never</bdi>", "<bdi>Always</bdi>"], "a": 0, "w": "مسألة 3.13."}], "i3": [{"q": "<bdi>5×5 image, 3×3 kernel. Full convolution size:</bdi><div class=\"ar\">يعني: صورة 5×5 و kernel 3×3، حجم الناتج؟</div>", "o": ["<bdi>3×3</bdi>", "<bdi>7×7</bdi>", "<bdi>5×5</bdi>", "<bdi>9×9</bdi>"], "a": 1, "w": "<span class=\"m\">5 + 3 − 1</span>."}, {"q": "<bdi>Convolution differs from correlation by:</bdi><div class=\"ar\">يعني: الفرق بين convolution و correlation؟</div>", "o": ["<bdi>Padding</bdi>", "<bdi>Scaling</bdi>", "<bdi>Rotating the kernel 180°</bdi>", "<bdi>Nothing</bdi>"], "a": 2, "w": "مسألة 3.17."}, {"q": "<bdi>Feeding an impulse to a convolution chip outputs:</bdi><div class=\"ar\">يعني: impulse في convolution بيطلّع؟</div>", "o": ["<bdi>Impulse</bdi>", "<bdi>Kernel rotated 180°</bdi>", "<bdi>Zeros</bdi>", "<bdi>The kernel as is</bdi>"], "a": 3, "w": "مسألة 3.16."}, {"q": "<bdi>Test kernel must be:</bdi><div class=\"ar\">يعني: الـ test kernel لازم يكون؟</div>", "o": ["<bdi>Symmetric</bdi>", "<bdi>Asymmetric</bdi>"], "a": 1, "w": "عشان يبان الفرق."}, {"q": "<bdi>A 1×1 kernel does:</bdi><div class=\"ar\">يعني: Kernel 1×1 بيعمل إيه؟</div>", "o": ["<bdi>Nothing at all</bdi>", "<bdi>Edge detection</bdi>", "<bdi>Scaling intensities</bdi>", "<bdi>Blurring</bdi>"], "a": 2, "w": "مسألة 3.15."}, {"q": "<bdi>Updating a local histogram when moving one pixel needs:</bdi><div class=\"ar\">يعني: تحديث الـ histogram المحلي محتاج؟</div>", "o": ["<bdi>1 update</bdi>", "<bdi>mn updates</bdi>", "<bdi>2m updates</bdi>", "<bdi>m² updates</bdi>"], "a": 2, "w": "مسألة 3.14."}, {"q": "<bdi>3.18 value at (2,3):</bdi><div class=\"ar\">يعني: قيمة 3.18 عند (2,3)؟</div>", "o": ["<bdi>4</bdi>", "<bdi>2</bdi>", "<bdi>6</bdi>", "<bdi>8</bdi>"], "a": 2, "w": "<span class=\"m\">4 + 2</span>."}], "i4": [{"q": "<bdi>[1 3 1; 2 6 2] = w₁ w₂ with w₁ =</bdi><div class=\"ar\">يعني: w₁ للـ kernel ده؟</div>", "o": ["<bdi>[1;3;1]</bdi>", "<bdi>[2;6]</bdi>", "<bdi>[3;1]</bdi>", "<bdi>[1;2]</bdi>"], "a": 3, "w": "الصف التاني ضعف الأول. (3.22)"}, {"q": "<bdi>Is the Laplacian [0 1 0;1 −4 1;0 1 0] separable?</bdi><div class=\"ar\">يعني: الـ Laplacian ده separable؟</div>", "o": ["<bdi>Yes</bdi>", "<bdi>No</bdi>"], "a": 1, "w": "rank 2. (3.44)"}, {"q": "<bdi>Four passes of a 3×3 Gaussian (σ=1). Equivalent σ:</bdi><div class=\"ar\">يعني: 4 مرات Gaussian σ=1، الـ σ؟</div>", "o": ["<bdi>4</bdi>", "<bdi>1</bdi>", "<bdi>√2</bdi>", "<bdi>2</bdi>"], "a": 3, "w": "<span class=\"m\">√(4 × 1)</span>."}, {"q": "<bdi>Same: equivalent size:</bdi><div class=\"ar\">يعني: نفس السؤال، الحجم؟</div>", "o": ["<bdi>7×7</bdi>", "<bdi>9×9</bdi>", "<bdi>3×3</bdi>", "<bdi>12×12</bdi>"], "a": 1, "w": "<span class=\"m\">3 + 2 + 2 + 2</span>."}, {"q": "<bdi>Convolving Gaussians: what adds?</bdi><div class=\"ar\">يعني: إيه اللي بيتجمع؟</div>", "o": ["<bdi>Nothing</bdi>", "<bdi>Variances</bdi>", "<bdi>Sizes only</bdi>", "<bdi>Standard deviations</bdi>"], "a": 1, "w": "Table 3.6."}, {"q": "<bdi>Better model for defocus:</bdi><div class=\"ar\">يعني: أحسن موديل للـ defocus؟</div>", "o": ["<bdi>Gaussian</bdi>", "<bdi>Box</bdi>", "<bdi>Laplacian</bdi>", "<bdi>Median</bdi>"], "a": 0, "w": "مسألة 3.33."}, {"q": "<bdi>All-ones image convolved with [1 2 1;2 4 2;1 2 1]: centre value</bdi><div class=\"ar\">يعني: صورة كلها 1، قيمة النص؟</div>", "o": ["<bdi>1</bdi>", "<bdi>16</bdi>", "<bdi>9</bdi>", "<bdi>4</bdi>"], "a": 1, "w": "مجموع الـ kernel. (3.21)"}], "i5": [{"q": "<bdi>Bars 5 px wide with 20 px gaps merge with box width:</bdi><div class=\"ar\">يعني: الخطوط بتندمج مع أنهي عرض؟</div>", "o": ["<bdi>Any</bdi>", "<bdi>45</bdi>", "<bdi>25</bdi>", "<bdi>23</bdi>"], "a": 2, "w": "25 = فترة النمط. (3.34)"}, {"q": "<bdi>Repeated lowpass filtering tends to:</bdi><div class=\"ar\">يعني: الـ blur المتكرر بيوصل لإيه؟</div>", "o": ["<bdi>Binary</bdi>", "<bdi>Sharper image</bdi>", "<bdi>Constant image = average</bdi>", "<bdi>Noise</bdi>"], "a": 2, "w": "مسألة 3.29."}, {"q": "<bdi>Box kernel to cut q×q objects to 1/10 intensity: n ≥</bdi><div class=\"ar\">يعني: n لازم ≥؟</div>", "o": ["<bdi>q²</bdi>", "<bdi>3q</bdi>", "<bdi>10q</bdi>", "<bdi>√10·q</bdi>"], "a": 3, "w": "<span class=\"m\">q²/n² ≤ 1/10</span>. (3.35)"}, {"q": "<bdi>For q = 10 the smallest odd n is:</bdi><div class=\"ar\">يعني: q = 10، أصغر n فردي؟</div>", "o": ["<bdi>31</bdi>", "<bdi>11</bdi>", "<bdi>35</bdi>", "<bdi>33</bdi>"], "a": 3, "w": "<span class=\"m\">31.6</span>، يبقى 33."}, {"q": "<bdi>Bridging 3-pixel gaps needs a box of size:</bdi><div class=\"ar\">يعني: سد فجوة 3 pixels محتاج؟</div>", "o": ["<bdi>3×3</bdi>", "<bdi>7×7</bdi>", "<bdi>5×5</bdi>", "<bdi>9×9</bdi>"], "a": 2, "w": "مسألة 3.45."}, {"q": "<bdi>Checkerboard after 3×3 box blur has values:</bdi><div class=\"ar\">يعني: الـ checkerboard بعد الـ blur؟</div>", "o": ["<bdi>0 and 1</bdi>", "<bdi>Only 1/2</bdi>", "<bdi>4/9 and 5/9</bdi>", "<bdi>1/3 and 2/3</bdi>"], "a": 2, "w": "مسألة 3.26."}], "i6": [{"q": "<bdi>A sharpening kernel's coefficients sum to:</bdi><div class=\"ar\">يعني: مجموع sharpening kernel؟</div>", "o": ["<bdi>9</bdi>", "<bdi>1</bdi>", "<bdi>0</bdi>", "<bdi>−1</bdi>"], "a": 2, "w": "مسألة 3.32."}, {"q": "<bdi>A smoothing kernel's coefficients sum to:</bdi><div class=\"ar\">يعني: مجموع smoothing kernel؟</div>", "o": ["<bdi>1</bdi>", "<bdi>0</bdi>"], "a": 0, "w": "مسألة 3.31."}, {"q": "<bdi>A 3×3 median removes clusters with area less than:</bdi><div class=\"ar\">يعني: الـ median 3×3 بيمسح clusters أصغر من؟</div>", "o": ["<bdi>1</bdi>", "<bdi>3</bdi>", "<bdi>4.5</bdi>", "<bdi>9</bdi>"], "a": 2, "w": "<span class=\"m\">n²/2</span>."}, {"q": "<bdi>Median position in a 3×3 sorted window:</bdi><div class=\"ar\">يعني: ترتيب الـ median في 9 قيم؟</div>", "o": ["<bdi>4th</bdi>", "<bdi>1st</bdi>", "<bdi>5th</bdi>", "<bdi>9th</bdi>"], "a": 2, "w": "<span class=\"m\">(9 + 1)/2</span>."}], "i7": [{"q": "<bdi>Is smooth→Laplacian equal to Laplacian→smooth?</bdi><div class=\"ar\">يعني: الترتيب بيفرق؟</div>", "o": ["<bdi>Yes, same result</bdi>", "<bdi>No</bdi>"], "a": 0, "w": "convolution commutative. (3.38)"}, {"q": "<bdi>Why −8 Laplacian sharper than −4?</bdi><div class=\"ar\">يعني: ليه −8 أحسن؟</div>", "o": ["<bdi>Includes diagonal directions</bdi>", "<bdi>Nonlinear</bdi>", "<bdi>Larger kernel</bdi>", "<bdi>Sums to 1</bdi>"], "a": 0, "w": "مسألة 3.40."}, {"q": "<bdi>Unsharp masking kernel centre for k = 1:</bdi><div class=\"ar\">يعني: نص الـ kernel لـ k = 1؟</div>", "o": ["<bdi>9</bdi>", "<bdi>8/9</bdi>", "<bdi>17/9</bdi>", "<bdi>1</bdi>"], "a": 2, "w": "<span class=\"m\">1 + 8/9</span>. (3.41)"}, {"q": "<bdi>Is |gx| + |gy| isotropic?</bdi><div class=\"ar\">يعني: |gx| + |gy| isotropic؟</div>", "o": ["<bdi>Yes</bdi>", "<bdi>No</bdi>"], "a": 1, "w": "مسألة 3.43."}, {"q": "<bdi>Which kernels are separable?</bdi><div class=\"ar\">يعني: أنهي kernels separable؟</div>", "o": ["<bdi>Sobel</bdi>", "<bdi>Roberts</bdi>", "<bdi>Laplacian</bdi>", "<bdi>None</bdi>"], "a": 0, "w": "<span class=\"m\">[−1 0 1]ᵀ[1 2 1]</span>. (3.44)"}, {"q": "<bdi>Subtracting the Laplacian equals unsharp masking with k =</bdi><div class=\"ar\">يعني: طرح الـ Laplacian = unsharp بـ k؟</div>", "o": ["<bdi>1</bdi>", "<bdi>4</bdi>", "<bdi>2</bdi>", "<bdi>8</bdi>"], "a": 1, "w": "مسألة 3.42."}], "i8": [{"q": "<bdi>The image model used in 3.47:</bdi><div class=\"ar\">يعني: الموديل في 3.47؟</div>", "o": ["<bdi>f = i · r</bdi>", "<bdi>f = i − r</bdi>", "<bdi>f = r / i</bdi>", "<bdi>f = i + r</bdi>"], "a": 0, "w": "illumination × reflectance."}]};
+
+const KEY="anas-uni-progress-v1",V="v2:";
+const $=id=>document.getElementById(id);
+const loadAll=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return {}}};
+const saveAll=d=>{try{localStorage.setItem(KEY,JSON.stringify(d))}catch{}};
+function L(){const d=loadAll();d[LESSON]=d[LESSON]||{parts:{},answers:{},exam:null};d[LESSON].answers=d[LESSON].answers||{};d[LESSON].parts=d[LESSON].parts||{};return d}
+function setPart(p,on,right,total){const d=L();if(on)d[LESSON].parts[p]={right,total,at:Date.now()};else delete d[LESSON].parts[p];saveAll(d);bar()}
+function bar(){const l=L()[LESSON],t=PARTS.length+(HAS_EXAM?1:0),done=PARTS.filter(p=>l.parts[p]).length+(HAS_EXAM&&l.exam?1:0),p=Math.round(done/t*100);
+ $("pct").textContent=`${p}% · ${done}/${t}`;$("fill").style.width=p+"%";
+ document.querySelectorAll("[data-chip]").forEach(a=>a.classList.toggle("done",a.dataset.chip==="exam"?!!l.exam:!!l.parts[a.dataset.chip]));
+ document.querySelectorAll("[data-done]").forEach(b=>{const on=!!l.parts[b.dataset.done];b.classList.toggle("on",on);b.textContent=on?"خلصت ✓":"علّم إني خلصت"})}
+document.querySelectorAll("[data-done]").forEach(b=>b.onclick=()=>setPart(b.dataset.done,!L()[LESSON].parts[b.dataset.done]));
+document.querySelectorAll("[data-sol]").forEach(b=>b.onclick=()=>{const s=$(b.dataset.sol);s.classList.toggle("show");b.textContent=s.classList.contains("show")?"اخفي الإجابة":b.dataset.label||"اظهر الإجابة"});
+function mcq(box,part,items){
+ const ans=()=>L()[LESSON].answers,k=i=>V+part+":"+i,st=document.createElement("div");st.className="score";
+ function check(){const a=ans(),got=items.filter((_,i)=>a[k(i)]!==undefined).length,r=items.filter((it,i)=>a[k(i)]===it.a).length;
+  st.innerHTML=got===items.length?`<span class="badge">خلصت · ${r}/${items.length}</span>`:`جاوبت ${got} من ${items.length}`;
+  if(got===items.length)setPart(part,true,r,items.length)}
+ items.forEach((it,i)=>{const q=document.createElement("div");q.className="q";
+  const draw=()=>{const g=ans()[k(i)];
+   q.innerHTML=`<div class="stem">${i+1}. ${it.q}</div><div class="opts">${it.o.map((o,j)=>{let c="";if(g!==undefined){if(j===it.a)c="right";else if(j===g)c="wrong"}return `<button type="button" class="opt ${c}" data-j="${j}" ${g!==undefined?"disabled":""}>${o}</button>`}).join("")}</div>${g!==undefined?`<div class="why ${g===it.a?"":"bad"}">${g===it.a?"إجابتك صح. ":`إجابتك غلط. الإجابة الصح: ${it.o[it.a]}. `}${it.w}</div>`:""}`};
+  q.onclick=e=>{const b=e.target.closest("[data-j]");if(!b||b.disabled)return;const d=L();d[LESSON].answers[k(i)]=+b.dataset.j;saveAll(d);draw();check()};
+  draw();box.append(q)});
+ const re=document.createElement("button");re.type="button";re.className="btn ghost";re.textContent="أعيد الأسئلة دي";
+ re.onclick=()=>{const d=L();items.forEach((_,i)=>delete d[LESSON].answers[k(i)]);delete d[LESSON].parts[part];saveAll(d);box.innerHTML="";bar();mcq(box,part,items)};
+ box.append(st,re);check();
+}
+document.querySelectorAll("[data-mcq]").forEach(b=>mcq(b,b.dataset.mcq,MCQ[b.dataset.mcq]));
+function parseAns(s){return String(s).replace(/−/g,"-").replace(/[\[\]()]/g," ").split(/[,،\s]+/).filter(Boolean).map(t=>{const m=t.match(/^(-?\d*\.?\d+)\/(\d*\.?\d+)$/);return m?m[1]/m[2]:Number(t)})}
+function guided(box){box.querySelectorAll(".gs").forEach((s,i,all)=>{
+ if(i)s.classList.add("lock");
+ const inp=s.querySelector("input"),a=s.dataset.a?JSON.parse(s.dataset.a):null,tol=+(s.dataset.tol||.01);
+ const nxt=()=>{s.classList.add("open");if(all[i+1])all[i+1].classList.remove("lock")};
+ s.querySelector("[data-check]")?.addEventListener("click",()=>{const v=parseAns(inp.value),ok=a&&v.length===a.length&&v.every((x,j)=>Math.abs(x-a[j])<=tol);inp.className=ok?"ok":"no";if(ok)nxt()});
+ s.querySelector("[data-show]")?.addEventListener("click",nxt)})}
+document.querySelectorAll(".g").forEach(guided);
+function exam(cfg){const box=$(cfg.box),res=$(cfg.res),tEl=$(cfg.timer),go=$(cfg.go),E=cfg.items;let ans={},left=0,tick;
+ const prev=L()[LESSON][cfg.key];if(prev){res.hidden=false;res.textContent=`آخر نتيجة: ${prev.right} / ${prev.total}. تقدر تعيد.`}
+ const show=()=>tEl.textContent=`${String(Math.floor(left/60)).padStart(2,"0")}:${String(left%60).padStart(2,"0")}`;
+ function finish(){clearInterval(tick);const right=E.filter((e,i)=>ans[i]===e.a).length;
+  box.querySelectorAll("button.opt").forEach(b=>b.disabled=true);
+  E.forEach((e,i)=>{const q=box.children[i];q.querySelectorAll("button.opt").forEach((b,j)=>{b.classList.remove("pick");if(j===e.a)b.classList.add("right");else if(j===ans[i])b.classList.add("wrong")});
+   const w=document.createElement("div");w.className="why"+(ans[i]===e.a?"":" bad");w.innerHTML=(ans[i]===e.a?"إجابتك صح. ":ans[i]===undefined?`ما جاوبتش. الإجابة الصح: ${e.o[e.a]}. `:`إجابتك غلط. الإجابة الصح: ${e.o[e.a]}. `)+e.w;q.append(w)});
+  const d=L();d[LESSON][cfg.key]={right,total:E.length,at:Date.now()};saveAll(d);bar();
+  res.hidden=false;res.textContent=`النتيجة: ${right} / ${E.length}. `+(right/E.length>=.85?"ممتاز.":right/E.length>=.7?"كويس. راجع اللي غلطت فيه وأعد.":"ارجع للأجزاء اللي غلطت فيها، وأعد.");
+  go.disabled=false;go.textContent="أعد الامتحان";cfg.after&&cfg.after()}
+ go.onclick=()=>{ans={};left=cfg.min*60;box.hidden=false;res.hidden=true;go.disabled=true;
+  box.innerHTML=E.map((e,i)=>`<div class="q"><div class="stem">${i+1}. ${e.q}</div><div class="opts">${e.o.map((o,j)=>`<button type="button" class="opt" data-i="${i}" data-j="${j}">${o}</button>`).join("")}</div></div>`).join("")+`<div class="btns"><button type="button" class="btn" id="${cfg.box}Sub">سلّم</button></div>`;
+  $(cfg.box+"Sub").onclick=finish;show();clearInterval(tick);tick=setInterval(()=>{left--;show();if(left<=0)finish()},1000)};
+ box.addEventListener("click",e=>{const b=e.target.closest("button.opt");if(!b||b.disabled)return;const i=+b.dataset.i;ans[i]=+b.dataset.j;box.children[i].querySelectorAll("button.opt").forEach(x=>x.classList.remove("pick"));b.classList.add("pick")})}
+/* canvas helpers */
+function cv(id,size=400,R=5){const c=$(id),r=window.devicePixelRatio||1;c.width=size*r;c.height=size*r;const x=c.getContext("2d");x.scale(r,r);return {ctx:x,size,R,sx:v=>(v+R)/(2*R)*size,sy:v=>size-(v+R)/(2*R)*size}}
+function base(g){const {ctx,size,R,sx,sy}=g;ctx.clearRect(0,0,size,size);ctx.strokeStyle="#E6E9F0";ctx.lineWidth=1;for(let i=-R;i<=R;i++){ctx.beginPath();ctx.moveTo(sx(i),0);ctx.lineTo(sx(i),size);ctx.moveTo(0,sy(i));ctx.lineTo(size,sy(i));ctx.stroke()}
+ ctx.strokeStyle="#B8BFCC";ctx.beginPath();ctx.moveTo(sx(0),0);ctx.lineTo(sx(0),size);ctx.moveTo(0,sy(0));ctx.lineTo(size,sy(0));ctx.stroke()}
+function wline(g,w,color,dash){const {ctx,R,sx,sy}=g;if(Math.abs(w[1])<1e-9&&Math.abs(w[2])<1e-9)return;ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.setLineDash(dash?[6,6]:[]);ctx.beginPath();
+ if(Math.abs(w[2])>1e-9){const y=x=>-(w[0]+w[1]*x)/w[2];ctx.moveTo(sx(-R),sy(y(-R)));ctx.lineTo(sx(R),sy(y(R)))}else{const x=-w[0]/w[1];ctx.moveTo(sx(x),sy(-R));ctx.lineTo(sx(x),sy(R))}ctx.stroke();ctx.restore()}
+function dots(g,P,w,ring){const {ctx,sx,sy}=g;P.forEach((p,i)=>{ctx.beginPath();ctx.arc(sx(p[0]),sy(p[1]),6,0,7);ctx.fillStyle=p[2]>0?"#4F5BD5":"#C0392B";ctx.fill();
+ if(w&&Math.sign(w[0]+w[1]*p[0]+w[2]*p[1])!==p[2]){ctx.lineWidth=3;ctx.strokeStyle="#E2A400";ctx.stroke()}
+ if(ring===i){ctx.beginPath();ctx.arc(sx(p[0]),sy(p[1]),12,0,7);ctx.lineWidth=2;ctx.strokeStyle="#1E2433";ctx.stroke()}})}
+
+document.querySelectorAll(".idx a").forEach(a=>a.classList.toggle("done",!!L()[LESSON].parts[a.dataset.p]));
+document.querySelectorAll("[data-done]").forEach(b=>b.addEventListener("click",()=>document.querySelectorAll(".idx a").forEach(a=>a.classList.toggle("done",!!L()[LESSON].parts[a.dataset.p]))));
+bar();
+</script>
+</body>
+</html>
