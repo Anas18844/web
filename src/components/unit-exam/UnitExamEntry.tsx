@@ -22,7 +22,7 @@ type Open = {
   answers: { id: string; value: AnswerValue | null; rev: number; flagged: boolean }[]
 }
 
-const PASS_KEY = 'unit-exam:pass:unit-1'
+const PASS_KEY = 'unit-exam:pass:unit-2'
 const NAME_HINT = {
   empty: 'اكتب اسمك',
   not_arabic: 'اكتب اسمك بالحروف العربي',

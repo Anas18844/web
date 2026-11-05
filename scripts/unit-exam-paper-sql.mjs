@@ -16,7 +16,9 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { exit } from 'node:process'
 
-const SRC = '.private/unit-1-exam.public.json'
+// node scripts/unit-exam-paper-sql.mjs unit-2  → the paper of that exam (default: unit-1)
+const SLUG = process.argv[2] ?? 'unit-1'
+const SRC = `.private/${SLUG}-exam.public.json`
 const OUT = '.private/unit-exam-paper.sql'
 
 const paper = JSON.parse(readFileSync(SRC, 'utf-8'))

@@ -86,7 +86,7 @@ export default async function UnitExamMonitor() {
       <AutoRefresh seconds={15} />
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-xl font-extrabold text-ink">متابعة الامتحان الشامل · الوحدة الأولى</h1>
+          <h1 className="text-xl font-extrabold text-ink">متابعة الامتحان الشامل · الوحدة الثانية</h1>
           <p className="mt-1 text-xs text-ink-faint">بتتحدّث لوحدها كل ١٥ ثانية</p>
         </div>
         {isAdmin && (

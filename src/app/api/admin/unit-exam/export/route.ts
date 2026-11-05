@@ -52,7 +52,7 @@ export async function GET(req: Request) {
     return new NextResponse('﻿' + [head.join(','), ...lines].join('\n'), {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="unit-1-exam-${stamp}.csv"`,
+        'Content-Disposition': `attachment; filename="${UNIT_EXAM.slug}-exam-${stamp}.csv"`,
       },
     })
   }
@@ -60,7 +60,7 @@ export async function GET(req: Request) {
   return new NextResponse(JSON.stringify({ slug: UNIT_EXAM.slug, exported_at: new Date().toISOString(), attempts: full }, null, 1), {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
-      'Content-Disposition': `attachment; filename="unit-1-exam-${stamp}.json"`,
+      'Content-Disposition': `attachment; filename="${UNIT_EXAM.slug}-exam-${stamp}.json"`,
     },
   })
 }

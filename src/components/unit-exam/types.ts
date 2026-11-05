@@ -27,12 +27,22 @@ export type CompareItem = Base & {
   star: boolean
 }
 
-export type ExamItem = McqItem | TfItem | TermItem | GapItem | NestedItem | TimelineItem | CompareItem
+/** Unit 2: the network drawing comes as an SVG from the generator (no answers in it). */
+export type DmzItem = Base & { type: 'dmz'; stem: string; svg: string; parts: number; servers: string[] }
+/** Unit 2: the risk matrix. Rows = impact high→low, columns = likelihood high→low (right to left). */
+export type MatrixCell = { value: string } | { blank: number }
+export type MatrixItem = Base & { type: 'matrix'; stem: string; grid: MatrixCell[][]; levels: string[]; task: string }
+/** Unit 2: an essay in parts (أ) and (ب). */
+export type OpenItem = Base & { type: 'open'; stem: string; parts: { q: string; marks: number }[] }
+
+export type ExamItem =
+  | McqItem | TfItem | TermItem | GapItem | NestedItem | TimelineItem | CompareItem | DmzItem | MatrixItem | OpenItem
 
 export type PublicUnitExam = {
   slug: string
   sections: { key: SectionKey; n: number; title: string; marks: string }[]
-  bonus: { title: string; mark: string; options: string[] }
+  /** Unit 1 had a gift question; unit 2 has none. */
+  bonus: { title: string; mark: string; options: string[] } | null
   items: ExamItem[]
 }
 
@@ -44,5 +54,8 @@ export type AnswerValue =
   | { judge: 'T' | 'F' | ''; fix: string } // tf
   | { names: string[]; ex: string[] } // nested
   | string[][] // compare
+  | { names: string[]; place: string[] } // dmz
+  | { cells: string[]; mark: [number, number] | null } // matrix
+  // open: string[] (one text per part)
 
 export type Answers = Record<string, AnswerValue | undefined>

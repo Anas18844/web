@@ -204,8 +204,8 @@ function save(d: FileDb) {
 }
 
 const fileStore: UnitExamStore = {
-  async getPaper() {
-    const f = path.join(process.cwd(), '.private', 'unit-1-exam.public.json')
+  async getPaper(slug) {
+    const f = path.join(process.cwd(), '.private', `${slug}-exam.public.json`)
     return existsSync(f) ? (JSON.parse(readFileSync(f, 'utf-8')) as PublicUnitExam) : null
   },
   async findAttempt(slug, phone) {

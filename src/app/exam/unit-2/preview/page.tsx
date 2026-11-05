@@ -29,7 +29,7 @@ export default async function UnitExamPreview({
 
   let exam: PublicUnitExam
   try {
-    const file = path.join(process.cwd(), '.private', 'unit-1-exam.public.json')
+    const file = path.join(process.cwd(), '.private', `${UNIT_EXAM.slug}-exam.public.json`)
     exam = JSON.parse(await readFile(file, 'utf-8')) as PublicUnitExam
   } catch {
     return (

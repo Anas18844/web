@@ -18,7 +18,7 @@ export const dynamic = 'force-dynamic'
  * the hand-in, nothing is written.
  */
 const GRACE_MS = 60_000
-const QUESTION_ID = /^(me-\d{2}|bonus|draft)$/
+const QUESTION_ID = /^((me|ue)-\d{2}|bonus|draft)$/
 
 const Body = z.object({
   token: z.string().max(2000),

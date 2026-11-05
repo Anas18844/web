@@ -1,14 +1,17 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { toArabicDigits } from '@/lib/arabic'
 import type {
   Answers,
   AnswerValue,
   CompareItem,
+  DmzItem,
   ExamItem,
   GapItem,
+  MatrixItem,
   NestedItem,
+  OpenItem,
   PublicUnitExam,
   TfItem,
   TimelineItem,
@@ -340,7 +343,10 @@ export function ExamRoom({ exam, student, endsAt, serverNow, storageKey, token, 
     touch(id, 800)
   }
 
-  const all = useMemo(() => [{ id: 'bonus', n: 0 } as const, ...exam.items], [exam.items])
+  const all = useMemo(
+    () => (exam.bonus ? [{ id: 'bonus', n: 0 } as const, ...exam.items] : exam.items),
+    [exam.bonus, exam.items],
+  )
   const isAnswered = (item: { id: string }) => answered(exam.items.find((i) => i.id === item.id), answers[item.id])
   const done = all.filter(isAnswered).length
 
@@ -474,17 +480,19 @@ export function ExamRoom({ exam, student, endsAt, serverNow, storageKey, token, 
       <div className="relative mx-auto max-w-3xl px-3 pb-24 pt-5 sm:px-5">
         <Watermark text={`${student.name} · ${student.phone}`} />
 
-        <section id="q-bonus" className="exam-q scroll-mt-28 border-dashed border-gold/60 bg-gold/[0.06]">
-          <p className="exam-stem text-gold">
-            {exam.bonus.title} <span className="exam-mark">[{exam.bonus.mark}]</span>
-          </p>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {exam.bonus.options.map((o, j) => (
-              <Choice key={o} name="bonus" letter={LETTERS[j]} text={o} checked={answers.bonus === j}
-                disabled={locked} onPick={() => set('bonus', j)} />
-            ))}
-          </div>
-        </section>
+        {exam.bonus && (
+          <section id="q-bonus" className="exam-q scroll-mt-28 border-dashed border-gold/60 bg-gold/[0.06]">
+            <p className="exam-stem text-gold">
+              {exam.bonus.title} <span className="exam-mark">[{exam.bonus.mark}]</span>
+            </p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {exam.bonus.options.map((o, j) => (
+                <Choice key={o} name="bonus" letter={LETTERS[j]} text={o} checked={answers.bonus === j}
+                  disabled={locked} onPick={() => set('bonus', j)} />
+              ))}
+            </div>
+          </section>
+        )}
 
         {exam.sections.map((sec) => {
           const items = exam.items.filter((i) => i.section === sec.key)
@@ -647,7 +655,135 @@ function Body({ item, value, disabled, onChange, onPaste }: {
       return <TimelineBody item={item} value={value as string[] | undefined} disabled={disabled} onChange={onChange} />
     case 'compare':
       return <CompareBody item={item} value={value as string[][] | undefined} disabled={disabled} onChange={onChange} onPaste={onPaste} />
+    case 'dmz':
+      return <DmzBody item={item} value={value as { names: string[]; place: string[] } | undefined}
+        disabled={disabled} onChange={onChange} onPaste={onPaste} />
+    case 'matrix':
+      return <MatrixBody item={item} value={value as { cells: string[]; mark: [number, number] | null } | undefined}
+        disabled={disabled} onChange={onChange} onPaste={onPaste} />
+    case 'open':
+      return <OpenBody item={item} value={value as string[] | undefined} disabled={disabled} onChange={onChange} onPaste={onPaste} />
   }
+}
+
+function DmzBody({ item, value, disabled, onChange, onPaste }: {
+  item: DmzItem; value: { names: string[]; place: string[] } | undefined; disabled: boolean
+  onChange: (v: AnswerValue) => void; onPaste: (e: React.ClipboardEvent) => void
+}) {
+  const v = value ?? { names: Array(item.parts).fill(''), place: item.servers.map(() => '') }
+  const nums = Array.from({ length: item.parts }, (_, i) => ar(i + 1))
+  return (
+    <>
+      <p className="exam-stem">{item.stem}</p>
+      {/* The drawing is our own SVG from the generator — it carries no answer. */}
+      <div className="mt-3 overflow-x-auto rounded-lg bg-white p-2 [&_svg]:mx-auto [&_svg]:h-auto [&_svg]:min-w-[34rem] [&_svg]:max-w-full"
+        dangerouslySetInnerHTML={{ __html: item.svg }} />
+      <p className="mt-1 text-center text-xs text-ink-muted sm:hidden">اسحب الرسم يمين وشمال عشان تشوفه كله</p>
+      <p className="mt-4 text-sm font-bold text-ink-muted">(أ) اكتب اسم كل جزء مرقّم. الرقم (١) على الجدارين.</p>
+      <div className="mt-2 grid gap-2 sm:grid-cols-3">
+        {nums.map((n, j) => (
+          <label key={n} className="flex items-center gap-2">
+            <span className="exam-n !h-8 !w-8 shrink-0 !border-gold !text-sm">{n}</span>
+            <input className="exam-input !py-2" placeholder="اسم الجزء" disabled={disabled} value={v.names[j]} onPaste={onPaste}
+              onChange={(e) => { const x = [...v.names]; x[j] = e.target.value; onChange({ ...v, names: x }) }} />
+          </label>
+        ))}
+      </div>
+      <p className="mt-5 text-sm font-bold text-ink-muted">(ب) أرادت الشركة إضافة خادمين: اختار رقم الجزء المناسب لكل خادم.</p>
+      <div className="mt-2 grid gap-2">
+        {item.servers.map((srv, j) => (
+          <div key={srv} className="flex items-center gap-2 rounded border border-navy-line p-2.5">
+            <span className="flex-1 font-bold text-ink">{srv}</span>
+            <div className="flex gap-1.5">
+              {nums.map((n) => (
+                <button key={n} type="button" disabled={disabled}
+                  onClick={() => { const x = [...v.place]; x[j] = n; onChange({ ...v, place: x }) }}
+                  className={`h-10 w-10 rounded font-extrabold ${v.place[j] === n ? 'bg-gold text-navy-deep' : 'border border-navy-line text-ink'}`}>
+                  {n}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  )
+}
+
+const MATRIX_SHADE: Record<string, string> = {
+  'مرتفع جدًا': 'bg-[#22304F] text-white', 'مرتفع': 'bg-[#5A6A90] text-white', 'متوسط': 'bg-[#A9B3C9] text-[#1A2540]',
+  'منخفض': 'bg-[#D9DEE8] text-[#1A2540]', 'منخفض جدًا': 'bg-[#EEF1F6] text-[#1A2540]',
+}
+
+function MatrixBody({ item, value, disabled, onChange, onPaste }: {
+  item: MatrixItem; value: { cells: string[]; mark: [number, number] | null } | undefined; disabled: boolean
+  onChange: (v: AnswerValue) => void; onPaste: (e: React.ClipboardEvent) => void
+}) {
+  const blanks = item.grid.flat().filter((c) => 'blank' in c).length
+  const v = value ?? { cells: Array(blanks).fill(''), mark: null }
+  const isMark = (r: number, c: number) => v.mark !== null && v.mark[0] === r && v.mark[1] === c
+  const pick = (r: number, c: number) => { if (!disabled) onChange({ ...v, mark: isMark(r, c) ? null : [r, c] }) }
+  return (
+    <>
+      <p className="exam-stem">{item.stem}</p>
+      <p className="mt-1 text-sm font-bold text-gold">درجة الخطر = التأثير × الاحتمالية</p>
+      <div className="mt-4 overflow-x-auto">
+        {/* RTL: the first column sits on the right — high likelihood, as in the book. */}
+        <div className="grid grid-cols-[3.2rem_repeat(3,minmax(0,1fr))] gap-1 text-center text-xs font-bold sm:grid-cols-[4.5rem_repeat(3,minmax(0,1fr))] sm:text-sm">
+          <div className="grid place-items-center text-[10px] leading-tight text-gold sm:text-xs">الصف: التأثير<br />العمود: الاحتمالية</div>
+          {item.levels.map((l) => <div key={`h-${l}`} className="py-1 text-ink-muted">{l}</div>)}
+          {item.grid.map((row, r) => (
+            <Fragment key={r}>
+              <div className="grid place-items-center text-ink-muted">{item.levels[r]}</div>
+              {row.map((cell, c) => (
+                <div key={c} role="button" tabIndex={0} aria-label={`خانة التأثير ${item.levels[r]} والاحتمالية ${item.levels[c]}`}
+                  onClick={(e) => { if ((e.target as HTMLElement).tagName !== 'INPUT') pick(r, c) }}
+                  onKeyDown={(e) => { if (e.key === 'Enter') pick(r, c) }}
+                  className={`relative grid min-h-16 min-w-0 cursor-pointer place-items-center rounded p-1.5 ${
+                    'value' in cell ? MATRIX_SHADE[cell.value] ?? '' : 'border-2 border-dashed border-gold/70 bg-navy-soft'
+                  } ${isMark(r, c) ? 'ring-4 ring-gold' : ''}`}>
+                  {'value' in cell ? cell.value : (
+                    <>
+                      <span className="absolute end-1 top-1 grid h-5 w-5 place-items-center rounded-full bg-gold text-[11px] text-navy-deep">{ar(cell.blank)}</span>
+                      <input size={1} className="exam-gap !m-0 !w-full !min-w-0 !max-w-full" disabled={disabled} value={v.cells[cell.blank - 1]} onPaste={onPaste}
+                        placeholder={`(${ar(cell.blank)})`}
+                        onChange={(e) => { const x = [...v.cells]; x[cell.blank - 1] = e.target.value; onChange({ ...v, cells: x }) }} />
+                    </>
+                  )}
+                  {isMark(r, c) && <span className="absolute start-1 bottom-0 text-2xl font-extrabold text-gold">×</span>}
+                </div>
+              ))}
+            </Fragment>
+          ))}
+        </div>
+      </div>
+      <p className="mt-4 text-sm font-bold text-ink-muted">(أ) اكتب درجة الخطر في الخانات من (١) إلى (٤).</p>
+      <p className="mt-1 text-sm font-bold text-ink-muted">(ب) {item.task} {v.mark ? '✓' : ''}</p>
+    </>
+  )
+}
+
+function OpenBody({ item, value, disabled, onChange, onPaste }: {
+  item: OpenItem; value: string[] | undefined; disabled: boolean
+  onChange: (v: AnswerValue) => void; onPaste: (e: React.ClipboardEvent) => void
+}) {
+  const v = value ?? item.parts.map(() => '')
+  return (
+    <>
+      <p className="exam-stem">{item.stem}</p>
+      <div className="mt-4 grid gap-4">
+        {item.parts.map((part, j) => (
+          <label key={part.q} className="block">
+            <span className="exam-stem block !text-[calc(1rem*var(--exam-scale))]">
+              <b className="text-gold">({'أب'[j]})</b> {part.q} <span className="exam-mark">[{markLabel(part.marks)}]</span>
+            </span>
+            <textarea className="exam-input mt-2 min-h-32" disabled={disabled} value={v[j]} onPaste={onPaste}
+              onChange={(e) => { const x = [...v]; x[j] = e.target.value; onChange(x) }} />
+          </label>
+        ))}
+      </div>
+    </>
+  )
 }
 
 function TfBody({ item, value, disabled, onChange, onPaste }: {
@@ -891,6 +1027,16 @@ function answered(item: ExamItem | undefined, v: AnswerValue | undefined): boole
     }
     case 'compare':
       return (v as string[][]).every((r) => r.every((x) => x.trim()))
+    case 'dmz': {
+      const t = v as { names: string[]; place: string[] }
+      return t.names.every((x) => x.trim()) && t.place.every((x) => x)
+    }
+    case 'matrix': {
+      const t = v as { cells: string[]; mark: [number, number] | null }
+      return t.cells.every((x) => x.trim()) && t.mark !== null
+    }
+    case 'open':
+      return (v as string[]).every((x) => x.trim())
   }
 }
 
