@@ -431,7 +431,8 @@ async function callGemini(
             // Ten marks with a note each needs room. The default cut replies
             // off mid-array; the repair path below survives that, but not
             // needing it is better.
-            maxOutputTokens: 2048,
+            // A unit workshop sends 35 at once, so the room grows with the paper.
+            maxOutputTokens: Math.max(2048, items.length * 120),
           },
         }),
       },

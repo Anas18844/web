@@ -273,6 +273,7 @@ export const LESSONS: readonly Lesson[] = [
     blurb:
       'الدروس التلاتة في مراجعة واحدة: ١٧ نقطة بترتيب الكتاب، وبعد كل نقطة أسئلة الوزارة ونموذج الإجابة، وشرح أطول لأصعب النقاط.',
     youtubeId: 'nm_7z1Lqbwk',
+    homeworkSlug: 'second-bacc-unit-2-workshop',
     answerKeyUrl: '/files/answers/second-bacc/unit-2.pdf',
     // The review's own student PDF (34 pages: the 17 points + the answers at the
     // end), built in mr-anas-hq, curriculum/second-bacc/u2-cybersecurity/r02-unit-2-review.
