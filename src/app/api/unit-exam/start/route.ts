@@ -26,7 +26,7 @@ const Body = z.union([
   z.object({
     name: z.string().max(120),
     phone: z.string().max(30),
-    type: z.enum(['online', 'exam_only']),
+    type: z.enum(['online', 'center', 'exam_only']),
     consent: z.boolean().optional(),
     accepted: z.literal(true),
   }),

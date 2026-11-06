@@ -21,7 +21,7 @@ export type Attempt = {
   exam_slug: string
   phone: string
   full_name: string
-  student_type: 'online' | 'exam_only'
+  student_type: 'online' | 'center' | 'exam_only'
   contact_consent: boolean
   started_at: string
   ends_at: string

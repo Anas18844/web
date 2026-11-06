@@ -34,7 +34,7 @@ export function UnitExamEntry({ late, discount }: { late: boolean; discount: num
   const [checking, setChecking] = useState(true)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
-  const [type, setType] = useState<'online' | 'exam_only' | ''>('')
+  const [type, setType] = useState<'online' | 'center' | 'exam_only' | ''>('')
   const [consent, setConsent] = useState(false)
   const [accepted, setAccepted] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -73,7 +73,7 @@ export function UnitExamEntry({ late, discount }: { late: boolean; discount: num
     setError(null)
     const problem = nameError(name)
     if (problem) return setError(NAME_HINT[problem])
-    if (!type) return setError('اختار: طالب أونلاين عندنا، ولا جاي تمتحن بس؟')
+    if (!type) return setError('اختار: طالب أونلاين، ولا طالب سنتر، ولا جاي تمتحن بس؟')
     if (!accepted) return setError('علّم على «قريت القواعد وموافق» الأول')
     setBusy(true)
     try {
@@ -131,9 +131,10 @@ export function UnitExamEntry({ late, discount }: { late: boolean; discount: num
       </div>
       <fieldset>
         <legend className="mb-2 text-sm font-bold text-ink">إنت…</legend>
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid gap-2 sm:grid-cols-3">
           {([
             ['online', 'طالب أونلاين عندنا'],
+            ['center', 'طالب سنتر (حلوان أو المعادي)'],
             ['exam_only', 'جاي أمتحن بس'],
           ] as const).map(([v, label]) => (
             <label key={v} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded border px-4 ${type === v ? 'border-gold bg-gold/15' : 'border-navy-line'}`}>

@@ -155,7 +155,7 @@ export default async function UnitExamMonitor() {
                       {a.extended_minutes > 0 && <span className="ms-1.5 text-[0.65rem] text-gold">+{ar(a.extended_minutes)} د</span>}
                     </td>
                     {isAdmin && <td className="p-2 font-mono text-ink-muted" dir="ltr">{a.phone}</td>}
-                    <td className="p-2 text-ink-muted">{a.student_type === 'online' ? 'أونلاين' : 'امتحان بس'}</td>
+                    <td className="p-2 text-ink-muted">{a.student_type === 'online' ? 'أونلاين' : a.student_type === 'center' ? 'سنتر' : 'امتحان بس'}</td>
                     <td className={`p-2 font-bold ${STATUS[status].tone}`}>{STATUS[status].label}</td>
                     <td className="p-2 text-ink">{a.submitted_at ? '—' : `${minutes(Date.parse(a.ends_at) - now)} د`}</td>
                     <td className="p-2 text-ink">{ar(answers[a.id] ?? 0)}/{ar(TOTAL)}</td>
