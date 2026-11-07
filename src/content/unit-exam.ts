@@ -28,10 +28,10 @@ export const UNIT_EXAM = {
   /** The exam opens — the countdown on the page runs to this moment. */
   opensAt: '2026-11-06T20:00:00+02:00',
   /** Last moment a student may START, so everyone gets the full two hours. */
-  lastStartAt: '2026-11-07T16:00:00+02:00',
+  lastStartAt: '2026-11-07T18:00:00+02:00',
   /** Nothing is accepted after this — same instant as the site announcement
    *  (SECOND_BACC_COMPREHENSIVE_EXAM.endsAt). lastStartAt + minutes must not pass it. */
-  closesAt: '2026-11-07T18:00:00+02:00',
+  closesAt: '2026-11-07T20:00:00+02:00',
 
   minutes: 120,
   questions: 45,
