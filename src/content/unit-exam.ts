@@ -3,7 +3,10 @@
  *
  * Unit 2 (owner, 2026-11-05): same system and rules as unit 1. Egypt left
  * daylight-saving time on the last Thursday of October, so November is +02:00.
- * Fri 6 Nov 20:00 → last start Sat 7 Nov 16:00 → closed 18:00.
+ * Fri 6 Nov 20:00 → last start Sat 7 Nov 18:00 → closed 20:00 (extended, 65d0262).
+ * Retake (owner, 2026-11-12), same paper and same rules, for the online students
+ * who have not sat it yet: Fri 13 Nov 20:00 → last start Sat 14 Nov 16:00 →
+ * closed 18:00. A number that already has an attempt gets that attempt back.
  *
  * History, unit 1:
  *
@@ -26,12 +29,12 @@ export const UNIT_EXAM = {
   grade: 'الصف الثاني بكالوريا · البرمجة والذكاء الاصطناعي',
 
   /** The exam opens — the countdown on the page runs to this moment. */
-  opensAt: '2026-11-06T20:00:00+02:00',
+  opensAt: '2026-11-13T20:00:00+02:00',
   /** Last moment a student may START, so everyone gets the full two hours. */
-  lastStartAt: '2026-11-07T18:00:00+02:00',
+  lastStartAt: '2026-11-14T16:00:00+02:00',
   /** Nothing is accepted after this — same instant as the site announcement
    *  (SECOND_BACC_COMPREHENSIVE_EXAM.endsAt). lastStartAt + minutes must not pass it. */
-  closesAt: '2026-11-07T20:00:00+02:00',
+  closesAt: '2026-11-14T18:00:00+02:00',
 
   minutes: 120,
   questions: 45,
