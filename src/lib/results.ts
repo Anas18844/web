@@ -10,12 +10,13 @@ import { createHash } from 'node:crypto'
  * id, which only Supabase holds. Whoever types a phone number gets back the
  * keys of the attempts made with that number and nothing else.
  *
- * Must match SALT in mr-anas-hq …/r04-unit-1-exam/grading/publish-site.py.
+ * One salt per exam. Must match SALT in mr-anas-hq
+ * …/r04-unit-N-exam/grading/publish-site.py.
  */
-const SALT = 'mr-anas|results|unit-1'
+const salt = (slug: string) => `mr-anas|results|${slug}`
 
-export const resultToken = (attemptId: string) =>
-  createHash('sha256').update(`${SALT}|file|${attemptId}`).digest('hex').slice(0, 24)
+export const resultToken = (attemptId: string, slug = 'unit-1') =>
+  createHash('sha256').update(`${salt(slug)}|file|${attemptId}`).digest('hex').slice(0, 24)
 
-export const resultKey = (attemptId: string) =>
-  createHash('sha256').update(`${SALT}|key|${attemptId}`).digest('base64')
+export const resultKey = (attemptId: string, slug = 'unit-1') =>
+  createHash('sha256').update(`${salt(slug)}|key|${attemptId}`).digest('base64')

@@ -6,11 +6,14 @@ import { site } from '@/content/site'
 type Offer = 'self' | 'friend' | 'full' | null
 type ResultFile = { kind: string; label: string; name: string; path: string }
 type Meta = { first: string; score: number; of: number; offer: Offer; files: ResultFile[] }
-type Opened = Meta & { key: CryptoKey }
-/** A center student's paper result (migration 012). Only their own row. */
+type Opened = Meta & { key: CryptoKey; slug: string }
+/** A center student's result (migration 012). Only their own row. */
 type Center = { first: string; score: number; of: number; rank: number; tied: boolean; top: boolean }
+/** One exam the number has a result in (newest first). */
+type Exam = { slug: string; title: string; center: Center | null; results: { token: string; key: string }[] }
+type Shown = { slug: string; title: string; center: Center | null; found: Opened[] }
 
-const BASE = '/files/results/unit-1/'
+const base = (slug: string) => `/files/results/${slug}/`
 const ar = (n: number) => n.toLocaleString('ar-EG')
 
 async function importKey(b64: string) {
@@ -19,8 +22,8 @@ async function importKey(b64: string) {
 }
 
 /** Fetch one sealed file (12-byte nonce + AES-GCM ciphertext) and open it. */
-async function open(key: CryptoKey, path: string) {
-  const res = await fetch(BASE + path)
+async function open(key: CryptoKey, slug: string, path: string) {
+  const res = await fetch(base(slug) + path)
   if (!res.ok) throw new Error('fetch')
   const buf = new Uint8Array(await res.arrayBuffer())
   return crypto.subtle.decrypt({ name: 'AES-GCM', iv: buf.slice(0, 12) }, key, buf.slice(12))
@@ -34,15 +37,13 @@ export function ResultsLookup() {
   const [phone, setPhone] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const [found, setFound] = useState<Opened[]>([])
-  const [center, setCenter] = useState<Center | null>(null)
+  const [shown, setShown] = useState<Shown[]>([])
   const [downloading, setDownloading] = useState('')
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    setFound([])
-    setCenter(null)
+    setShown([])
     setBusy(true)
     try {
       const res = await fetch('/api/results', {
@@ -55,14 +56,17 @@ export function ResultsLookup() {
         setError(body?.message ?? 'حصلت مشكلة. جرّب تاني.')
         return
       }
-      const opened: Opened[] = []
-      for (const r of body.results as { token: string; key: string }[]) {
-        const key = await importKey(r.key)
-        const meta = JSON.parse(new TextDecoder().decode(await open(key, `${r.token}.meta`))) as Meta
-        opened.push({ ...meta, key })
+      const out: Shown[] = []
+      for (const ex of body.exams as Exam[]) {
+        const found: Opened[] = []
+        for (const r of ex.results) {
+          const key = await importKey(r.key)
+          const meta = JSON.parse(new TextDecoder().decode(await open(key, ex.slug, `${r.token}.meta`))) as Meta
+          found.push({ ...meta, key, slug: ex.slug })
+        }
+        out.push({ slug: ex.slug, title: ex.title, center: ex.center, found })
       }
-      setFound(opened)
-      setCenter(body.center ?? null)
+      setShown(out)
     } catch {
       setError('النت فصل أو حصلت مشكلة. جرّب تاني.')
     } finally {
@@ -73,7 +77,7 @@ export function ResultsLookup() {
   async function download(r: Opened, f: ResultFile) {
     setDownloading(f.path)
     try {
-      const pdf = await open(r.key, f.path)
+      const pdf = await open(r.key, r.slug, f.path)
       const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }))
       const a = document.createElement('a')
       a.href = url
@@ -124,13 +128,17 @@ export function ResultsLookup() {
         </button>
       </form>
 
-      {center && <CenterCard r={center} />}
-
-      {found.map((r, i) => (
+      {shown.map((ex) => (
+        <div key={ex.slug} className="space-y-4">
+          <h2 className="border-b border-navy-line pb-2 text-lg font-extrabold text-gold">
+            الامتحان الشامل · {ex.title}
+          </h2>
+          {ex.center && <CenterCard r={ex.center} title={ex.title} slug={ex.slug} hasReport={ex.found.length > 0} />}
+          {ex.found.map((r, i) => (
         <section key={i} className="rounded border border-gold/40 bg-gold/5 p-5" aria-live="polite">
           <p className="text-lg font-extrabold text-ink">أهلًا يا {r.first} 👋</p>
           <p className="mt-2 text-body text-ink-muted">
-            درجتك في الامتحان الشامل للوحدة الأولى:{' '}
+            درجتك في الامتحان الشامل لـ{ex.title}:{' '}
             <span className="text-xl font-extrabold text-gold">
               {ar(r.score)} من {ar(r.of)}
             </span>
@@ -156,18 +164,24 @@ export function ResultsLookup() {
             جوه التقرير: الإجابة في كل سؤال، وشرح كل غلطة، وخطة مذاكرة لمدة ٧ أيام.
           </p>
         </section>
+          ))}
+        </div>
       ))}
     </div>
   )
 }
 
-/** Score and rank of a center student; the top ten hear about their certificate. */
-function CenterCard({ r }: { r: Center }) {
+/**
+ * Score and rank of a center student; the ten with a certificate hear about it.
+ * Paper students of unit 2 on: the paper was fully reviewed and comes back to
+ * them (owner, 2026-11-12). Center students who sat it online get the report below.
+ */
+function CenterCard({ r, title, slug, hasReport }: { r: Center; title: string; slug: string; hasReport: boolean }) {
   return (
     <section className="rounded border border-gold/40 bg-gold/5 p-5" aria-live="polite">
       <p className="text-lg font-extrabold text-ink">أهلًا يا {r.first} 👋</p>
       <p className="mt-2 text-body text-ink-muted">
-        درجتك في الامتحان الشامل للوحدة الأولى:{' '}
+        درجتك في الامتحان الشامل لـ{title}:{' '}
         <span className="text-xl font-extrabold text-gold">
           {ar(r.score)} من {ar(r.of)}
         </span>
@@ -175,21 +189,28 @@ function CenterCard({ r }: { r: Center }) {
       <p className="mt-2 text-body text-ink-muted">
         ترتيبك على طلاب السنتر:{' '}
         <span className="whitespace-nowrap text-xl font-extrabold text-gold">المركز {ar(r.rank)}</span>
-        {r.tied && <span className="text-sm"> (مكرر مع زميل بنفس الدرجة)</span>}
+        {r.tied && <span className="text-sm"> (مركز مكرر)</span>}
       </p>
 
       {r.top && (
         <div className="mt-5 rounded border-2 border-gold bg-navy-deep p-4">
-          <p className="font-extrabold text-gold">🏆 مبروك، من العشرة الأوائل!</p>
+          <p className="font-extrabold text-gold">🏆 مبروك، من أوائل السنتر!</p>
           <p className="mt-2 text-sm font-bold leading-relaxed text-ink">
             ليك شهادة تقدير وجايزة، وهتستلمهم في السنتر.
           </p>
         </div>
       )}
 
-      <p className="mt-4 rounded border border-navy-line bg-navy-deep px-4 py-3 text-sm leading-relaxed text-ink-muted">
-        📄 تقرير الأداء بتاعك (أخطاءك وشرح كل غلطة وتراجع إيه) هينزل هنا في نفس الصفحة قريب، وهتفتحه بنفس الرقم.
-      </p>
+      {hasReport ? null : slug === 'unit-1' ? (
+        <p className="mt-4 rounded border border-navy-line bg-navy-deep px-4 py-3 text-sm leading-relaxed text-ink-muted">
+          📄 تقرير الأداء بتاعك (أخطاءك وشرح كل غلطة وتراجع إيه) هينزل هنا في نفس الصفحة قريب، وهتفتحه بنفس الرقم.
+        </p>
+      ) : (
+        <p className="mt-4 rounded border border-navy-line bg-navy-deep px-4 py-3 text-sm leading-relaxed text-ink-muted">
+          📝 ورقة امتحانك اتراجعت بالكامل، وهتتسلملك في السنتر عشان تشوف كل سؤال وإجابته. ولو فيه أي سؤال
+          لسه مش واضح، اسأل عليه في الحصة أو على واتساب.
+        </p>
+      )}
     </section>
   )
 }

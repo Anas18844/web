@@ -4,12 +4,12 @@ import { ResultsLookup } from '@/components/results/ResultsLookup'
 
 export const metadata: Metadata = {
   title: 'نتيجة الامتحان الشامل',
-  description: 'نتيجة الامتحان الشامل للوحدة الأولى، تانية بكالوريا: اكتب الرقم اللي امتحنت بيه، أونلاين أو في السنتر.',
+  description: 'نتيجة الامتحانات الشاملة للوحدة الأولى والثانية، تانية بكالوريا: اكتب الرقم اللي امتحنت بيه، أونلاين أو في السنتر.',
   alternates: { canonical: '/results' },
   robots: { index: false },
 }
 
-/** Unit-1 results by phone number (owner, 2026-10-18). See lib/results.ts. */
+/** Unit-exam results by phone number (owner, 2026-10-18; unit 2 added 2026-11-12). See lib/results.ts. */
 export default function ResultsPage() {
   return (
     <div className="bg-navy-deep py-10 sm:py-14">
@@ -20,7 +20,7 @@ export default function ResultsPage() {
             <p className="text-sm font-bold text-gold">تانية بكالوريا</p>
             <h1 className="mt-2 text-title font-extrabold text-ink">نتيجة الامتحان الشامل</h1>
             <p className="mt-2 text-body text-ink-muted">
-              الوحدة الأولى. اكتب نفس الرقم اللي امتحنت بيه، أونلاين أو في ورقة امتحان السنتر.
+              الوحدة الأولى والوحدة الثانية. اكتب نفس الرقم اللي امتحنت بيه، أونلاين أو في ورقة امتحان السنتر.
             </p>
             <div className="mt-7">
               <ResultsLookup />
