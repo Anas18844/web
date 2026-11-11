@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { site } from '@/content/site'
 
-type Offer = 'self' | 'friend' | 'full' | null
+type Offer = 'self' | 'friend' | 'full' | 'friend2' | 'top2' | null
 type ResultFile = { kind: string; label: string; name: string; path: string }
 type Meta = { first: string; score: number; of: number; offer: Offer; files: ResultFile[] }
 type Opened = Meta & { key: CryptoKey; slug: string }
@@ -221,8 +221,13 @@ function CenterCard({ r, title, slug, hasReport }: { r: Center; title: string; s
   )
 }
 
-/** The 20% notice — same rules as the offer page in the PDF (BIZ-45 · BIZ-46 · BIZ-47). */
+/**
+ * The 20% notice. Unit 1: the offer page in the PDF (BIZ-45 · BIZ-46 · BIZ-47).
+ * Unit 2 (owner, 2026-11-12), online and exam-only students, not the center:
+ * friend2 = 20% for any classmate they bring, on any package; top2 = that plus 20% for themselves.
+ */
 function OfferNotice({ offer }: { offer: Exclude<Offer, null> }) {
+  if (offer === 'friend2' || offer === 'top2') return <OfferUnit2 top={offer === 'top2'} />
   const wa = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent('عايز أشترك في منصة Code Up بخصم الـ20% بتاع الامتحان الشامل')}`
   return (
     <div className="mt-5 rounded border-2 border-gold bg-navy-deep p-4">
@@ -243,6 +248,32 @@ function OfferNotice({ offer }: { offer: Exclude<Offer, null> }) {
         إزاي الخصم يتفعّل؟ ابعت رسالة على واتساب{' '}
         <bdi dir="ltr" className="font-bold text-ink">{site.whatsapp.display}</bdi> بطلب الاشتراك، وبيطلعلك كود خصم
         صالح لمدة شهر من يوم إصداره، على باقة الشهر أو باقة الترم.
+      </p>
+      <a
+        href={wa}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-3 inline-block rounded bg-gold px-4 py-2 text-sm font-extrabold text-navy-deep"
+      >
+        اطلب كود الخصم على واتساب
+      </a>
+    </div>
+  )
+}
+
+function OfferUnit2({ top }: { top: boolean }) {
+  const wa = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent('عايز كود خصم الـ20% بتاع الامتحان الشامل للوحدة التانية')}`
+  return (
+    <div className="mt-5 rounded border-2 border-gold bg-navy-deep p-4">
+      <p className="font-extrabold text-gold">🎁 هدية الامتحان الشامل</p>
+      <ul className="mt-3 space-y-2 text-sm font-bold leading-relaxed text-ink">
+        {top && <li>🏆 خصم ٢٠٪ ليك على الاشتراك في منصة Code Up، عشان إنت من الأوائل</li>}
+        <li>👥 خصم ٢٠٪ لأي زميل تجيبه معاك، على أي باقة يختارها</li>
+      </ul>
+      <p className="mt-3 text-xs leading-relaxed text-ink-muted">
+        إزاي الخصم يتفعّل؟ ابعت رسالة على واتساب{' '}
+        <bdi dir="ltr" className="font-bold text-ink">{site.whatsapp.display}</bdi>، وزميلك يقول إنه جاي من طرفك،
+        وبيطلع كود الخصم.
       </p>
       <a
         href={wa}
