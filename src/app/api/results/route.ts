@@ -27,7 +27,7 @@ const EXAMS = [
 /** Same line as MIN_ANSWERS in mr-anas-hq …/r04-unit-N-exam/grading/common.py. */
 const MIN_ANSWERS = 30
 
-/** The top ten get a certificate and a prize at the center (owner, 2026-10-22). */
+/** Places 1 to 10 get a certificate and a prize at the center (owner, 2026-10-22 and 2026-11-12). */
 const TOP = 10
 
 /**
@@ -50,10 +50,10 @@ const firstName = (full: string) => {
  * The center result of a student (migration 012), with the rank among the
  * center students of the same exam. Only this student's own row leaves the route.
  *
- * Two ranks (owner, 2026-10-24):
- * - shown: a tie shares the place and the next score takes the next number
- *   (69.5 → 1, 66 ×3 → 3, 65 → 4), the same place printed on the certificate;
- * - certificate: one plus how many scored higher is 10 or less (the top ten).
+ * The place: a tie shares it and the next score takes the next number
+ * (69.5 → 1, 66 ×3 → 2, 65 → 3), the same place printed on the certificate
+ * (owner, 2026-10-24). Every student in places 1 to 10 gets a certificate,
+ * however many students that is (owner, 2026-11-12).
  */
 async function centerResult(slug: string, phone: string) {
   const db = getSupabaseAdmin()
@@ -70,13 +70,15 @@ async function centerResult(slug: string, phone: string) {
   const score = Number(data.score)
   const scores = (all.data ?? []).map((r) => Number(r.score))
   const above = scores.filter((s) => s > score)
+  const rank = new Set(above).size + 1
   return {
     first: firstName(data.full_name),
     score,
     of: Number(data.max_score),
-    rank: new Set(above).size + 1,
+    rank,
     tied: scores.filter((s) => s === score).length > 1,
-    top: above.length + 1 <= TOP,
+    // Unit 1's certificates were already printed for the top ten by count.
+    top: slug === 'unit-1' ? above.length + 1 <= TOP : rank <= TOP,
   }
 }
 
