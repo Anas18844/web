@@ -144,6 +144,12 @@ export function ResultsLookup() {
             </span>
           </p>
 
+          {r.files.some((f) => f.kind === 'certificate') && (
+            <p className="mt-3 rounded border-2 border-gold bg-navy-deep px-4 py-3 font-extrabold text-gold">
+              🏆 مبروك، من أوائل الامتحان! شهادة التقدير بتاعتك أول ملف تحت.
+            </p>
+          )}
+
           {r.offer && <OfferNotice offer={r.offer} />}
 
           <div className="mt-5 grid gap-3">
