@@ -330,6 +330,7 @@ export const UNITS: Record<Grade, readonly { n: number; title: string }[]> = {
     { n: 1, title: 'ما هي المعلومات؟' },
     { n: 2, title: 'القوانين والحقوق في مجتمع المعلومات' },
     { n: 3, title: 'أمن المعلومات' },
+    { n: 6, title: 'التناظري والرقمي' },
   ],
 }
 

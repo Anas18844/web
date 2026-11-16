@@ -79,6 +79,15 @@ export const BOOKLETS: readonly LibraryItem[] = [
   // أولى ثانوي — one booklet per unit: a short summary, 40 questions, the answers,
   // and a QR to the unit's video. Built in mr-anas-hq, curriculum/first-sec/<unit>/booklet.
   {
+    id: 'first-sec-unit-6',
+    unit: 6, kind: 'explain',
+    grade: 'first_sec',
+    title: 'ملزمة الوحدة السادسة — التناظري والرقمي',
+    blurb: 'ملخص بسيط للمحاور الستة صفحة لكل محور (ومعاهم الحسابات الثنائية)، و٤٠ سؤال (٣٠ اختيار من متعدد و١٠ صح أو خطأ) بالإجابات، وكود يفتح فيديو الشرح.',
+    url: '/files/booklets/first-sec-unit-6.pdf',
+    meta: '١٢ صفحة · ملخص + ٤٠ سؤال',
+  },
+  {
     id: 'first-sec-unit-3',
     unit: 3, kind: 'explain',
     grade: 'first_sec',
