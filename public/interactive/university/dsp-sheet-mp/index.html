@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>DSP · Magnitude & Phase Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=Readex+Pro:wght@300;400;500;600&display=swap">
+<style>
+:root{color-scheme:light;--bg:#F4F6FA;--card:#FFFFFF;--ink:#1E2433;--soft:#5D6679;--faint:#8C94A6;--line:#E6E9F0;
+--c:#4F5BD5;--tint:#EDEFFB;--pos:#1F8A4C;--pos-tint:#E5F5EC;--neg:#C0392B;--neg-tint:#FDECEA;--amber:#B45309;--amber-tint:#FFF6E5;
+--f-head:"Alexandria","Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;--f-body:"Readex Pro",system-ui,"Segoe UI",Tahoma,sans-serif;
+--f-math:"Cambria Math","Cambria","Times New Roman",serif;--shadow:0 1px 2px rgba(30,36,51,.04),0 6px 24px rgba(30,36,51,.06)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:2;padding:0 16px 80px}
+.wrap{max-width:820px;margin-inline:auto;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--f-head);font-weight:700;margin:0;line-height:1.45}
+p{margin:0;max-width:68ch}a{color:var(--c)}button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.m{font-family:var(--f-math);direction:ltr;unicode-bidi:isolate;font-size:1.1em;white-space:nowrap}
+.mb{font-family:var(--f-math);direction:ltr;text-align:center;font-size:21px;background:var(--tint);border-radius:12px;padding:12px;overflow-x:auto}
+.bar{position:sticky;top:0;z-index:10;background:rgba(244,246,250,.96);padding:8px 16px;margin-inline:-16px;border-bottom:1px solid var(--line)}
+.bar .in{max-width:820px;margin-inline:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px}
+.bar a{text-decoration:none;color:var(--soft);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:1px 10px;white-space:nowrap}
+.bar a.done{background:var(--pos-tint);border-color:var(--pos);color:var(--pos)}
+.bar .sp{margin-inline-start:auto;color:var(--soft)}
+.track{flex-basis:100%;height:5px;background:var(--line);border-radius:6px;overflow:hidden}.track i{display:block;height:100%;width:0;background:var(--c)}
+.hero{background:var(--tint);border-radius:22px;padding:22px 24px;display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.hero h1{font-size:clamp(25px,5vw,34px)}.hero .meta{font-size:14px;color:var(--c);font-weight:600}
+.part{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;gap:16px;scroll-margin-top:64px}
+.part .num{font-size:13px;color:var(--c);font-weight:600}.part h2{font-size:23px}
+.part h3{font-size:18px;margin-top:10px;padding-top:12px;border-top:1px solid var(--line)}
+.idea{background:var(--tint);border-radius:14px;padding:12px 16px;font-weight:500}
+.trick{background:var(--pos-tint);border-radius:14px;padding:12px 16px}.trick b:first-child{color:var(--pos)}
+.trap{background:var(--amber-tint);border-radius:14px;padding:12px 16px;color:#5A3505}.trap b:first-child{color:var(--amber)}
+.examw{border:2px solid var(--c);border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:6px}.examw>b:first-child{color:var(--c)}
+.ex{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}.ex>b:first-child{color:var(--c)}
+.list{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:8px}
+.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.steps li{counter-increment:s;position:relative;background:var(--bg);border-radius:12px;padding:10px 14px;padding-inline-start:46px}
+.steps li::before{content:counter(s);position:absolute;inset-inline-start:12px;top:12px;width:24px;height:24px;border-radius:50%;background:var(--c);color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.tbl{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:15.5px}
+th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:start;vertical-align:top}th{color:var(--soft);font-size:14px;background:var(--bg)}
+.lab{border:2px dashed #B9C0EE;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.lab .tag{font-size:14px;font-weight:600;color:var(--c)}
+.ctl{display:flex;flex-wrap:wrap;gap:12px;align-items:end;direction:ltr}
+.ctl label{display:flex;flex-direction:column;font-size:13px;color:var(--soft);gap:2px}
+.ctl input,.ctl select{font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:10px;padding:4px 8px;background:var(--card);direction:ltr;width:130px}
+.ctl input[type=range]{padding:0;width:170px;accent-color:var(--c)}
+.ctl input.wide{width:240px}
+.read{font-family:var(--f-math);direction:ltr;text-align:center;font-size:17px;line-height:1.8;overflow-x:auto}
+.rd{text-align:center;font-size:15px;color:var(--soft)}
+canvas{width:100%;max-width:400px;aspect-ratio:1;background:#FBFCFE;border:1px solid var(--line);border-radius:14px;display:block;margin-inline:auto;touch-action:none}
+canvas.wide{max-width:100%;aspect-ratio:5/2}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.two figure{margin:0;display:flex;flex-direction:column;gap:4px;text-align:center;font-size:14px;color:var(--soft)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:0;background:var(--c);color:#fff;border-radius:999px;padding:6px 16px;font-size:15px;min-height:40px}
+.btn.ghost{background:var(--card);color:var(--c);border:1.5px solid var(--c)}.btn.on{background:var(--pos);color:#fff;border-color:var(--pos)}.btn:disabled{opacity:.5;cursor:default}
+.qs{display:flex;flex-direction:column;gap:12px}.qk{font-size:14px;font-weight:600;color:var(--c);margin-top:6px}
+.q{background:var(--bg);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.q .stem{font-weight:500}.opts{display:flex;flex-direction:column;gap:6px}
+.opt{text-align:start;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:8px 12px;font-size:15.5px;line-height:1.7}
+.opt:hover:not(:disabled){border-color:var(--c)}.opt:disabled{cursor:default}.opt.pick{border-color:var(--c);background:var(--tint)}
+.opt.right{background:var(--pos-tint);border-color:var(--pos)}.opt.wrong{background:var(--neg-tint);border-color:var(--neg)}
+.why{font-size:15px;color:var(--soft);border-inline-start:3px solid var(--c);padding-inline-start:10px}.why.bad{border-color:var(--neg)}
+.score{font-size:14px;color:var(--soft)}.badge{background:var(--pos-tint);color:var(--pos);border-radius:999px;padding:2px 12px;font-size:14px;font-weight:600}
+.prob{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.sol{display:none;background:var(--bg);border-radius:12px;padding:12px 14px;flex-direction:column;gap:8px}.sol.show{display:flex}
+.g{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}.g>b{color:var(--c)}
+.gs{background:var(--bg);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:8px}
+.gs .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.gs input{font:inherit;font-size:16px;width:170px;border:1.5px solid var(--line);border-radius:10px;padding:4px 8px;direction:ltr;text-align:center}
+.gs input.ok{border-color:var(--pos);background:var(--pos-tint)}.gs input.no{border-color:var(--neg);background:var(--neg-tint)}
+.gs .ans{display:none;color:var(--soft);font-size:15.5px}.gs.open .ans{display:block}.gs.lock{display:none}
+.timer{font-family:var(--f-head);font-size:28px;color:var(--c);direction:ltr}
+.result{background:var(--tint);border-radius:14px;padding:12px 16px;font-weight:500}
+.exam{border:2px solid var(--c)}
+.next{display:flex;gap:8px;flex-wrap:wrap}.next a{background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:6px 16px;text-decoration:none}
+@media (max-width:640px){.part{padding:18px 16px}.two{grid-template-columns:1fr}.m{white-space:normal}}
+@media print{.bar,.next,.btn{display:none}body{background:#fff}.part{box-shadow:none;break-inside:avoid}.sol{display:flex}}
+</style>
+</head>
+<body>
+
+<style>:root{--c:#0E7C86;--tint:#E3F4F5}
+.pr{border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;margin-bottom:18px}
+.pr h3{margin:0;color:var(--c)}
+.pr .qq{background:var(--tint);border-radius:12px;padding:12px 14px;line-height:1.9}
+.st{display:none;border-inline-start:4px solid var(--c);padding:8px 14px;line-height:1.9}
+.st.on{display:block}
+.st b.k{display:block;color:var(--c);margin-bottom:4px}
+.nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.nav .cnt{color:var(--muted,#667);font-size:.9em}
+.tb{overflow-x:auto;margin:8px 0}
+.tb table{border-collapse:collapse;direction:ltr;font-family:var(--f-math)}
+.tb th,.tb td{border:1px solid var(--line);padding:6px 10px;text-align:center;white-space:nowrap}
+.tb td small{display:block;font-size:.72em;opacity:.65}
+.mb{direction:ltr;text-align:left}
+.st .m,.qq .m{direction:ltr;unicode-bidi:isolate}
+.grp{background:var(--c);color:#fff;border-radius:10px;padding:8px 14px;margin:26px 0 12px;font-size:1.1em;text-align:left}
+.bar .in{overflow-x:auto}
+</style>
+<div class="bar"><div class="in"><a href="/interactive/university/midterm">الخريطة</a><a href="#p0" data-chip="p0">1</a><a href="#p1" data-chip="p1">2</a><a href="#p2" data-chip="p2">3</a><a href="#p3" data-chip="p3">4</a><a href="#p4" data-chip="p4">5</a><a href="#p5" data-chip="p5">6</a><a href="#p6" data-chip="p6">7</a><a href="#p7" data-chip="p7">8</a><a href="#p8" data-chip="p8">9</a><a href="#p9" data-chip="p9">10</a><span class="sp" id="pct"></span><div class="track"><i id="fill"></i></div></div></div><div class="wrap">
+<header class="hero"><div class="meta">DSP · الشيتات خطوة بخطوة</div><h1>شيت الـ Magnitude & Phase</h1><p>الشيت في <bdi dir="ltr">02-DSP/questions/DSP_Magnitude_and_Phase_Practice.pdf</bdi>. حل المسألة على ورقة الأول، وبعدين دوس Next عشان تشوف خطوة واحدة بس، وقارنها باللي عملته.</p></header>
+<section class="pr" id="p0"><h3 dir="ltr" style="text-align:left">Problem 1 · Basic</h3><div class="qq" dir="ltr" style="text-align:left">Given <span class="m">h[0] = 1</span> and <span class="m">h[1] = 1/2</span>, find <span class="m">H(e<sup>jω</sup>)</span>, <span class="m">|H(e<sup>jω</sup>)|</span>, and <span class="m">∠H(e<sup>jω</sup>)</span>.</div><div class="st"><b class="k">1. الوصفة اللي هنمشي بيها في الشيت كله</b>• <b>H</b>: كل عينة h[k] تتضرب في <span class="m">e<sup>−jωk</sup></span> وتتجمع: <span class="m">H(e<sup>jω</sup>) = Σₖ h[k]e<sup>−jωk</sup></span><br>• <b>Magnitude</b>: طول الرقم المركب <span class="m">|H| = √(Hᵣ² + Hᵢ²)</span><br>• <b>Phase</b>: زاويته <span class="m">∠H = atan2(Hᵢ, Hᵣ)</span><br>والأداة الأساسية: <span class="m">e<sup>−jω</sup> = cos ω − j sin ω</span></div><div class="st"><b class="k">2. اكتب H</b>k = 0 بتدي <span class="m">e<sup>0</sup> = 1</span>، و k = 1 بتدي <span class="m">e<sup>−jω</sup></span>:<div class="mb">H(e<sup>jω</sup>) = 1 + ½e<sup>−jω</sup></div></div><div class="st"><b class="k">3. افصل الحقيقي عن التخيلي</b>عوّض <span class="m">e<sup>−jω</sup> = cos ω − j sin ω</span>:<div class="mb">H = 1 + ½cos ω − j ½sin ω</div><div class="mb">Hᵣ = 1 + ½cos ω ,  Hᵢ = −½sin ω</div></div><div class="st"><b class="k">4. الـ Magnitude</b><div class="mb">|H|² = (1 + ½cos ω)² + (½sin ω)² = 1 + cos ω + ¼cos²ω + ¼sin²ω</div>وبما إن <span class="m">cos² + sin² = 1</span>:<div class="mb">|H|² = 5/4 + cos ω  →  |H| = √(5/4 + cos ω) = ½√(5 + 4cos ω)</div></div><div class="st"><b class="k">5. الـ Phase</b><div class="mb">∠H = atan2(−½sin ω, 1 + ½cos ω) = −tan⁻¹( sin ω / (2 + cos ω) )</div>ينفع نستخدم <span class="m">tan⁻¹</span> العادية لأن <span class="m">Hᵣ = 1 + ½cos ω ≥ ½</span> دايمًا موجبة.</div><div class="st"><b class="k">6. راجع بنقطتين سهلين</b>• عند <span class="m">ω = 0</span>: H = Σh = 1 + ½ = 1.5، والقانون: <span class="m">√(5/4 + 1) = 1.5</span> ✓<br>• عند <span class="m">ω = π</span>: H = 1 − ½ = 0.5، والقانون: <span class="m">√(5/4 − 1) = 0.5</span> ✓</div><div class="nav"><button type="button" class="btn" data-nx>ابدأ الحل ←</button><button type="button" class="btn ghost" data-bk>→ رجوع</button><button type="button" class="btn ghost" data-rs>من الأول</button><span class="cnt"></span><button type="button" class="btn ghost" data-done="p0"></button></div></section>
+<section class="pr" id="p1"><h3 dir="ltr" style="text-align:left">Problem 2 · Lecture example</h3><div class="qq" dir="ltr" style="text-align:left">Given <span class="m">h[0] = 1/2</span> and <span class="m">h[1] = 1/2</span>, find <span class="m">H(e<sup>jω</sup>)</span>, magnitude, and phase.</div><div class="st"><b class="k">1. اكتب H</b><div class="mb">H = ½ + ½e<sup>−jω</sup> = ½(1 + e<sup>−jω</sup>)</div></div><div class="st"><b class="k">2. الحيلة: اطلع نص الـ delay برا</b>اطلع <span class="m">e<sup>−jω/2</sup></span> عامل مشترك، عشان اللي جوه يبقى متماثل:<div class="mb">H = ½ e<sup>−jω/2</sup> (e<sup>jω/2</sup> + e<sup>−jω/2</sup>)</div>جرّب تضربها تاني: <span class="m">e<sup>−jω/2</sup>·e<sup>jω/2</sup> = 1</span> و <span class="m">e<sup>−jω/2</sup>·e<sup>−jω/2</sup> = e<sup>−jω</sup></span> ✓</div><div class="st"><b class="k">3. Euler: الأقواس تبقى cos</b><span class="m">e<sup>jθ</sup> + e<sup>−jθ</sup> = 2cos θ</span> و <span class="m">e<sup>jθ</sup> − e<sup>−jθ</sup> = 2j sin θ</span>، يعني القوس = <span class="m">2cos(ω/2)</span>:<div class="mb">H = cos(ω/2) e<sup>−jω/2</sup></div>دلوقتي H = (رقم حقيقي) × (حاجة طولها 1).</div><div class="st"><b class="k">4. الـ Magnitude</b><span class="m">|e<sup>−jω/2</sup>| = 1</span>، فالطول كله من الجزء الحقيقي:<div class="mb">|H| = |cos(ω/2)|</div></div><div class="st"><b class="k">5. الـ Phase</b>زاوية <span class="m">e<sup>−jω/2</sup></span> هي <span class="m">−ω/2</span>.<br>• لما <span class="m">cos(ω/2) &gt; 0</span> (يعني <span class="m">|ω| &lt; π</span>): <span class="m">∠H = −ω/2</span><br>• لو بقى سالب: زوّد π (السالب = زاوية π)<br>• عند <span class="m">ω = ±π</span>: <span class="m">cos(π/2) = 0</span>، فـ H = 0 والـ phase <b>undefined</b></div><div class="st"><b class="k">6. اكتب الإجابة</b><div class="mb">H = cos(ω/2)e<sup>−jω/2</sup> ,  |H| = |cos(ω/2)| ,  ∠H = −ω/2 (|ω| &lt; π)</div>ده <b>lowpass</b>: عند ω = 0 الطول 1، وعند ω = π صفر.</div><div class="nav"><button type="button" class="btn" data-nx>ابدأ الحل ←</button><button type="button" class="btn ghost" data-bk>→ رجوع</button><button type="button" class="btn ghost" data-rs>من الأول</button><span class="cnt"></span><button type="button" class="btn ghost" data-done="p1"></button></div></section>
+<section class="pr" id="p2"><h3 dir="ltr" style="text-align:left">Problem 3 · Three samples</h3><div class="qq" dir="ltr" style="text-align:left">Given <span class="m">h[0] = h[1] = h[2] = 1/3</span>, find <span class="m">H(e<sup>jω</sup>)</span>, magnitude, and phase. Simplify where possible.</div><div class="st"><b class="k">1. اكتب H</b><div class="mb">H = ⅓(1 + e<sup>−jω</sup> + e<sup>−j2ω</sup>)</div></div><div class="st"><b class="k">2. اطلع الحد اللي في النص برا</b>3 عينات، فالنص عند k = 1. اطلع <span class="m">e<sup>−jω</sup></span>:<div class="mb">H = ⅓ e<sup>−jω</sup>(e<sup>jω</sup> + 1 + e<sup>−jω</sup>)</div></div><div class="st"><b class="k">3. Euler</b><span class="m">e<sup>jω</sup> + e<sup>−jω</sup> = 2cos ω</span>:<div class="mb">H = ⅓ e<sup>−jω</sup>(1 + 2cos ω)</div></div><div class="st"><b class="k">4. الـ Magnitude</b><div class="mb">|H| = |1 + 2cos ω| / 3</div></div><div class="st"><b class="k">5. الـ Phase: امتى الجزء الحقيقي بيغير إشارته؟</b><span class="m">1 + 2cos ω = 0</span> لما <span class="m">cos ω = −½</span>، يعني <span class="m">ω = ±2π/3</span>.<br>• <span class="m">|ω| &lt; 2π/3</span>: موجب → <span class="m">∠H = −ω</span><br>• <span class="m">2π/3 &lt; |ω| ≤ π</span>: سالب → <span class="m">∠H = −ω ± π</span><br>• عند <span class="m">ω = ±2π/3</span>: H = 0 والـ phase undefined</div><div class="st"><b class="k">6. راجع</b>• <span class="m">ω = 0</span>: Σh = 1، والقانون <span class="m">(1 + 2)/3 = 1</span> ✓<br>• <span class="m">ω = π</span>: <span class="m">⅓ − ⅓ + ⅓ = ⅓</span>، والقانون <span class="m">|1 − 2|/3 = ⅓</span> ✓</div><div class="nav"><button type="button" class="btn" data-nx>ابدأ الحل ←</button><button type="button" class="btn ghost" data-bk>→ رجوع</button><button type="button" class="btn ghost" data-rs>من الأول</button><span class="cnt"></span><button type="button" class="btn ghost" data-done="p2"></button></div></section>
+<section class="pr" id="p3"><h3 dir="ltr" style="text-align:left">Problem 4 · Difference system</h3><div class="qq" dir="ltr" style="text-align:left">Given <span class="m">h[0] = 1</span> and <span class="m">h[1] = −1</span>, find <span class="m">H(e<sup>jω</sup>)</span>, magnitude, and phase.</div><div class="st"><b class="k">1. اكتب H واطلع نص الـ delay</b><div class="mb">H = 1 − e<sup>−jω</sup> = e<sup>−jω/2</sup>(e<sup>jω/2</sup> − e<sup>−jω/2</sup>)</div></div><div class="st"><b class="k">2. Euler بالسالب: بتطلع j sin</b><span class="m">e<sup>jθ</sup> + e<sup>−jθ</sup> = 2cos θ</span> و <span class="m">e<sup>jθ</sup> − e<sup>−jθ</sup> = 2j sin θ</span>، يعني:<div class="mb">H = 2j sin(ω/2) e<sup>−jω/2</sup></div></div><div class="st"><b class="k">3. الـ Magnitude</b><span class="m">|j| = 1</span> و <span class="m">|e<sup>−jω/2</sup>| = 1</span>:<div class="mb">|H| = 2|sin(ω/2)|</div></div><div class="st"><b class="k">4. الـ Phase: الـ j بتزود π/2</b><span class="m">j = e<sup>jπ/2</sup></span>، يعني زاويتها π/2. الزوايا بتتجمع:<br>• <span class="m">0 &lt; ω ≤ π</span> (<span class="m">sin &gt; 0</span>): <span class="m">∠H = π/2 − ω/2</span><br>• <span class="m">−π ≤ ω &lt; 0</span> (<span class="m">sin &lt; 0</span>، يعني زاوية π زيادة): <span class="m">∠H = −π/2 − ω/2</span><br>• عند <span class="m">ω = 0</span>: H = 0، فالـ phase undefined</div><div class="st"><b class="k">5. راجع</b>عند <span class="m">ω = π</span>: H = 1 − (−1) = 2. والقانون: <span class="m">|H| = 2sin(π/2) = 2</span> و <span class="m">∠H = π/2 − π/2 = 0</span> ✓<br>ده <b>highpass</b>: صفر عند ω = 0، وأكبر حاجة عند π.</div><div class="nav"><button type="button" class="btn" data-nx>ابدأ الحل ←</button><button type="button" class="btn ghost" data-bk>→ رجوع</button><button type="button" class="btn ghost" data-rs>من الأول</button><span class="cnt"></span><button type="button" class="btn ghost" data-done="p3"></button></div></section>
+<section class="pr" id="p4"><h3 dir="ltr" style="text-align:left">Problem 5 · Weighted samples</h3><div class="qq" dir="ltr" style="text-align:left">Given <span class="m">h[0] = 1/2</span> and <span class="m">h[1] = −1/2</span>, find <span class="m">H(e<sup>jω</sup>)</span>, magnitude, and phase.</div><div class="st"><b class="k">1. لاحظ إنها نص Problem 4</b><div class="mb">H = ½(1 − e<sup>−jω</sup>)</div>وإحنا عارفين من Problem 4 إن <span class="m">1 − e<sup>−jω</sup> = 2j sin(ω/2)e<sup>−jω/2</sup></span>.</div><div class="st"><b class="k">2. H</b><div class="mb">H = j sin(ω/2) e<sup>−jω/2</sup></div></div><div class="st"><b class="k">3. الـ Magnitude والـ Phase</b><div class="mb">|H| = |sin(ω/2)|</div>الضرب في ½ (رقم موجب) بيغير الطول بس، ما بيغيرش الزاوية. يعني الـ phase زي Problem 4 بالظبط: <span class="m">π/2 − ω/2</span> لما sin موجب، و <span class="m">−π/2 − ω/2</span> لما سالب، و undefined عند ω = 0.</div><div class="nav"><button type="button" class="btn" data-nx>ابدأ الحل ←</button><button type="button" class="btn ghost" data-bk>→ رجوع</button><button type="button" class="btn ghost" data-rs>من الأول</button><span class="cnt"></span><button type="button" class="btn ghost" data-done="p4"></button></div></section>
+<section class="pr" id="p5"><h3 dir="ltr" style="text-align:left">Problem 6 · Delayed impulse</h3><div class="qq" dir="ltr" style="text-align:left">Given <span class="m">h[2] = 1</span> and all other samples are zero, find <span class="m">H(e<sup>jω</sup>)</span>, magnitude, and phase.</div><div class="st"><b class="k">1. اكتب H</b>فيه عينة واحدة بس عند k = 2:<div class="mb">H = 1 · e<sup>−j2ω</sup> = e<sup>−j2ω</sup></div></div><div class="st"><b class="k">2. الـ Magnitude والـ Phase</b>دي على الصورة <span class="m">e<sup>jθ</sup></span> مباشرة، و <span class="m">|e<sup>jθ</sup>| = 1</span>:<div class="mb">|H| = 1 ,  ∠H = −2ω</div></div><div class="st"><b class="k">3. الفهم</b>الـ delay بخطوتين ما بيغيرش طول أي تردد (|H| = 1)، بيزود بس phase خطية ميلها −2. القاعدة: <b>delay بـ d = phase قيمتها −dω</b>.</div><div class="nav"><button type="button" class="btn" data-nx>ابدأ الحل ←</button><button type="button" class="btn ghost" data-bk>→ رجوع</button><button type="button" class="btn ghost" data-rs>من الأول</button><span class="cnt"></span><button type="button" class="btn ghost" data-done="p5"></button></div></section>
+<section class="pr" id="p6"><h3 dir="ltr" style="text-align:left">Problem 7 · Complex response</h3><div class="qq" dir="ltr" style="text-align:left">A system has <span class="m">H(e<sup>jω</sup>) = 1 + j</span>. Find its magnitude and phase.</div><div class="st"><b class="k">1. الجزء الحقيقي والتخيلي</b><span class="m">Hᵣ = 1</span> و <span class="m">Hᵢ = 1</span></div><div class="st"><b class="k">2. الـ Magnitude</b><div class="mb">|H| = √(1² + 1²) = √2</div></div><div class="st"><b class="k">3. الـ Phase</b><div class="mb">∠H = atan2(1, 1) = π/4 = 45°</div>النقطة (1, 1) في الربع الأول، فمفيش تصحيح.</div><div class="nav"><button type="button" class="btn" data-nx>ابدأ الحل ←</button><button type="button" class="btn ghost" data-bk>→ رجوع</button><button type="button" class="btn ghost" data-rs>من الأول</button><span class="cnt"></span><button type="button" class="btn ghost" data-done="p6"></button></div></section>
+<section class="pr" id="p7"><h3 dir="ltr" style="text-align:left">Problem 8 · Frequency-dependent response</h3><div class="qq" dir="ltr" style="text-align:left">Given <span class="m">H(e<sup>jω</sup>) = 1 − e<sup>−jω</sup></span>, rewrite it in a form that makes the magnitude and phase easier to identify. Then find both.</div><div class="st"><b class="k">1. دي Problem 4 بالظبط</b><span class="m">1 − e<sup>−jω</sup></span> هي H بتاعة h = {1, −1}. الفرق إن السؤال هنا طالب الـ <b>rewrite</b> صريح.</div><div class="st"><b class="k">2. الشكل المطلوب</b>اطلع <span class="m">e<sup>−jω/2</sup></span> وطبّق Euler:<div class="mb">H = e<sup>−jω/2</sup>(e<sup>jω/2</sup> − e<sup>−jω/2</sup>) = 2j sin(ω/2) e<sup>−jω/2</sup></div></div><div class="st"><b class="k">3. الإجابة</b><div class="mb">|H| = 2|sin(ω/2)|</div><div class="mb">∠H = π/2 − ω/2  (sin(ω/2) &gt; 0)</div>وتتعدل بـ π لما sin سالب، و undefined عند <span class="m">ω = 2πm</span>.</div><div class="nav"><button type="button" class="btn" data-nx>ابدأ الحل ←</button><button type="button" class="btn ghost" data-bk>→ رجوع</button><button type="button" class="btn ghost" data-rs>من الأول</button><span class="cnt"></span><button type="button" class="btn ghost" data-done="p7"></button></div></section>
+<section class="pr" id="p8"><h3 dir="ltr" style="text-align:left">Problem 9 · Evaluate at a frequency</h3><div class="qq" dir="ltr" style="text-align:left">For <span class="m">h[0] = 1/2</span> and <span class="m">h[1] = 1/2</span>, evaluate H, magnitude, and phase at <span class="m">ω = π/2</span>.</div><div class="st"><b class="k">1. احسب <span class="m">e<sup>−jπ/2</sup></span></b><div class="mb">e<sup>−jπ/2</sup> = cos(π/2) − j sin(π/2) = 0 − j = −j</div></div><div class="st"><b class="k">2. عوّض في H</b><div class="mb">H = ½ + ½(−j) = ½ − ½j</div></div><div class="st"><b class="k">3. الـ Magnitude</b><div class="mb">|H| = √(¼ + ¼) = √(½) = √2/2 ≈ 0.707</div></div><div class="st"><b class="k">4. الـ Phase</b><div class="mb">∠H = atan2(−½, ½) = −π/4 = −45°</div>النقطة في الربع الرابع (حقيقي موجب، تخيلي سالب).</div><div class="st"><b class="k">5. راجع بقانون Problem 2</b><span class="m">|cos(π/4)| = 0.707</span> ✓ و <span class="m">−ω/2 = −π/4</span> ✓</div><div class="nav"><button type="button" class="btn" data-nx>ابدأ الحل ←</button><button type="button" class="btn ghost" data-bk>→ رجوع</button><button type="button" class="btn ghost" data-rs>من الأول</button><span class="cnt"></span><button type="button" class="btn ghost" data-done="p8"></button></div></section>
+<section class="pr" id="p9"><h3 dir="ltr" style="text-align:left">Problem 10 · Challenge</h3><div class="qq" dir="ltr" style="text-align:left">Given <span class="m">h[0] = 1/4</span>, <span class="m">h[1] = 1/2</span>, and <span class="m">h[2] = 1/4</span>, find <span class="m">H(e<sup>jω</sup>)</span>, magnitude, and phase. Identify frequencies where the magnitude is zero and phase is undefined.</div><div class="st"><b class="k">1. اكتب H واطلع الحد اللي في النص</b><div class="mb">H = ¼ + ½e<sup>−jω</sup> + ¼e<sup>−j2ω</sup> = e<sup>−jω</sup>(¼e<sup>jω</sup> + ½ + ¼e<sup>−jω</sup>)</div></div><div class="st"><b class="k">2. Euler</b><span class="m">¼(e<sup>jω</sup> + e<sup>−jω</sup>) = ½cos ω</span>:<div class="mb">H = e<sup>−jω</sup>(½ + ½cos ω)</div></div><div class="st"><b class="k">3. بسّطها بقانون نص الزاوية</b><span class="m">½(1 + cos ω) = cos²(ω/2)</span>:<div class="mb">H = cos²(ω/2) e<sup>−jω</sup></div>(وفيه طريقة تانية: <span class="m">H = ¼(1 + e<sup>−jω</sup>)² = (cos(ω/2)e<sup>−jω/2</sup>)²</span>، نفس النتيجة.)</div><div class="st"><b class="k">4. الـ Magnitude والـ Phase</b><span class="m">cos²</span> عمرها ما بتبقى سالبة، فمش محتاجين absolute ولا تصحيح بـ π:<div class="mb">|H| = cos²(ω/2) ,  ∠H = −ω</div></div><div class="st"><b class="k">5. فين H = 0؟</b><span class="m">cos(ω/2) = 0</span> لما <span class="m">ω/2 = π/2 + mπ</span>، يعني <span class="m">ω = (2m + 1)π</span> (يعني ±π).<br>هناك الـ magnitude = 0 والـ phase undefined.</div><div class="st"><b class="k">6. راجع</b>• <span class="m">ω = 0</span>: Σh = 1 ✓<br>• <span class="m">ω = π</span>: <span class="m">¼ − ½ + ¼ = 0</span> ✓</div><div class="nav"><button type="button" class="btn" data-nx>ابدأ الحل ←</button><button type="button" class="btn ghost" data-bk>→ رجوع</button><button type="button" class="btn ghost" data-rs>من الأول</button><span class="cnt"></span><button type="button" class="btn ghost" data-done="p9"></button></div></section>
+</div><script>
+const LESSON="dsp-sheet-mp",PARTS=['p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9'],HAS_EXAM=false,MCQ={};
+
+const KEY="anas-uni-progress-v1",V="v2:";
+const $=id=>document.getElementById(id);
+const loadAll=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return {}}};
+const saveAll=d=>{try{localStorage.setItem(KEY,JSON.stringify(d))}catch{}};
+function L(){const d=loadAll();d[LESSON]=d[LESSON]||{parts:{},answers:{},exam:null};d[LESSON].answers=d[LESSON].answers||{};d[LESSON].parts=d[LESSON].parts||{};return d}
+function setPart(p,on,right,total){const d=L();if(on)d[LESSON].parts[p]={right,total,at:Date.now()};else delete d[LESSON].parts[p];saveAll(d);bar()}
+function bar(){const l=L()[LESSON],t=PARTS.length+(HAS_EXAM?1:0),done=PARTS.filter(p=>l.parts[p]).length+(HAS_EXAM&&l.exam?1:0),p=Math.round(done/t*100);
+ $("pct").textContent=`${p}% · ${done}/${t}`;$("fill").style.width=p+"%";
+ document.querySelectorAll("[data-chip]").forEach(a=>a.classList.toggle("done",a.dataset.chip==="exam"?!!l.exam:!!l.parts[a.dataset.chip]));
+ document.querySelectorAll("[data-done]").forEach(b=>{const on=!!l.parts[b.dataset.done];b.classList.toggle("on",on);b.textContent=on?"خلصت ✓":"علّم إني خلصت"})}
+document.querySelectorAll("[data-done]").forEach(b=>b.onclick=()=>setPart(b.dataset.done,!L()[LESSON].parts[b.dataset.done]));
+document.querySelectorAll("[data-sol]").forEach(b=>b.onclick=()=>{const s=$(b.dataset.sol);s.classList.toggle("show");b.textContent=s.classList.contains("show")?"اخفي الإجابة":b.dataset.label||"اظهر الإجابة"});
+function mcq(box,part,items){
+ const ans=()=>L()[LESSON].answers,k=i=>V+part+":"+i,st=document.createElement("div");st.className="score";
+ function check(){const a=ans(),got=items.filter((_,i)=>a[k(i)]!==undefined).length,r=items.filter((it,i)=>a[k(i)]===it.a).length;
+  st.innerHTML=got===items.length?`<span class="badge">خلصت · ${r}/${items.length}</span>`:`جاوبت ${got} من ${items.length}`;
+  if(got===items.length)setPart(part,true,r,items.length)}
+ items.forEach((it,i)=>{const q=document.createElement("div");q.className="q";
+  const draw=()=>{const g=ans()[k(i)];
+   q.innerHTML=`<div class="stem">${i+1}. ${it.q}</div><div class="opts">${it.o.map((o,j)=>{let c="";if(g!==undefined){if(j===it.a)c="right";else if(j===g)c="wrong"}return `<button type="button" class="opt ${c}" data-j="${j}" ${g!==undefined?"disabled":""}>${o}</button>`}).join("")}</div>${g!==undefined?`<div class="why ${g===it.a?"":"bad"}">${g===it.a?"إجابتك صح. ":`إجابتك غلط. الإجابة الصح: ${it.o[it.a]}. `}${it.w}</div>`:""}`};
+  q.onclick=e=>{const b=e.target.closest("[data-j]");if(!b||b.disabled)return;const d=L();d[LESSON].answers[k(i)]=+b.dataset.j;saveAll(d);draw();check()};
+  draw();box.append(q)});
+ const re=document.createElement("button");re.type="button";re.className="btn ghost";re.textContent="أعيد الأسئلة دي";
+ re.onclick=()=>{const d=L();items.forEach((_,i)=>delete d[LESSON].answers[k(i)]);delete d[LESSON].parts[part];saveAll(d);box.innerHTML="";bar();mcq(box,part,items)};
+ box.append(st,re);check();
+}
+document.querySelectorAll("[data-mcq]").forEach(b=>mcq(b,b.dataset.mcq,MCQ[b.dataset.mcq]));
+function parseAns(s){return String(s).replace(/−/g,"-").replace(/[\[\]()]/g," ").split(/[,،\s]+/).filter(Boolean).map(t=>{const m=t.match(/^(-?\d*\.?\d+)\/(\d*\.?\d+)$/);return m?m[1]/m[2]:Number(t)})}
+function guided(box){box.querySelectorAll(".gs").forEach((s,i,all)=>{
+ if(i)s.classList.add("lock");
+ const inp=s.querySelector("input"),a=s.dataset.a?JSON.parse(s.dataset.a):null,tol=+(s.dataset.tol||.01);
+ const nxt=()=>{s.classList.add("open");if(all[i+1])all[i+1].classList.remove("lock")};
+ s.querySelector("[data-check]")?.addEventListener("click",()=>{const v=parseAns(inp.value),ok=a&&v.length===a.length&&v.every((x,j)=>Math.abs(x-a[j])<=tol);inp.className=ok?"ok":"no";if(ok)nxt()});
+ s.querySelector("[data-show]")?.addEventListener("click",nxt)})}
+document.querySelectorAll(".g").forEach(guided);
+function exam(cfg){const box=$(cfg.box),res=$(cfg.res),tEl=$(cfg.timer),go=$(cfg.go),E=cfg.items;let ans={},left=0,tick;
+ const prev=L()[LESSON][cfg.key];if(prev){res.hidden=false;res.textContent=`آخر نتيجة: ${prev.right} / ${prev.total}. تقدر تعيد.`}
+ const show=()=>tEl.textContent=`${String(Math.floor(left/60)).padStart(2,"0")}:${String(left%60).padStart(2,"0")}`;
+ function finish(){clearInterval(tick);const right=E.filter((e,i)=>ans[i]===e.a).length;
+  box.querySelectorAll("button.opt").forEach(b=>b.disabled=true);
+  E.forEach((e,i)=>{const q=box.children[i];q.querySelectorAll("button.opt").forEach((b,j)=>{b.classList.remove("pick");if(j===e.a)b.classList.add("right");else if(j===ans[i])b.classList.add("wrong")});
+   const w=document.createElement("div");w.className="why"+(ans[i]===e.a?"":" bad");w.innerHTML=(ans[i]===e.a?"إجابتك صح. ":ans[i]===undefined?`ما جاوبتش. الإجابة الصح: ${e.o[e.a]}. `:`إجابتك غلط. الإجابة الصح: ${e.o[e.a]}. `)+e.w;q.append(w)});
+  const d=L();d[LESSON][cfg.key]={right,total:E.length,at:Date.now()};saveAll(d);bar();
+  res.hidden=false;res.textContent=`النتيجة: ${right} / ${E.length}. `+(right/E.length>=.85?"ممتاز.":right/E.length>=.7?"كويس. راجع اللي غلطت فيه وأعد.":"ارجع للأجزاء اللي غلطت فيها، وأعد.");
+  go.disabled=false;go.textContent="أعد الامتحان";cfg.after&&cfg.after()}
+ go.onclick=()=>{ans={};left=cfg.min*60;box.hidden=false;res.hidden=true;go.disabled=true;
+  box.innerHTML=E.map((e,i)=>`<div class="q"><div class="stem">${i+1}. ${e.q}</div><div class="opts">${e.o.map((o,j)=>`<button type="button" class="opt" data-i="${i}" data-j="${j}">${o}</button>`).join("")}</div></div>`).join("")+`<div class="btns"><button type="button" class="btn" id="${cfg.box}Sub">سلّم</button></div>`;
+  $(cfg.box+"Sub").onclick=finish;show();clearInterval(tick);tick=setInterval(()=>{left--;show();if(left<=0)finish()},1000)};
+ box.addEventListener("click",e=>{const b=e.target.closest("button.opt");if(!b||b.disabled)return;const i=+b.dataset.i;ans[i]=+b.dataset.j;box.children[i].querySelectorAll("button.opt").forEach(x=>x.classList.remove("pick"));b.classList.add("pick")})}
+/* canvas helpers */
+function cv(id,size=400,R=5){const c=$(id),r=window.devicePixelRatio||1;c.width=size*r;c.height=size*r;const x=c.getContext("2d");x.scale(r,r);return {ctx:x,size,R,sx:v=>(v+R)/(2*R)*size,sy:v=>size-(v+R)/(2*R)*size}}
+function base(g){const {ctx,size,R,sx,sy}=g;ctx.clearRect(0,0,size,size);ctx.strokeStyle="#E6E9F0";ctx.lineWidth=1;for(let i=-R;i<=R;i++){ctx.beginPath();ctx.moveTo(sx(i),0);ctx.lineTo(sx(i),size);ctx.moveTo(0,sy(i));ctx.lineTo(size,sy(i));ctx.stroke()}
+ ctx.strokeStyle="#B8BFCC";ctx.beginPath();ctx.moveTo(sx(0),0);ctx.lineTo(sx(0),size);ctx.moveTo(0,sy(0));ctx.lineTo(size,sy(0));ctx.stroke()}
+function wline(g,w,color,dash){const {ctx,R,sx,sy}=g;if(Math.abs(w[1])<1e-9&&Math.abs(w[2])<1e-9)return;ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.setLineDash(dash?[6,6]:[]);ctx.beginPath();
+ if(Math.abs(w[2])>1e-9){const y=x=>-(w[0]+w[1]*x)/w[2];ctx.moveTo(sx(-R),sy(y(-R)));ctx.lineTo(sx(R),sy(y(R)))}else{const x=-w[0]/w[1];ctx.moveTo(sx(x),sy(-R));ctx.lineTo(sx(x),sy(R))}ctx.stroke();ctx.restore()}
+function dots(g,P,w,ring){const {ctx,sx,sy}=g;P.forEach((p,i)=>{ctx.beginPath();ctx.arc(sx(p[0]),sy(p[1]),6,0,7);ctx.fillStyle=p[2]>0?"#4F5BD5":"#C0392B";ctx.fill();
+ if(w&&Math.sign(w[0]+w[1]*p[0]+w[2]*p[1])!==p[2]){ctx.lineWidth=3;ctx.strokeStyle="#E2A400";ctx.stroke()}
+ if(ring===i){ctx.beginPath();ctx.arc(sx(p[0]),sy(p[1]),12,0,7);ctx.lineWidth=2;ctx.strokeStyle="#1E2433";ctx.stroke()}})}
+
+
+document.querySelectorAll(".pr").forEach(p=>{const s=[...p.querySelectorAll(".st")],c=p.querySelector(".cnt"),nx=p.querySelector("[data-nx]"),bk=p.querySelector("[data-bk]");let i=0;
+ const draw=()=>{s.forEach((e,j)=>e.classList.toggle("on",j<i));c.textContent=i?`خطوة ${i} من ${s.length}`:`${s.length} خطوات`;nx.disabled=i>=s.length;bk.disabled=i<=0;nx.textContent=i?"Next ←":"ابدأ الحل ←"};
+ nx.onclick=()=>{i++;draw();s[i-1].scrollIntoView({behavior:"smooth",block:"nearest"})};bk.onclick=()=>{i--;draw()};
+ p.querySelector("[data-rs]").onclick=()=>{i=0;draw()};draw()});
+
+bar();
+</script>
+</body>
+</html>
